@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "vsbh-cricleague",
+  "private_key_id": "d1d1472b6918dc1ea9505901d5f15d33769e7f60",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC6z3qrsMwyNadQ\nEG/yXR/XHh0aHa1gTLhOvSdi9IwXzGI7b+b2kRFIMQqdoqZ6mlGV1iboA6sGUwkH\nbHwuiMk2GpFTJuY+I+krnbi1WrQ+Zt5eHirUU8xjLalrB+W6yRULVsfBc6MXPDBS\nQxlQ3UrZl4BR9/qDsCh3k4WQwx/mwqzxyjXCzehira2lAY0MhkOIdPMlDJrWR6fd\nF3HPulcEtxJwGhke8t/1DSpOm+EKeEJwdj2ZxWOKDUya5nrEAnW7mIlp+YYwlNVp\nZCqTndSjDT578YI3LIiCWME2G8V+ENP8jCyNT3m4PSrDTO1G8UsDThDDphzl2yJn\nL/rpQR1vAgMBAAECggEAJ4ZCZBUR/wWPEseHh/XgCLmcWqwwxJE25aHrtWocQeTC\nW+T/LufeijGmF1gUdRg1bshSjwBHrRzgaiuv0oCqYcIZQUiXqkoayVmjfOtl+1X0\ncmFbmnToZ4t/rt+K4Ywt4apItUtsFDxt1NnRf2Rys7r0MWOQI1CgHzydI9XE6COn\nTZmP+u/3ekvDYAVvj2jSzyRfGe0kNXvEiu5XOq9idH+ORfdInUMY+vIP+CoY9iag\n0zFAXwIl9kWvVMY6Tary094pTybZeCe0uOERqkBqxAJ0UI9uh1no+XCIIMHA+zyV\n7BoNo65c5ziQECsXGbCTPo8wzG1D/zVW8Hcp2obusQKBgQDxCoRdq/uYlaHWsj7a\n2+XcesKVW3baFt9TYzYcXY0OjHjpFmrWB35iUqGHEsvT+gVuml6dDXAGNsZI9O8f\nDqLvmeVEbCgZU4wqXtA5IFuuOwBFLtMO9d3aWY1qGAUOgtOjWRA4hCbJOHK+rWFo\nM9zyhSSQW2X4FBEPAuiIG73AjQKBgQDGZ2LWff2UefFCg6z0fcrcslwa/CFv6FuN\nslviZ/lrZxwHWfOGgZ6LL2FbCpcz8Qh3RN2NapMVwdZAyZHn4I1Wqwre1UWK3WGk\nDT2HaiLuA6qZnDd3FLGredEI4wxOiiVtCPRCW7kOCZqnmFE5cCLXA2p22csVj470\n0lAxmWXM6wKBgQDVTzZWYxVzMbAX/IOtUP65QBYk8N1cIPOfquO+9HcZEe0KcSE4\nqUcKIg/6JgMlY1QdThU+rR6fESgmdkOK23wLx8hh5ckSqKIY+PESLPWVWXdiwg5b\nZe/gBHImGn2XGuXJ386ABUsBtaet4GecPJFiObti2M+DW9bAzxUTJmGlHQKBgB4O\nO2LS4z9C2dGBsQm4pKqaOmm8GDSjtnrYsiKyLY6fqBdVARc3O5VKMC1ihVVRBj9L\nJ2Ts6Cs7mgFmh7vgwIiIkLUBCe/naYs4lkGVSoVT+NwcViqr795SLeByxMKBGvpR\niO8khfwiaFNLN8LDwgNgeRhYFfPGM5nS4mMhIdLRAoGAPO9TjhJ8xpeIARce9cOJ\nDrP5WilyMaxu1izHpR/IrTejrDZcJ4937x9Vf0jYOHH4pj4JMNcEGVoN1WBI6xUs\n26sGlQC1fE1RR8033rlyvWyXz2/vcgLa0gtZK0q9OilNZlEgeTHxyXqGb2sY2GZ/\nZutjDiCoSfHpA2Rg6RfR6fY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "prasoon-pathak@vsbh-cricleague.iam.gserviceaccount.com",
+  "client_id": "107826035144611187998",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/prasoon-pathak%40vsbh-cricleague.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,0 +1,405 @@
+/* Animated Countdown Timer */
+.countdown-timer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.countdown-timer.active {
+  border: 2px solid #27ae60;
+  box-shadow: 0 12px 40px rgba(39, 174, 96, 0.2);
+}
+
+.countdown-timer.inactive {
+  border: 2px solid #6c757d;
+  opacity: 0.7;
+}
+
+/* Timer Circle with Progress */
+.timer-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+.progress-ring__background {
+  stroke: #2c3e50;
+  opacity: 0.3;
+}
+
+.progress-ring__progress {
+  transition: stroke-dashoffset 0.5s ease-in-out;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Timer Display */
+.timer-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-text {
+  font-size: 48px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 20px currentColor;
+  transition: color 0.3s ease;
+  line-height: 1;
+}
+
+.timer-seconds {
+  font-size: 14px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* Color States */
+.countdown-timer.safe .timer-text {
+  color: #27ae60;
+}
+
+.countdown-timer.warning .timer-text {
+  color: #f39c12;
+}
+
+.countdown-timer.critical .timer-text {
+  color: #e74c3c;
+}
+
+/* Pulse Animation */
+.countdown-timer.pulsing .timer-text {
+  animation: criticalPulse 1s infinite;
+}
+
+@keyframes criticalPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Timer Status */
+.timer-status {
+  text-align: center;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.status-indicator.safe {
+  background: rgba(39, 174, 96, 0.2);
+  color: #27ae60;
+  border: 1px solid #27ae60;
+}
+
+.status-indicator.warning {
+  background: rgba(243, 156, 18, 0.2);
+  color: #f39c12;
+  border: 1px solid #f39c12;
+}
+
+.status-indicator.critical {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  animation: statusFlash 1s infinite;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: dotPulse 1s infinite;
+}
+
+.status-indicator.safe .indicator-dot {
+  background: #27ae60;
+}
+
+.status-indicator.warning .indicator-dot {
+  background: #f39c12;
+}
+
+.status-indicator.critical .indicator-dot {
+  background: #e74c3c;
+}
+
+@keyframes dotPulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes statusFlash {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Pulse Overlay */
+.pulse-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 2px solid #e74c3c;
+  border-radius: 50%;
+  opacity: 0;
+  animation: pulseRing 2s infinite;
+}
+
+.pulse-ring.delay-1 {
+  animation-delay: 0.5s;
+}
+
+.pulse-ring.delay-2 {
+  animation-delay: 1s;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Warning Flash */
+.warning-flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.flash-bar {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #f39c12, transparent);
+  animation: warningFlash 3s infinite;
+}
+
+@keyframes warningFlash {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+/* Time Bars */
+.time-bars {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 300px;
+}
+
+.time-bar {
+  width: 8px;
+  height: 20px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  opacity: 0.3;
+  transform: scaleY(0.5);
+}
+
+.time-bar.active {
+  opacity: 1;
+  transform: scaleY(1);
+  animation: barPop 0.5s ease;
+}
+
+.time-bar.safe.active {
+  box-shadow: 0 0 8px rgba(39, 174, 96, 0.5);
+}
+
+.time-bar.warning.active {
+  box-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
+}
+
+.time-bar.critical.active {
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.5);
+  animation: barPopCritical 0.5s ease infinite alternate;
+}
+
+@keyframes barPop {
+  0% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.2); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes barPopCritical {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(1.1); }
+}
+
+/* Audio Cue Indicator */
+.audio-cue {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sound-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.wave-bar {
+  width: 3px;
+  height: 12px;
+  background: #e74c3c;
+  border-radius: 2px;
+  animation: soundWave 0.5s infinite alternate;
+}
+
+.wave-bar:nth-child(2) {
+  animation-delay: 0.1s;
+  height: 18px;
+}
+
+.wave-bar:nth-child(3) {
+  animation-delay: 0.2s;
+  height: 8px;
+}
+
+@keyframes soundWave {
+  0% { transform: scaleY(0.5); opacity: 0.5; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .countdown-timer {
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  .timer-circle {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  
+  .timer-text {
+    font-size: 36px;
+  }
+  
+  .timer-seconds {
+    font-size: 12px;
+  }
+  
+  .time-bars {
+    max-width: 200px;
+  }
+  
+  .time-bar {
+    width: 6px;
+    height: 15px;
+  }
+  
+  .pulse-ring {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .countdown-timer {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .timer-circle {
+    width: 120px !important;
+    height: 120px !important;
+  }
+  
+  .timer-text {
+    font-size: 28px;
+  }
+  
+  .timer-seconds {
+    font-size: 10px;
+  }
+  
+  .time-bars {
+    max-width: 150px;
+  }
+  
+  .time-bar {
+    width: 4px;
+    height: 12px;
+  }
+  
+  .pulse-ring {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .countdown-timer {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  }
+  
+  .timer-seconds {
+    color: #9ca3af;
+  }
+  
+  .status-text {
+    color: #e5e7eb;
+  }
+}

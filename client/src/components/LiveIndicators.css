@@ -1,0 +1,694 @@
+/* Live Indicators Component */
+.live-indicators {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Status Badge Container */
+.status-badge-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 2px solid;
+  border-radius: 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.badge-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.badge-icon {
+  font-size: 18px;
+  animation: iconBounce 2s infinite;
+}
+
+.badge-text {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Live Status Animation */
+.status-badge.live {
+  animation: liveGlow 2s infinite;
+  box-shadow: 0 0 20px currentColor;
+}
+
+.status-badge.live .badge-text {
+  animation: textPulse 1s infinite;
+}
+
+.status-badge.live .badge-icon {
+  animation: iconBounce 1.5s infinite;
+}
+
+/* Sold Status Animation */
+.status-badge.sold {
+  animation: soldPop 0.6s ease;
+}
+
+.status-badge.sold .badge-icon {
+  animation: soldIcon 1s ease;
+}
+
+/* Unsold Status Animation */
+.status-badge.unsold {
+  animation: unsoldShake 0.6s ease;
+}
+
+.status-badge.unsold .badge-icon {
+  animation: unsoldIcon 1s ease;
+}
+
+/* Pulse Ring Effect */
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.pulse-ring-1,
+.pulse-ring-2,
+.pulse-ring-3 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border: 2px solid #00ff00;
+  border-radius: 30px;
+  opacity: 0;
+}
+
+.pulse-ring-1 {
+  animation: pulseRing 2s infinite 0s;
+}
+
+.pulse-ring-2 {
+  animation: pulseRing 2s infinite 0.5s;
+}
+
+.pulse-ring-3 {
+  animation: pulseRing 2s infinite 1s;
+}
+
+/* Live Blinking Dot */
+.live-dot {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: #00ff00;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #00ff00;
+  animation: liveBlink 1s infinite;
+}
+
+.dot-inner {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  margin: 4px;
+  animation: innerPulse 1s infinite;
+}
+
+/* Timer Context */
+.timer-context {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.timer-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Courier New', monospace;
+}
+
+.timer-bar {
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  transition: width 1s ease, background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Player Context */
+.player-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.context-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.player-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.mvp-indicator {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: shimmer 2s infinite;
+}
+
+/* Sold Animation */
+.sold-animation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.sold-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(39, 174, 96, 0.4);
+  animation: soldPopIn 0.6s ease;
+}
+
+.sold-icon {
+  font-size: 48px;
+  animation: soldIconSpin 1s ease;
+}
+
+.sold-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.sold-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Confetti Effect */
+.confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 2px;
+  animation: confettiFall 1s ease-out forwards;
+}
+
+.confetti-piece:nth-child(1) {
+  left: 20%;
+  animation-delay: 0s;
+  background: #ff6b6b;
+}
+
+.confetti-piece:nth-child(2) {
+  left: 40%;
+  animation-delay: 0.1s;
+  background: #4ecdc4;
+}
+
+.confetti-piece:nth-child(3) {
+  left: 60%;
+  animation-delay: 0.2s;
+  background: #45b7d1;
+}
+
+.confetti-piece:nth-child(4) {
+  left: 80%;
+  animation-delay: 0.3s;
+  background: #96ceb4;
+}
+
+.confetti-piece:nth-child(5) {
+  left: 50%;
+  animation-delay: 0.4s;
+  background: #ffeaa7;
+}
+
+/* Unsold Animation */
+.unsold-animation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.unsold-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(231, 76, 60, 0.4);
+  animation: unsoldPopIn 0.6s ease;
+}
+
+.unsold-icon {
+  font-size: 48px;
+  animation: unsoldIconShake 1s ease;
+}
+
+.unsold-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Action History */
+.action-history {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-header {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  font-size: 11px;
+  transition: all 0.3s ease;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.history-item.sold {
+  border-left: 2px solid #27ae60;
+}
+
+.history-item.unsold {
+  border-left: 2px solid #e74c3c;
+}
+
+.history-indicator {
+  font-size: 12px;
+}
+
+.history-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-action {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.history-player {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.history-price {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.history-time {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Courier New', monospace;
+}
+
+/* Connection Status */
+.connection-status {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.status-indicator-small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.connection-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: connectionPulse 2s infinite;
+}
+
+.connection-dot.connected {
+  background: #00ff00;
+  box-shadow: 0 0 6px #00ff00;
+}
+
+.connection-dot.disconnected {
+  background: #e74c3c;
+  box-shadow: 0 0 6px #e74c3c;
+}
+
+.connection-text {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Live Glow Effect */
+.live-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glow-effect {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 255, 0, 0.1) 0%, transparent 70%);
+  animation: glowPulse 2s infinite;
+}
+
+/* Animations */
+@keyframes liveGlow {
+  0%, 100% { box-shadow: 0 0 20px currentColor; }
+  50% { box-shadow: 0 0 40px currentColor; }
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes iconBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-3px); }
+  60% { transform: translateY(-1px); }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes liveBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes innerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.7); }
+}
+
+@keyframes soldPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes soldPopIn {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes soldIcon {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes soldIconSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes unsoldShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes unsoldPopIn {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes unsoldIcon {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes unsoldIconShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.6); }
+  100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes connectionPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .live-indicators {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .status-badge-container {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .badge-content {
+    font-size: 14px;
+  }
+  
+  .timer-context {
+    align-items: center;
+  }
+  
+  .timer-bar {
+    width: 80px;
+  }
+  
+  .player-context {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .sold-content,
+  .unsold-content {
+    padding: 20px;
+  }
+  
+  .sold-icon,
+  .unsold-icon {
+    font-size: 36px;
+  }
+  
+  .sold-text,
+  .unsold-text {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .live-indicators {
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .status-badge {
+    padding: 10px 20px;
+  }
+  
+  .badge-content {
+    font-size: 12px;
+    gap: 6px;
+  }
+  
+  .badge-icon {
+    font-size: 14px;
+  }
+  
+  .player-context {
+    padding: 8px;
+  }
+  
+  .player-name {
+    font-size: 14px;
+  }
+  
+  .connection-status {
+    position: static;
+    margin-top: 8px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .live-indicators {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  }
+  
+  .player-context {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .action-history {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+}

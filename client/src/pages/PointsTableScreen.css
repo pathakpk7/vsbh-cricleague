@@ -1,0 +1,497 @@
+.points-table-screen {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.points-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.points-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.points-header p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.qualification-status {
+  margin-bottom: 30px;
+}
+
+.qualification-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.qualification-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.qualification-info p {
+  text-align: center;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.qualified-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.group-qualification h4 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #ffffff;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.qualified-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qualified-team {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(86, 171, 47, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(86, 171, 47, 0.3);
+}
+
+.qualified-team .position {
+  font-weight: bold;
+  color: #56ab2f;
+  font-size: 1.1rem;
+}
+
+.qualified-team .team-name {
+  flex: 1;
+  text-align: center;
+  font-weight: 500;
+}
+
+.qualified-team .points {
+  font-weight: bold;
+  color: #ffd93d;
+}
+
+.group-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.group-btn {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.group-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.group-btn.active {
+  background: rgba(255, 107, 107, 0.3);
+  border-color: #ff6b6b;
+}
+
+.points-table-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow-x: auto;
+  margin-bottom: 30px;
+}
+
+.points-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.points-table th,
+.points-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.points-table th {
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.points-table td {
+  color: #ffffff;
+}
+
+.points-table .qualified {
+  background: rgba(86, 171, 47, 0.1);
+  border-left: 3px solid #56ab2f;
+}
+
+.position {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.crown {
+  margin-left: 5px;
+  font-size: 0.8rem;
+}
+
+.team-name {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.winner-badge {
+  background: rgba(255, 215, 0, 0.3);
+  color: #ffd93d;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.group {
+  text-align: center;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.wins {
+  color: #56ab2f;
+  font-weight: bold;
+  text-align: center;
+}
+
+.losses {
+  color: #ff416c;
+  font-weight: bold;
+  text-align: center;
+}
+
+.points {
+  font-weight: bold;
+  color: #ffd93d;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.nrr {
+  text-align: center;
+  font-family: monospace;
+}
+
+.nrr.positive {
+  color: #56ab2f;
+}
+
+.nrr.negative {
+  color: #ff416c;
+}
+
+.status {
+  text-align: center;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.qualified-status {
+  background: rgba(86, 171, 47, 0.2);
+  color: #56ab2f;
+}
+
+.eliminated-status {
+  background: rgba(255, 65, 108, 0.2);
+  color: #ff416c;
+}
+
+.tournament-bracket {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tournament-bracket h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.bracket-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  overflow-x: auto;
+}
+
+.group-stage, .semi-finals, .final {
+  flex: 1;
+  min-width: 200px;
+}
+
+.group-stage h4,
+.semi-finals h4,
+.final h4 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #ffffff;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.group h5 {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.teams {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bracket-team {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bracket-team.qualified {
+  background: rgba(86, 171, 47, 0.2);
+  border-color: rgba(86, 171, 47, 0.3);
+  color: #56ab2f;
+  font-weight: 500;
+}
+
+.semi-final-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.team-slot {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  min-width: 80px;
+}
+
+.match span {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: bold;
+}
+
+.final-match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.final-match .team-slot {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd93d;
+  font-weight: bold;
+}
+
+.arrow {
+  font-size: 2rem;
+  color: #ffd93d;
+  font-weight: bold;
+  text-align: center;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #ff6b6b;
+}
+
+.empty-state p {
+  opacity: 0.8;
+}
+
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #ff6b6b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.error-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #ff416c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .points-table-screen {
+    padding: 15px;
+  }
+  
+  .points-header h1 {
+    font-size: 2rem;
+  }
+  
+  .qualified-teams {
+    grid-template-columns: 1fr;
+  }
+  
+  .group-selector {
+    flex-direction: column;
+  }
+  
+  .points-table-container {
+    padding: 15px;
+    overflow-x: auto;
+  }
+  
+  .points-table {
+    font-size: 0.8rem;
+  }
+  
+  .points-table th,
+  .points-table td {
+    padding: 8px;
+  }
+  
+  .bracket-diagram {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+  }
+  
+  .groups {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .qualification-card {
+    padding: 20px;
+  }
+  
+  .points-table-container {
+    padding: 10px;
+  }
+  
+  .tournament-bracket {
+    padding: 20px;
+  }
+  
+  .team-slot {
+    min-width: 60px;
+    font-size: 0.7rem;
+  }
+}

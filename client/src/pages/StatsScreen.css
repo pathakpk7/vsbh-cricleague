@@ -1,0 +1,481 @@
+.stats-screen {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.stats-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stats-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stats-header p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+/* Live Match Section */
+.live-match-section {
+  margin-bottom: 30px;
+}
+
+.live-match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 68, 68, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.live-match-header h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: #ff4444;
+}
+
+.live-indicator {
+  background: #ff4444;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.live-match-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 4px solid #ff4444;
+  animation: live-glow 2s infinite;
+}
+
+@keyframes live-glow {
+  0% { box-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
+}
+
+.live-score-board {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.team-score h3 {
+  font-size: 1.3rem;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+}
+
+.score {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffd93d;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.overs {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-left: 5px;
+}
+
+.vs {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.live-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.current-state {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.batsman-info, .bowler-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.6);
+  min-width: 60px;
+}
+
+.player {
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.batsman-info .score {
+  font-size: 1rem;
+  color: #56ab2f;
+  font-weight: bold;
+}
+
+.bowler-info .figures {
+  font-size: 0.9rem;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.match-info {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Stats Tabs */
+.stats-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 15px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn.active {
+  background: rgba(255, 107, 107, 0.3);
+  border-bottom: 2px solid #ff6b6b;
+}
+
+/* Stats Content */
+.stats-content {
+  min-height: 400px;
+}
+
+.stats-table-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 30px;
+}
+
+.stats-table-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table th {
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.stats-table td {
+  color: #ffffff;
+}
+
+.stats-table .top-performer {
+  background: rgba(255, 215, 0, 0.1);
+  border-left: 3px solid #ffd93d;
+}
+
+.rank {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.crown {
+  margin-left: 5px;
+  font-size: 0.8rem;
+}
+
+.player-name {
+  font-weight: 500;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.college-id {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: monospace;
+}
+
+.team {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.runs, .wickets {
+  text-align: center;
+  font-weight: bold;
+  color: #56ab2f;
+  font-size: 1.1rem;
+}
+
+.average {
+  text-align: center;
+  font-family: monospace;
+}
+
+.strike-rate {
+  text-align: center;
+  font-family: monospace;
+  color: #ff6b6b;
+}
+
+.economy {
+  text-align: center;
+  font-family: monospace;
+  color: #ff416c;
+}
+
+/* Highlights */
+.highlights-stats h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.highlight-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.highlight-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.highlight-icon {
+  font-size: 2.5rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+.highlight-content {
+  flex: 1;
+}
+
+.highlight-content h4 {
+  font-size: 1.2rem;
+  margin: 0 0 10px 0;
+  color: #ffd93d;
+}
+
+.highlight-content p {
+  margin: 0 0 15px 0;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+.highlight-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.highlight-meta span {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* Integration Notice */
+.integration-notice {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 215, 0, 0.1));
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 30px;
+}
+
+.notice-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #ffd93d;
+  text-align: center;
+}
+
+.notice-content p {
+  margin-bottom: 20px;
+  text-align: center;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.app-links {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stats-screen {
+    padding: 15px;
+  }
+  
+  .stats-header h1 {
+    font-size: 2rem;
+  }
+  
+  .live-score-board {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .vs {
+    transform: rotate(90deg);
+  }
+  
+  .live-details {
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+  }
+  
+  .stats-tabs {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .stats-table-container {
+    padding: 20px;
+    overflow-x: auto;
+  }
+  
+  .stats-table {
+    font-size: 0.8rem;
+  }
+  
+  .stats-table th,
+  .stats-table td {
+    padding: 8px;
+  }
+  
+  .highlights-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .highlight-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .app-links {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .live-match-card {
+    padding: 20px;
+  }
+  
+  .stats-table-container {
+    padding: 15px;
+  }
+  
+  .integration-notice {
+    padding: 20px;
+  }
+  
+  .highlight-icon {
+    font-size: 2rem;
+  }
+}

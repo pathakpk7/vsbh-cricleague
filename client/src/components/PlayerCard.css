@@ -1,0 +1,347 @@
+/* Modern Player Card Component */
+.player-card {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 2px solid #e9ecef;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hover Effect */
+.player-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  border-color: #4a90e2;
+}
+
+.player-card:hover .hover-overlay {
+  opacity: 1;
+}
+
+/* Selected State */
+.player-card.selected {
+  border-color: #4a90e2;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3f4f6 100%);
+}
+
+/* Sold State */
+.player-card.sold {
+  opacity: 0.7;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e9ecef 100%);
+  cursor: not-allowed;
+}
+
+.player-card.sold:hover {
+  transform: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* MVP State - Golden Border */
+.player-card.mvp {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, #fff9e6 0%, #fffef7 100%);
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+}
+
+.player-card.mvp:hover {
+  box-shadow: 0 16px 48px rgba(255, 215, 0, 0.3);
+}
+
+/* Jersey Number */
+.jersey-number {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+  z-index: 2;
+}
+
+/* MVP Badge */
+.mvp-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  z-index: 2;
+  animation: shimmer 2s infinite;
+}
+
+.mvp-icon {
+  font-size: 14px;
+  animation: rotate 3s linear infinite;
+}
+
+.mvp-text {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes shimmer {
+  0% { box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); }
+  50% { box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6); }
+  100% { box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Player Info */
+.player-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.player-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.player-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.role-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  align-self: center;
+}
+
+.role-icon {
+  font-size: 14px;
+}
+
+.role-text {
+  font-size: 11px;
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.player-year,
+.player-college {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.year-label,
+.college-label {
+  font-size: 10px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.year-value,
+.college-value {
+  font-size: 14px;
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Price Section */
+.price-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #dee2e6;
+  position: relative;
+}
+
+.price-label {
+  font-size: 11px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.price-amount {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sold-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+}
+
+.sold-text {
+  animation: pulse 2s infinite;
+}
+
+/* Hover Overlay */
+.hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.9) 0%, rgba(92, 184, 92, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 14px;
+}
+
+.overlay-content {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.view-details {
+  font-size: 14px;
+  font-weight: bold;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .player-card {
+    min-height: 240px;
+    padding: 16px;
+  }
+  
+  .player-name {
+    font-size: 18px;
+  }
+  
+  .price-amount {
+    font-size: 20px;
+  }
+  
+  .jersey-number {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .mvp-badge {
+    padding: 4px 8px;
+  }
+  
+  .mvp-text {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-card {
+    min-height: 200px;
+    padding: 12px;
+  }
+  
+  .player-name {
+    font-size: 16px;
+  }
+  
+  .price-amount {
+    font-size: 18px;
+  }
+  
+  .role-badge {
+    padding: 4px 8px;
+  }
+  
+  .role-text {
+    font-size: 10px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .player-card {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+  
+  .player-name {
+    color: #f7fafc;
+  }
+  
+  .price-section {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-color: #4a5568;
+  }
+  
+  .price-amount {
+    color: #f7fafc;
+  }
+  
+  .year-value,
+  .college-value {
+    color: #e2e8f0;
+  }
+}
