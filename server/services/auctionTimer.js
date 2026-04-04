@@ -34,7 +34,7 @@ const startAuctionTimer = (io) => {
       }
 
       // IF auction is active
-      if (auctionState.is_active) {
+      if (auctionState && auctionState.is_active) {
         // Decrease timer_seconds by 1
         const newTimerSeconds = Math.max(0, auctionState.timer_seconds - 1);
 
@@ -46,16 +46,21 @@ const startAuctionTimer = (io) => {
             updated_at: new Date().toISOString()
           })
           .eq('id', 1)
-          .select()
-          .single();
+          .select();
 
         if (updateError) {
-          console.error('Error updating timer:', updateError);
+          console.error('Error updating auction timer:', updateError);
           return;
         }
 
-        // Emit socket: timer-update
-        io.to('auction-room').emit('timer-update', updatedState);
+        // Emit timer update to clients
+        if (global.io) {
+          global.io.emit('timer-update', {
+            timer_seconds: newTimerSeconds,
+            is_active: true,
+            auction_state: updatedState
+          });
+        }
 
         // IF timer reaches 0
         if (newTimerSeconds === 0) {
