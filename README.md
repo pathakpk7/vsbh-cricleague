@@ -6,20 +6,32 @@
 
 ## 🎉 **LIVE DEPLOYMENT**
 
-### 🌐 **Live Application**
-- **Frontend**: https://vsbh-cl.vercel.app
-- **Backend**: https://vsbh-cl-backend.onrender.com
-- **Admin Panel**: https://vsbh-cl-backend.onrender.com/admin-test.html
+### 🌐 **Live Application URLs**
+- **Frontend**: https://vsbh-cl.vercel.app ✅
+- **Backend**: https://vsbh-cl-backend.onrender.com ✅  
+- **Admin Panel**: https://vsbh-cl-backend.onrender.com/admin-test.html ✅
+- **Health Check**: https://vsbh-cl-backend.onrender.com/health ✅
 
 ### 🔐 **Login Credentials**
-- **Admin Key**: `unitedvsbh@321`
+- **Admin Key**: `unitedvsbh@321` (for admin panel access)
 - **User Login**: Any email/name works (no restrictions)
 - **Test Email**: `prasoon7pathak@gmail.com`
+- **Captain Code**: Any unique code during team creation
 
-### 🚀 **Quick Start**
-1. **Visit**: https://vsbh-cl.vercel.app
-2. **Login** with any credentials
-3. **Start** using the live auction system!
+### � **Mobile Features**
+- ✅ **Responsive Design**: Optimized for mobile, tablet, and desktop
+- ✅ **Hamburger Menu**: Mobile navigation in top-left corner
+- ✅ **Modern UI**: Glassmorphism effects and smooth animations
+- ✅ **Touch-Friendly**: Proper touch targets and gestures
+- ✅ **WCAG Compliant**: Improved color contrast and accessibility
+
+### �🚀 **Quick Start Guide**
+1. **Visit**: https://vsbh-cl.vercel.app (mobile-friendly)
+2. **Login** with any email/name as user
+3. **Admin Access**: Go to https://vsbh-cl-backend.onrender.com/admin-test.html with key `unitedvsbh@321`
+4. **Start Auction**: Use admin panel to begin live bidding
+5. **Create Teams**: Captains can create teams with unique codes
+6. **Enjoy**: Real-time cricket league management!
 
 ---
 
