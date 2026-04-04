@@ -27,6 +27,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(express.static('public'));
 
 // Import routes
 const playersRouter = require('./routes/players');
@@ -158,6 +159,11 @@ io.on('connection', (socket) => {
 // Basic routes
 app.get('/', (req, res) => {
   res.json({ message: 'VSBH-CL Server Running' });
+});
+
+// Admin panel route
+app.get('/admin-test.html', (req, res) => {
+  res.sendFile(__dirname + '/admin-test.html');
 });
 
 // Health check
