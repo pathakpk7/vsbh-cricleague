@@ -91,7 +91,7 @@ VSBH_CL/
 
 ## ⚡ 1. Clone Repository
 
-git clone https://github.com/your-username/vsbh-cricleague.git  
+git clone https://github.com/pathakpk7/vsbh-cricleague.git
 cd vsbh-cricleague
 
 ---

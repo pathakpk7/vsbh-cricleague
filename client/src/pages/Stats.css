@@ -36,7 +36,7 @@
 }
 
 .stats-empty-state {
-  background: #f8f9fa;
+  background: #344a60;
   border: 2px dashed #dee2e6;
   border-radius: 16px;
   padding: 60px 40px;
@@ -164,7 +164,7 @@
 
 /* Card Styles */
 .card {
-  background: #f8f9fa;
+  background: #273b4f;
   border-radius: 12px;
   padding: 25px;
   border: 1px solid #dee2e6;
@@ -197,7 +197,7 @@
 
 /* Stats Table */
 .stats-table {
-  background: #ffffff;
+  background: #e17d7d;
   border-radius: 8px;
   overflow: hidden;
   display: grid;
@@ -205,7 +205,7 @@
 }
 
 .highlight-item {
-  background: #ffffff;
+  background: #1e5456;
   border-radius: 8px;
   padding: 20px;
   border-left: 4px solid #667eea;
