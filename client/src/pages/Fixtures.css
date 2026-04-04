@@ -1,5 +1,5 @@
 .fixtures {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -7,29 +7,31 @@
 .notification-container {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 28px;
 }
 
 .notification-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #1e293b 0%, #1a1f35 100%);
   border-radius: 20px;
   padding: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.2);
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 32px;
   transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .notification-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 12px 40px rgba(14, 165, 233, 0.15);
 }
 
 .notification-icon {
   font-size: 80px;
   animation: bounce 2s infinite;
+  flex-shrink: 0;
 }
 
 @keyframes bounce {
@@ -50,33 +52,35 @@
 
 .notification-content h2 {
   font-size: 2rem;
-  margin: 0 0 15px 0;
-  color: #4a90e2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0 0 16px 0;
+  color: #0ea5e9;
+  font-weight: 700;
+  text-shadow: none;
 }
 
 .notification-content p {
   font-size: 1.1rem;
-  margin: 0 0 10px 0;
-  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 12px 0;
+  color: #cbd5e1;
   line-height: 1.6;
 }
 
 .notification-actions {
   display: flex;
-  gap: 15px;
-  margin-top: 25px;
+  gap: 16px;
+  margin-top: 28px;
+  flex-wrap: wrap;
 }
 
 .notify-btn,
 .schedule-btn {
   padding: 12px 24px;
   border: none;
-  border-radius: 10px;
-  font-weight: bold;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
   gap: 8px;

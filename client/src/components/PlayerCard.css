@@ -1,11 +1,11 @@
 /* Modern Player Card Component */
 .player-card {
   position: relative;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #1a1f35 100%);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  border: 2px solid #e9ecef;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(14, 165, 233, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   overflow: hidden;
@@ -17,8 +17,8 @@
 /* Hover Effect */
 .player-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
-  border-color: #4a90e2;
+  box-shadow: 0 16px 48px rgba(14, 165, 233, 0.2);
+  border-color: #0ea5e9;
 }
 
 .player-card:hover .hover-overlay {
@@ -27,31 +27,31 @@
 
 /* Selected State */
 .player-card.selected {
-  border-color: #4a90e2;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3f4f6 100%);
+  border-color: #0ea5e9;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%);
 }
 
 /* Sold State */
 .player-card.sold {
-  opacity: 0.7;
-  background: linear-gradient(135deg, #f5f5f5 0%, #e9ecef 100%);
+  opacity: 0.6;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
   cursor: not-allowed;
 }
 
 .player-card.sold:hover {
   transform: none;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* MVP State - Golden Border */
 .player-card.mvp {
-  border-color: #ffd700;
-  background: linear-gradient(135deg, #fff9e6 0%, #fffef7 100%);
-  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+  border-color: #fb923c;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, #1a1f35 100%);
+  box-shadow: 0 8px 32px rgba(251, 146, 60, 0.15);
 }
 
 .player-card.mvp:hover {
-  box-shadow: 0 16px 48px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 16px 48px rgba(251, 146, 60, 0.25);
 }
 
 /* Jersey Number */
@@ -59,17 +59,17 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-  color: white;
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  color: #0f172a;
   width: 40px;
   height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 16px;
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
   z-index: 2;
 }
 
@@ -78,16 +78,17 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #000;
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  color: #fff;
   padding: 6px 12px;
   border-radius: 20px;
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(251, 146, 60, 0.3);
   z-index: 2;
   animation: shimmer 2s infinite;
+  font-weight: 700;
 }
 
 .mvp-icon {
@@ -97,7 +98,7 @@
 
 .mvp-text {
   font-size: 11px;
-  font-weight: bold;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }

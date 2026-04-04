@@ -4,21 +4,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+  gap: 24px;
+  padding: 28px;
+  background: linear-gradient(135deg, #1e293b 0%, #1a1f35 100%);
   border-radius: 20px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
 .countdown-timer.active {
-  border: 2px solid #27ae60;
-  box-shadow: 0 12px 40px rgba(39, 174, 96, 0.2);
+  border: 2px solid rgba(34, 197, 94, 0.4);
+  box-shadow: 0 12px 40px rgba(34, 197, 94, 0.15);
 }
 
 .countdown-timer.inactive {
-  border: 2px solid #6c757d;
+  border: 2px solid rgba(107, 114, 128, 0.3);
   opacity: 0.7;
 }
 
@@ -36,13 +37,13 @@
 }
 
 .progress-ring__background {
-  stroke: #2c3e50;
-  opacity: 0.3;
+  stroke: rgba(14, 165, 233, 0.1);
+  opacity: 0.5;
 }
 
 .progress-ring__progress {
   transition: stroke-dashoffset 0.5s ease-in-out;
-  filter: drop-shadow(0 0 8px currentColor);
+  filter: drop-shadow(0 0 12px currentColor);
 }
 
 /* Timer Display */
@@ -56,7 +57,7 @@
 
 .timer-text {
   font-size: 48px;
-  font-weight: bold;
+  font-weight: 700;
   font-family: 'Courier New', monospace;
   text-shadow: 0 0 20px currentColor;
   transition: color 0.3s ease;
@@ -64,20 +65,21 @@
 }
 
 .timer-seconds {
-  font-size: 14px;
-  color: #6c757d;
+  font-size: 0.9rem;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-weight: 700;
 }
 
 /* Color States */
 .countdown-timer.safe .timer-text {
-  color: #27ae60;
+  color: #22c55e;
 }
 
 .countdown-timer.warning .timer-text {
-  color: #f39c12;
+  color: #fb923c;
 }
 
 .countdown-timer.critical .timer-text {

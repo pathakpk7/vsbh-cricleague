@@ -2,52 +2,53 @@
 .bid-buttons-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+  gap: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, #1e293b 0%, #1a1f35 100%);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
 /* Bid Input Section */
 .bid-input-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .bid-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid #4a90e2;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(14, 165, 233, 0.3);
   border-radius: 12px;
   padding: 16px;
   transition: all 0.3s ease;
 }
 
 .bid-input-wrapper.focused {
-  border-color: #5cb85c;
-  box-shadow: 0 0 20px rgba(92, 184, 92, 0.3);
-  background: rgba(255, 255, 255, 0.15);
+  border-color: #22c55e;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .bid-input-wrapper.error {
-  border-color: #e74c3c;
-  box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+  border-color: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
 }
 
 .currency-symbol {
-  font-size: 20px;
-  font-weight: bold;
-  color: #4a90e2;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0ea5e9;
   margin-right: 12px;
   transition: color 0.3s ease;
 }
 
 .bid-input-wrapper.focused .currency-symbol {
-  color: #5cb85c;
+  color: #22c55e;
 }
 
 .bid-input {
@@ -55,16 +56,16 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: bold;
+  color: #e2e8f0;
+  font-size: 1.6rem;
+  font-weight: 700;
   outline: none;
   font-family: 'Courier New', monospace;
 }
 
 .bid-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: normal;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
 .bid-input:disabled {
