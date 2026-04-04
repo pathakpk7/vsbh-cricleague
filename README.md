@@ -477,14 +477,14 @@ cd ../server && npm start
 
 ### **Deployment Architecture**
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Vercel CDN    │    │    Render API   │    │  Supabase DB    │
-│                 │    │                 │    │                 │
-│ React Frontend  │◄──►│ Node.js Backend │◄──►│ PostgreSQL      │
-│ Global Edge     │    │ Socket.IO       │    │ Real-time       │
-│ https://vsbh-cl │    │ https://vsbh-cl │    │ qriibawpjsbazglb │
-│ .vercel.app     │    │ -backend.onrender│    | wohn.supabase   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│   Vercel CDN    │    │    Render API    │    │  Supabase DB     │
+│                 │    │                  │    │                  │
+│ React Frontend  │◄──►│ Node.js Backend  │◄──►│ PostgreSQL       │
+│ Global Edge     │    │ Socket.IO        │    │ Real-time        │
+│ https://vsbh-cl │    │ https://vsbh-cl  │    │ qriibawpjsbazglb │
+│ .vercel.app     │    │ -backend.onrender│    | wohn.supabase    │
+└─────────────────┘    └──────────────────┘    └──────────────────┘
 ```
 
 ### **Environment Configuration**
@@ -603,7 +603,7 @@ This project represents a complete end-to-end solution for college cricket leagu
 
 ---
 
-*Last Updated: April 2024 | Version: 1.0.0 | Status: Production Ready*
+*Last Updated: April 2026 | Version: 1.0.0 | Status: Production Ready*
 
 ### Getting Help
 - **Documentation** - Check this README first
