@@ -448,15 +448,6 @@ tbody tr:hover {
     padding: 10px 6px;
   }
 }
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #ffc9c9;
-}
 
 .form-control {
   width: 100%;
