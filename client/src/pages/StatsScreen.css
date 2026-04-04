@@ -46,8 +46,8 @@
 }
 
 .live-indicator {
-  background: #ff4444;
-  color: white;
+  background: #18ece5;
+  color: rgb(0, 86, 74);
   padding: 6px 12px;
   border-radius: 15px;
   font-weight: bold;
