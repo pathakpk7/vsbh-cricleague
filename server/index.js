@@ -8,12 +8,24 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: [
+      "http://localhost:3000",
+      "https://localhost:3000",
+      process.env.FRONTEND_URL || "https://your-vercel-app.vercel.app"
+    ],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://localhost:3000",
+    process.env.FRONTEND_URL || "https://your-vercel-app.vercel.app"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Import routes
