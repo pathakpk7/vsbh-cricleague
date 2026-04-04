@@ -111,8 +111,8 @@ const Login: React.FC = () => {
         </form>
 
         <div className="login-footer">
-          <p>Only admin and authorized captains can login</p>
-          <p>Contact admin at: prasoon7pathak@gmail.com</p>
+          <p>Welcome to VSBH Cricket League!</p>
+          <p>For support: prasoon7pathak@gmail.com</p>
         </div>
       </div>
     </div>

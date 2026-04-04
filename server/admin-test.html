@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Reset Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, button { padding: 10px; margin: 5px 0; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .response { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel - Reset Auction System</h1>
+        
+        <div class="form-group">
+            <label for="adminKey">Admin Key:</label>
+            <input type="password" id="adminKey" placeholder="Enter admin key">
+        </div>
+        
+        <button onclick="login()">Login</button>
+        <button onclick="resetSystem()" style="background: #dc3545;">Reset System</button>
+        
+        <div id="response" class="response" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api/admin';
+        let authToken = null;
+
+        function showResponse(message, isSuccess = true) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.style.display = 'block';
+            responseDiv.className = `response ${isSuccess ? 'success' : 'error'}`;
+            responseDiv.innerHTML = message;
+        }
+
+        async function login() {
+            const adminKey = document.getElementById('adminKey').value;
+            
+            if (!adminKey) {
+                showResponse('Please enter admin key', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ admin_key: adminKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.token;
+                    showResponse('Login successful! You can now reset the system.');
+                } else {
+                    showResponse(data.message, false);
+                }
+            } catch (error) {
+                showResponse('Login failed: ' + error.message, false);
+            }
+        }
+
+        async function resetSystem() {
+            const adminKey = document.getElementById('adminKey').value;
+            
+            if (!adminKey) {
+                showResponse('Please enter admin key first', false);
+                return;
+            }
+
+            if (!confirm('⚠️ WARNING: This will reset the entire auction system!\n\nThis action will:\n• Delete all auction logs\n• Delete all team players\n• Reset all player statuses\n• Reset all team budgets\n• Reset auction state\n\nThis cannot be undone. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/reset`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'admin_key': adminKey
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showResponse(`
+                        <h3>✅ System Reset Successful!</h3>
+                        <p>${data.message}</p>
+                        <ul>
+                            ${data.reset_operations.map(op => `<li>${op}</li>`).join('')}
+                        </ul>
+                    `);
+                } else {
+                    showResponse(data.message, false);
+                }
+            } catch (error) {
+                showResponse('Reset failed: ' + error.message, false);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -65,10 +65,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const validateUserFromGoogleSheets = async (credentials: LoginCredentials): Promise<User | null> => {
     try {
-      // In a real implementation, this would call your backend API
-      // that connects to Google Sheets API
-      // For now, we'll simulate the validation with hardcoded admin
-      
       // Admin validation
       if (credentials.email === 'prasoon7pathak@gmail.com' && 
           credentials.name.toLowerCase().includes('prasoon')) {
@@ -84,7 +80,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       // Simulate captain validation from Google Sheets
-      // In production, this would be an API call to your backend
       const mockCaptainData = [
         {
           name: 'John Captain',
@@ -124,7 +119,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
       }
 
-      return null;
+      // Allow any user to login as a player (no restrictions)
+      return {
+        id: `player_${credentials.universityId}`,
+        name: credentials.name,
+        email: credentials.email,
+        universityId: credentials.universityId,
+        cricHeroesId: credentials.cricHeroesId,
+        role: 'player',
+        isAuthenticated: true
+      };
+
     } catch (error) {
       console.error('Error validating user from Google Sheets:', error);
       return null;
@@ -154,7 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const validatedUser = await validateUserFromGoogleSheets(credentials);
       
       if (!validatedUser) {
-        setError('Invalid credentials. Only admin and authorized captains can login.');
+        setError('Login failed. Please check your credentials and try again.');
         return false;
       }
 

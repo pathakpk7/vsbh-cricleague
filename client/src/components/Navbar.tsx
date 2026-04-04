@@ -67,7 +67,10 @@ const Navbar: React.FC = () => {
             <div className="user-menu">
               <div className="user-info">
                 <span className="user-name">{user.name}</span>
-                <span className="user-role">{user.role === 'admin' ? 'Admin' : 'Captain'}</span>
+                <span className="user-role">
+                  {user.role === 'admin' ? 'Admin' : 
+                   user.role === 'captain' ? 'Captain' : 'Player'}
+                </span>
               </div>
               <button className="btn btn-secondary logout-btn" onClick={logout}>
                 Logout

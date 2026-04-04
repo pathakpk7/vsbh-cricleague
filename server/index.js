@@ -21,6 +21,7 @@ const playersRouter = require('./routes/players');
 const teamsRouter = require('./routes/teams');
 const auctionRouter = require('./routes/auction');
 const googleSheetsRouter = require('./routes/googleSheets');
+const adminRouter = require('./routes/admin');
 
 // Import auction controller functions
 const { placeBid, startAuction, sellPlayer, skipPlayer } = require('./controllers/auctionController');
@@ -33,6 +34,7 @@ app.use('/api/players', playersRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/auction', auctionRouter);
 app.use('/api/google-sheets', googleSheetsRouter);
+app.use('/api/admin', adminRouter);
 
 const PORT = process.env.PORT || 5000;
 

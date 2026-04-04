@@ -1,0 +1,27 @@
+netlify.toml
+
+[build]
+  publish = "client/build"
+  command = "cd client && npm run build"
+
+[build.environment]
+  REACT_APP_API_URL = "/.netlify/functions"
+  REACT_APP_SOCKET_URL = "/"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/socket.io/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "server"
