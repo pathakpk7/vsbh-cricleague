@@ -1,192 +1,191 @@
-.footer {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  padding: 40px 0 20px;
+/* ==========================================================================
+   SPORTS OPERATIONS CENTER (SOC) - COMPACT SLIM FOOTER
+   ========================================================================== */
+
+.soc-compact-footer {
   margin-top: auto;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
-  margin-bottom: 30px;
-}
-
-.footer-section h3,
-.footer-section h4 {
-  margin-bottom: 15px;
-  font-weight: 600;
-}
-
-.footer-section h3 {
-  font-size: 1.3rem;
-  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.footer-section h4 {
-  font-size: 1.1rem;
-  color: #ffd93d;
-}
-
-.footer-brand p {
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.6;
-  margin-top: 8px;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-links li {
-  margin-bottom: 8px;
-}
-
-.footer-links a {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  transition: all 0.3s ease;
-  display: inline-block;
-}
-
-.footer-links a:hover {
-  color: #ff6b6b;
-  transform: translateX(5px);
-}
-
-.contact-info p {
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 8px;
-  line-height: 1.6;
-}
-
-.social-links {
-  display: flex;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  text-decoration: none;
-  transition: all 0.3s ease;
+  background: rgba(8, 12, 21, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+  padding: 16px 0 12px;
   position: relative;
-  overflow: hidden;
+  z-index: 10;
 }
 
-.social-link svg {
-  width: 20px;
-  height: 20px;
-  z-index: 1;
-}
-
-.social-link:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.social-link.twitter:hover {
-  background: #1DA1F2;
-  border-color: #1DA1F2;
-}
-
-.social-link.instagram:hover {
-  background: linear-gradient(45deg, #E4405F, #C13584, #833AB4, #5851DB, #405DE6);
-  border-color: transparent;
-}
-
-.social-link.linkedin:hover {
-  background: #0077B5;
-  border-color: #0077B5;
-}
-
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px 0;
-}
-
-.footer-bottom-content {
-  max-width: 1200px;
+.soc-footer-container {
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Left Brand */
+.soc-footer-brand {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-.footer-bottom p {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
-  margin: 0;
+.soc-footer-logo-frame {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(14, 165, 233, 0.05));
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .footer-content {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
+.soc-footer-logo {
+  width: 20px;
+  height: auto;
+  object-fit: contain;
+}
 
-  .footer-bottom-content {
+.soc-footer-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.soc-footer-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.soc-footer-accent {
+  color: #00f0ff;
+}
+
+.soc-footer-sub {
+  font-size: 8px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Center Inline Links */
+.soc-footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.soc-footer-nav a {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.soc-footer-nav a:hover {
+  color: #00f0ff;
+}
+
+.soc-footer-sep {
+  color: #334155;
+  font-size: 10px;
+}
+
+/* Right Social Icons */
+.soc-footer-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.soc-social-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.soc-social-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.soc-social-icon:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.soc-social-icon.twitter:hover {
+  background: rgba(29, 161, 242, 0.2);
+  border-color: #1da1f2;
+  color: #1da1f2;
+}
+
+.soc-social-icon.instagram:hover {
+  background: rgba(228, 64, 95, 0.2);
+  border-color: #e4405f;
+  color: #e4405f;
+}
+
+.soc-social-icon.linkedin:hover {
+  background: rgba(0, 119, 181, 0.2);
+  border-color: #0077b5;
+  color: #0077b5;
+}
+
+/* Bottom Strip */
+.soc-footer-bottom-strip {
+  max-width: 1440px;
+  margin: 10px auto 0;
+  padding: 8px 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.soc-footer-credit {
+  color: #475569;
+}
+
+@media (max-width: 768px) {
+  .soc-footer-container {
     flex-direction: column;
     text-align: center;
-    gap: 10px;
-  }
-
-  .social-links {
-    justify-content: center;
-  }
-
-  .footer-section h3 {
-    font-size: 1.2rem;
-  }
-
-  .footer-section h4 {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .footer {
-    padding: 30px 0 15px;
-  }
-
-  .footer-content {
-    padding: 0 15px;
-    gap: 25px;
-  }
-
-  .social-links {
     gap: 12px;
   }
 
-  .social-link {
-    width: 35px;
-    height: 35px;
+  .soc-footer-brand {
+    justify-content: center;
   }
 
-  .social-link svg {
-    width: 18px;
-    height: 18px;
+  .soc-footer-nav {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .soc-footer-bottom-strip {
+    flex-direction: column;
+    text-align: center;
+    gap: 4px;
   }
 }
