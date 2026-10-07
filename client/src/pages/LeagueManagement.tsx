@@ -23,7 +23,11 @@ const LeagueManagement: React.FC = () => {
     admin_name: '',
     admin_email: '',
     admin_password: '',
-    number_of_teams: '' as number | string
+    number_of_teams: '' as number | string,
+    default_team_purse: 100,
+    max_players_per_team: 15,
+    registration_deadline: '',
+    auction_date_time: ''
   });
 
   const [initialTeamNames, setInitialTeamNames] = useState<string[]>(['', '']);
@@ -32,7 +36,9 @@ const LeagueManagement: React.FC = () => {
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamBudget, setNewTeamBudget] = useState(100);
 
-  // Auction Date & Deadline State
+  // Tournament Rules & Schedule State
+  const [editDefaultPurse, setEditDefaultPurse] = useState<number>(100);
+  const [editMaxPlayers, setEditMaxPlayers] = useState<number>(15);
   const [auctionDateTime, setAuctionDateTime] = useState('');
   const [regDeadline, setRegDeadline] = useState('');
 
@@ -83,6 +89,13 @@ const LeagueManagement: React.FC = () => {
       if (leagueRes.ok && leagueData.success) {
         setCurrentLeague(leagueData.data);
         setActiveLeagueId(leagueData.data.id);
+        if (leagueData.data.default_team_purse !== undefined) {
+          setEditDefaultPurse(leagueData.data.default_team_purse);
+          setNewTeamBudget(leagueData.data.default_team_purse);
+        }
+        if (leagueData.data.max_players_per_team !== undefined) {
+          setEditMaxPlayers(leagueData.data.max_players_per_team);
+        }
         if (leagueData.data.auction_date_time) {
           setAuctionDateTime(leagueData.data.auction_date_time.slice(0, 16));
         }
@@ -124,6 +137,10 @@ const LeagueManagement: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newLeague,
+          default_team_purse: Number(newLeague.default_team_purse) || 100,
+          max_players_per_team: Number(newLeague.max_players_per_team) || 15,
+          auction_date_time: newLeague.auction_date_time ? new Date(newLeague.auction_date_time).toISOString() : undefined,
+          registration_deadline: newLeague.registration_deadline ? new Date(newLeague.registration_deadline).toISOString() : undefined,
           number_of_teams: newLeague.number_of_teams ? Number(newLeague.number_of_teams) : (validTeams.length || undefined),
           team_names: validTeams
         })
@@ -143,7 +160,11 @@ const LeagueManagement: React.FC = () => {
           admin_name: '',
           admin_email: '',
           admin_password: '',
-          number_of_teams: ''
+          number_of_teams: '',
+          default_team_purse: 100,
+          max_players_per_team: 15,
+          registration_deadline: '',
+          auction_date_time: ''
         });
         setInitialTeamNames(['', '']);
         await fetchLeagues();
@@ -231,6 +252,8 @@ const LeagueManagement: React.FC = () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          default_team_purse: Number(editDefaultPurse) || 100,
+          max_players_per_team: Number(editMaxPlayers) || 15,
           auction_date_time: auctionDateTime ? new Date(auctionDateTime).toISOString() : undefined,
           registration_deadline: regDeadline ? new Date(regDeadline).toISOString() : undefined
         })
@@ -238,10 +261,10 @@ const LeagueManagement: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.success) {
         setCurrentLeague(data.data);
-        setStatusMessage({ text: 'Auction schedule & deadline updated!', type: 'success' });
+        setStatusMessage({ text: 'Tournament purse (₹ Cr), squad size & schedule updated!', type: 'success' });
       }
     } catch (e) {
-      setStatusMessage({ text: 'Failed to update schedule', type: 'error' });
+      setStatusMessage({ text: 'Failed to update settings', type: 'error' });
     }
   };
 
@@ -381,6 +404,50 @@ const LeagueManagement: React.FC = () => {
                   onChange={(e) => setNewLeague({ ...newLeague, number_of_teams: e.target.value })}
                 />
               </div>
+
+              <div className="form-group">
+                <label>Default Team Purse / Price Pool (₹ Cr) *</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10000"
+                  placeholder="e.g. 100"
+                  value={newLeague.default_team_purse}
+                  onChange={(e) => setNewLeague({ ...newLeague, default_team_purse: Number(e.target.value) })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Max Squad Capacity (Players / Team) *</label>
+                <input
+                  type="number"
+                  min="5"
+                  max="35"
+                  placeholder="e.g. 15"
+                  value={newLeague.max_players_per_team}
+                  onChange={(e) => setNewLeague({ ...newLeague, max_players_per_team: Number(e.target.value) })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Registration Deadline (Date & Time)</label>
+                <input
+                  type="datetime-local"
+                  value={newLeague.registration_deadline}
+                  onChange={(e) => setNewLeague({ ...newLeague, registration_deadline: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Auction Date & Time</label>
+                <input
+                  type="datetime-local"
+                  value={newLeague.auction_date_time}
+                  onChange={(e) => setNewLeague({ ...newLeague, auction_date_time: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="teams-initial-list">
@@ -497,9 +564,9 @@ const LeagueManagement: React.FC = () => {
                 </div>
               </div>
 
-              {/* Auction & Deadline Settings */}
+              {/* Tournament Rules, Price Pool & Schedule Settings */}
               <div className="admin-panel-card">
-                <h3>⏰ Registration Deadline & Auction Schedule</h3>
+                <h3>⚙️ Tournament Rules, Price Pool & Schedule</h3>
                 <div className="schedule-controls-grid">
                   <div className="control-item">
                     <label>Player Registration Status:</label>
@@ -511,6 +578,28 @@ const LeagueManagement: React.FC = () => {
                         {currentLeague.registration_status === 'open' ? 'Close Registrations' : 'Open Registrations'}
                       </button>
                     </div>
+                  </div>
+
+                  <div className="control-item">
+                    <label>Default Team Purse / Price Pool (₹ Cr):</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="10000"
+                      value={editDefaultPurse}
+                      onChange={(e) => setEditDefaultPurse(Number(e.target.value))}
+                    />
+                  </div>
+
+                  <div className="control-item">
+                    <label>Max Squad Capacity (Players / Team):</label>
+                    <input
+                      type="number"
+                      min="5"
+                      max="35"
+                      value={editMaxPlayers}
+                      onChange={(e) => setEditMaxPlayers(Number(e.target.value))}
+                    />
                   </div>
 
                   <div className="control-item">
@@ -534,7 +623,7 @@ const LeagueManagement: React.FC = () => {
 
                 <div className="schedule-action-bar">
                   <button className="btn-save-schedule" onClick={handleSaveAuctionSchedule}>
-                    Save Dates & Deadlines
+                    Save Rules, Purse & Schedule
                   </button>
                   <button className="btn-danger-reset" onClick={handleResetAuction}>
                     Reset Auction System for this League
@@ -545,7 +634,12 @@ const LeagueManagement: React.FC = () => {
               {/* Team Management */}
               <div className="admin-panel-card">
                 <div className="panel-header-row">
-                  <h3>🏏 Team Configuration ({teams.length} / {currentLeague.number_of_teams} Teams)</h3>
+                  <div>
+                    <h3>🏏 Team Configuration ({teams.length} / {currentLeague.number_of_teams} Teams)</h3>
+                    <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
+                      Default Team Purse: <strong style={{ color: '#00f0ff' }}>₹{currentLeague.default_team_purse || 100} Cr</strong> | Squad Limit: <strong style={{ color: '#00f0ff' }}>{currentLeague.max_players_per_team || 15} Players</strong>
+                    </p>
+                  </div>
                 </div>
 
                 <div className="add-team-inline-form">
@@ -557,10 +651,10 @@ const LeagueManagement: React.FC = () => {
                   />
                   <input
                     type="number"
-                    placeholder="Budget (₹)"
+                    placeholder="Budget (₹ Cr)"
                     value={newTeamBudget}
                     onChange={(e) => setNewTeamBudget(Number(e.target.value))}
-                    style={{ width: '120px' }}
+                    style={{ width: '130px' }}
                   />
                   <button className="btn-add-team" onClick={handleAddTeam} disabled={loading}>
                     {loading ? 'Adding...' : '+ Add Team'}
@@ -582,9 +676,9 @@ const LeagueManagement: React.FC = () => {
                       {teams.map((t) => (
                         <tr key={t.id}>
                           <td><strong>{t.name}</strong></td>
-                          <td>₹{t.budget}</td>
+                          <td>₹{t.budget} Cr</td>
                           <td>{t.captain_name || 'Unassigned'}</td>
-                          <td>{t.team_players?.length || 0}</td>
+                          <td>{t.team_players?.length || 0} / {currentLeague.max_players_per_team || 15}</td>
                           <td>
                             <button
                               className="btn-delete-item"
@@ -609,25 +703,40 @@ const LeagueManagement: React.FC = () => {
                       <tr>
                         <th>Player Name</th>
                         <th>Role</th>
-                        <th>Dept / College ID</th>
+                        <th>Playing Style / Position</th>
+                        <th>Dept / ID</th>
                         <th>Base Price</th>
+                        <th>Registered At</th>
                         <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {players.map((p) => (
-                        <tr key={p.id}>
-                          <td><strong>{p.name}</strong></td>
-                          <td>{p.role?.toUpperCase()}</td>
-                          <td>{p.department || '-'} / {p.college_id || '-'}</td>
-                          <td>₹{p.base_price}</td>
-                          <td>
-                            <span className={`status-pill ${p.status}`}>
-                              {p.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {players.map((p) => {
+                        const styleInfo = [
+                          p.batting_hand ? `${p.batting_hand === 'left' ? 'LHB' : 'RHB'} (${p.batting_position || 'Middle Order'})` : null,
+                          p.bowling_arm || p.bowling_type ? `${p.bowling_arm === 'left' ? 'Left' : 'Right'}-Arm ${p.bowling_category || ''} (${p.bowling_type || ''})` : null,
+                          p.is_wicketkeeper ? '🧤 WK' : null,
+                          p.allrounder_type ? (p.allrounder_type === 'batting-allrounder' ? 'Batting AR' : 'Bowling AR') : null
+                        ].filter(Boolean).join(' • ');
+
+                        return (
+                          <tr key={p.id}>
+                            <td><strong>{p.name}</strong></td>
+                            <td>{p.role?.toUpperCase()}</td>
+                            <td style={{ fontSize: '12px', color: '#cbd5e1' }}>{styleInfo || '-'}</td>
+                            <td>{p.department || '-'} / {p.college_id || '-'}</td>
+                            <td>₹{p.base_price}</td>
+                            <td style={{ fontSize: '12px', color: '#94a3b8' }}>
+                              {p.registered_at ? new Date(p.registered_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                            </td>
+                            <td>
+                              <span className={`status-pill ${p.status}`}>
+                                {p.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

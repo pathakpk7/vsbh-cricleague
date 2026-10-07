@@ -9,19 +9,21 @@ const PlayerRegistration: React.FC = () => {
   const navigate = useNavigate();
   const { setActiveLeagueId } = useAuth();
 
+  const [allLeagues, setAllLeagues] = useState<League[]>([]);
   const [leagueCode, setLeagueCode] = useState(searchParams.get('league') || '');
   const [leagueInfo, setLeagueInfo] = useState<League | null>(null);
   const [isVerifyingLeague, setIsVerifyingLeague] = useState(false);
   const [leagueError, setLeagueError] = useState<string | null>(null);
+  const [showCustomCode, setShowCustomCode] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    role: 'all-rounder' as 'batter' | 'bowler' | 'all-rounder' | 'wicketkeeper',
+    role: 'batter' as 'batter' | 'bowler' | 'all-rounder' | 'wicketkeeper',
     department: '',
     college_id: '',
-    year: '',
+    year: '3rd',
     base_price: 10,
     password: '',
     is_available: true,
@@ -33,7 +35,7 @@ const PlayerRegistration: React.FC = () => {
     bowling_type: 'fast-medium',
     allrounder_type: 'batting-allrounder' as 'batting-allrounder' | 'bowling-allrounder',
     is_wicketkeeper: false,
-    experience_level: '',
+    experience_level: 'Hostel League',
     jersey_number: '',
     special_skills: ''
   });
@@ -42,13 +44,45 @@ const PlayerRegistration: React.FC = () => {
   const [submitSuccess, setSubmitSuccess] = useState<any | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Auto-verify if code passed in URL
+  // Auto-fetch open leagues on component mount
   useEffect(() => {
-    if (leagueCode) {
-      verifyLeagueCode(leagueCode);
-    }
+    fetchOpenLeagues();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchOpenLeagues = async () => {
+    try {
+      const res = await fetch('/api/leagues');
+      const data = await res.json();
+      if (res.ok && data.success && Array.isArray(data.data)) {
+        setAllLeagues(data.data);
+        const queryLeague = searchParams.get('league');
+        if (queryLeague) {
+          const match = data.data.find(
+            (l: League) => l.code?.toUpperCase() === queryLeague.toUpperCase() || l.id === queryLeague
+          );
+          if (match) {
+            selectLeague(match);
+            return;
+          }
+        }
+        // Auto-select open league or first available league
+        const defaultOpen = data.data.find((l: League) => l.registration_status === 'open') || data.data[0];
+        if (defaultOpen) {
+          selectLeague(defaultOpen);
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching leagues:', e);
+    }
+  };
+
+  const selectLeague = (league: League) => {
+    setLeagueInfo(league);
+    setLeagueCode(league.code);
+    setActiveLeagueId(league.id);
+    setLeagueError(null);
+  };
 
   const verifyLeagueCode = async (codeToVerify: string) => {
     if (!codeToVerify.trim()) return;
@@ -58,14 +92,14 @@ const PlayerRegistration: React.FC = () => {
       const res = await fetch(`/api/leagues/${codeToVerify.trim()}`);
       const data = await res.json();
       if (res.ok && data.success) {
-        setLeagueInfo(data.data);
-        setActiveLeagueId(data.data.id);
+        selectLeague(data.data);
+        setShowCustomCode(false);
       } else {
         setLeagueInfo(null);
         setLeagueError(data.message || 'Invalid League Key. Please verify with tournament organizer.');
       }
     } catch (err: any) {
-      setLeagueError('Could not verify league key. Please check your connection.');
+      setLeagueError('Could not verify league key. Please check connection.');
     } finally {
       setIsVerifyingLeague(false);
     }
@@ -85,14 +119,17 @@ const PlayerRegistration: React.FC = () => {
     setFormData(prev => {
       let updated = { ...prev, role };
       if (role === 'batter') {
-        updated.batting_position = prev.batting_position === 'wk-batter' ? 'opener' : prev.batting_position;
+        updated.is_wicketkeeper = false;
+        if (updated.batting_position === 'wk-batter') updated.batting_position = 'middle-order';
       } else if (role === 'bowler') {
+        updated.is_wicketkeeper = false;
         updated.bowling_category = prev.bowling_category || 'pace';
         updated.bowling_type = prev.bowling_type || (updated.bowling_category === 'spin' ? 'off-spin' : 'fast-medium');
       } else if (role === 'wicketkeeper') {
         updated.is_wicketkeeper = true;
         updated.batting_position = 'wk-batter';
       } else if (role === 'all-rounder') {
+        updated.is_wicketkeeper = false;
         updated.allrounder_type = prev.allrounder_type || 'batting-allrounder';
       }
       return updated;
@@ -102,17 +139,17 @@ const PlayerRegistration: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!leagueInfo) {
-      setErrorMessage('Please verify a valid League Key first.');
+      setErrorMessage('Please select a valid tournament league first.');
       return;
     }
 
-    if (!formData.name || !formData.email) {
-      setErrorMessage('Name and Email are required.');
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setErrorMessage('Full Name and Email Address are required.');
       return;
     }
 
     if (!formData.is_available) {
-      setErrorMessage('You must confirm your availability to be picked in the auction.');
+      setErrorMessage('Please confirm your availability for the auction.');
       return;
     }
 
@@ -147,9 +184,9 @@ const PlayerRegistration: React.FC = () => {
     <div className="player-reg-container">
       <div className="player-reg-card">
         <div className="player-reg-header">
-          <span className="badge-tag">Direct In-App Registration</span>
+          <span className="badge-tag">⚡ Fast Track Cricket Registration</span>
           <h2>🏏 League Player Registration</h2>
-          <p>Register yourself directly on VSBH-CL to declare your availability and playing style for the auction.</p>
+          <p>Register your profile and tactical cricket playing style for the upcoming auction in under 30 seconds.</p>
         </div>
 
         {submitSuccess ? (
@@ -157,96 +194,171 @@ const PlayerRegistration: React.FC = () => {
             <div className="success-icon">🎉</div>
             <h3>Registration Confirmed!</h3>
             <p>You are officially registered for the auction in <strong>{submitSuccess.league?.name}</strong>.</p>
-            
+
             <div className="player-summary-box">
-              <div><strong>Player:</strong> {submitSuccess.player?.name}</div>
-              <div><strong>Role:</strong> {submitSuccess.player?.role?.toUpperCase()}</div>
+              <div><strong>Player Name:</strong> {submitSuccess.player?.name}</div>
+              <div><strong>Primary Role:</strong> {submitSuccess.player?.role?.toUpperCase()}</div>
               <div>
-                <strong>Batting:</strong> {submitSuccess.player?.batting_hand?.toUpperCase()} Hand ({submitSuccess.player?.batting_position || 'Middle Order'})
+                <strong>Batting Profile:</strong> {submitSuccess.player?.batting_hand?.toUpperCase()} Hand ({submitSuccess.player?.batting_position?.toUpperCase() || 'MIDDLE ORDER'})
               </div>
               {(submitSuccess.player?.role === 'bowler' || submitSuccess.player?.role === 'all-rounder') && (
                 <div>
-                  <strong>Bowling:</strong> {submitSuccess.player?.bowling_arm?.toUpperCase()} Arm {submitSuccess.player?.bowling_category?.toUpperCase()} ({submitSuccess.player?.bowling_type})
+                  <strong>Bowling Profile:</strong> {submitSuccess.player?.bowling_arm?.toUpperCase()} Arm {submitSuccess.player?.bowling_category?.toUpperCase()} ({submitSuccess.player?.bowling_type})
                 </div>
               )}
-              {submitSuccess.player?.is_wicketkeeper && (
-                <div><strong>Special:</strong> 🧤 Wicketkeeper</div>
+              {submitSuccess.player?.allrounder_type && (
+                <div><strong>All-Rounder Type:</strong> {submitSuccess.player?.allrounder_type === 'batting-allrounder' ? 'Batting All-Rounder' : 'Bowling All-Rounder'}</div>
               )}
-              {submitSuccess.player?.special_skills && (
-                <div><strong>Strengths:</strong> {submitSuccess.player?.special_skills}</div>
+              {submitSuccess.player?.is_wicketkeeper && (
+                <div><strong>Wicketkeeper:</strong> 🧤 Designated Wicketkeeper</div>
               )}
               <div><strong>Base Price:</strong> ₹{submitSuccess.player?.base_price}</div>
-              <div><strong>Availability:</strong> <span className="status-badge available">Available for Auction</span></div>
+              
+              {/* Registration Timestamp & Auction Schedule */}
+              <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <strong>🕒 Registered At:</strong>{' '}
+                <span style={{ color: '#00f0ff' }}>
+                  {submitSuccess.player?.registered_at 
+                    ? new Date(submitSuccess.player.registered_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                    : new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                </span>
+              </div>
+              <div>
+                <strong>🔨 Scheduled Auction:</strong>{' '}
+                <span style={{ color: '#a7f3d0' }}>
+                  {submitSuccess.league?.auction_date_time
+                    ? new Date(submitSuccess.league.auction_date_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                    : 'To be declared by tournament admin'}
+                </span>
+              </div>
               <div><strong>League Code:</strong> {submitSuccess.league?.code}</div>
             </div>
 
             <div className="success-actions">
-              <button className="btn-primary" onClick={() => navigate('/auction')}>
-                Go to Live Auction Arena
+              <button className="btn-primary" onClick={() => navigate(`/auction?league=${submitSuccess.league?.id}`)}>
+                🎯 Go to Live Auction Arena
               </button>
               <button className="btn-secondary" onClick={() => { setSubmitSuccess(null); }}>
-                Register Another Player
+                ➕ Register Another Player
               </button>
             </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="player-reg-form">
-            {/* STEP 1: League Key Verification */}
+            {/* STEP 1: Fast Tournament Selection & Schedule Display */}
             <div className="form-section">
-              <h3>1. Organization League Key</h3>
-              <p className="section-hint">Enter the unique league ID provided by your league admin.</p>
-              
-              <div className="league-verify-input-group">
-                <input
-                  type="text"
-                  placeholder="e.g. VSBH-2026 or LEAGUE-ABCD"
-                  value={leagueCode}
-                  onChange={(e) => setLeagueCode(e.target.value.toUpperCase())}
-                  required
-                />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h3 style={{ margin: 0 }}>1. Select Cricket Tournament</h3>
                 <button
                   type="button"
-                  onClick={() => verifyLeagueCode(leagueCode)}
-                  disabled={isVerifyingLeague || !leagueCode}
-                  className="btn-verify"
+                  onClick={() => setShowCustomCode(!showCustomCode)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#38bdf8',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    textDecoration: 'underline'
+                  }}
                 >
-                  {isVerifyingLeague ? 'Verifying...' : 'Verify League'}
+                  {showCustomCode ? 'Choose from list' : 'Have a custom league key?'}
                 </button>
               </div>
 
-              {leagueInfo && (
-                <div className="league-verified-banner">
-                  <span className="check-icon">✓</span>
-                  <div>
-                    <strong>{leagueInfo.name}</strong>
-                    <div className="league-meta-text">
-                      Teams: {leagueInfo.number_of_teams} | Status: {leagueInfo.registration_status === 'open' ? '🟢 Registration Open' : '🔴 Closed'}
-                    </div>
-                  </div>
+              {showCustomCode ? (
+                <div className="league-verify-input-group" style={{ marginBottom: '14px' }}>
+                  <input
+                    type="text"
+                    placeholder="Enter League Key (e.g. VSBH-XXXX)"
+                    value={leagueCode}
+                    onChange={(e) => setLeagueCode(e.target.value.toUpperCase())}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => verifyLeagueCode(leagueCode)}
+                    disabled={isVerifyingLeague || !leagueCode}
+                    className="btn-verify"
+                  >
+                    {isVerifyingLeague ? 'Verifying...' : 'Verify'}
+                  </button>
                 </div>
+              ) : (
+                allLeagues.length > 0 && (
+                  <div className="tournament-picker-row">
+                    {allLeagues.map((l) => (
+                      <div
+                        key={l.id}
+                        className={`tournament-pick-card ${leagueInfo?.id === l.id ? 'active' : ''}`}
+                        onClick={() => selectLeague(l)}
+                      >
+                        <div className="t-name">🏆 {l.name}</div>
+                        <div className="t-code">Key: {l.code}</div>
+                      </div>
+                    ))}
+                  </div>
+                )
               )}
 
               {leagueError && (
-                <div className="league-error-banner">
+                <div className="league-error-banner" style={{ marginBottom: '14px' }}>
                   ⚠️ {leagueError}
+                </div>
+              )}
+
+              {/* Tournament Schedule & Deadline Banner */}
+              {leagueInfo && (
+                <div className="schedule-banner-box">
+                  <div className="schedule-banner-header">
+                    <span className="tournament-name-tag">🏆 {leagueInfo.name}</span>
+                    <span className={`status-pill ${leagueInfo.registration_status}`}>
+                      {leagueInfo.registration_status === 'open' ? '🟢 Registration Open' : '🔴 Closed'}
+                    </span>
+                  </div>
+
+                  <div className="schedule-grid-pills">
+                    <div className="schedule-pill-item">
+                      <div className="pill-label">📅 Registration Deadline</div>
+                      <div className="pill-val">
+                        {leagueInfo.registration_deadline
+                          ? new Date(leagueInfo.registration_deadline).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                          : 'Open until auction date'}
+                      </div>
+                    </div>
+
+                    <div className="schedule-pill-item">
+                      <div className="pill-label">🔨 Auction Date & Time</div>
+                      <div className="pill-val">
+                        {leagueInfo.auction_date_time
+                          ? new Date(leagueInfo.auction_date_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                          : 'To be announced'}
+                      </div>
+                    </div>
+
+                    <div className="schedule-pill-item">
+                      <div className="pill-label">💰 Team Purse / Squad Limit</div>
+                      <div className="pill-val">
+                        ₹{leagueInfo.default_team_purse || 100} Cr • Max {leagueInfo.max_players_per_team || 15} Players
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* STEP 2: Basic Contact & Identity */}
-            <div className={`form-section ${!leagueInfo ? 'disabled-section' : ''}`}>
-              <h3>2. Player Identity & Academic Details</h3>
-              
+            <div className="form-section">
+              <h3>2. Player Identity</h3>
+              <p className="section-hint">Only Name and Email are strictly required. Everything else is quick and optional.</p>
+
               <div className="form-grid">
                 <div className="form-group">
                   <label>Full Name *</label>
                   <input
                     type="text"
                     name="name"
-                    placeholder="Enter your full name"
+                    placeholder="e.g. Virat Sharma"
                     value={formData.name}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                     required
                   />
                 </div>
@@ -256,47 +368,43 @@ const PlayerRegistration: React.FC = () => {
                   <input
                     type="email"
                     name="email"
-                    placeholder="your.email@example.com"
+                    placeholder="player@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                     required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Phone Number</label>
+                  <label>Mobile Number (Optional)</label>
                   <input
                     type="tel"
                     name="phone"
                     placeholder="10-digit mobile number"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Department / Branch</label>
+                  <label>Department / Branch (Optional)</label>
                   <input
                     type="text"
                     name="department"
-                    placeholder="e.g. Computer Science / Mechanical"
+                    placeholder="e.g. CS / Mechanical / ECE"
                     value={formData.department}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>College Roll No / ID</label>
+                  <label>College Roll No / ID (Optional)</label>
                   <input
                     type="text"
                     name="college_id"
-                    placeholder="e.g. CS-2024-42"
+                    placeholder="e.g. 2024-CS-042"
                     value={formData.college_id}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   />
                 </div>
 
@@ -306,9 +414,7 @@ const PlayerRegistration: React.FC = () => {
                     name="year"
                     value={formData.year}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   >
-                    <option value="" disabled>Select Year</option>
                     <option value="1st">1st Year</option>
                     <option value="2nd">2nd Year</option>
                     <option value="3rd">3rd Year</option>
@@ -326,36 +432,33 @@ const PlayerRegistration: React.FC = () => {
                     step="5"
                     value={formData.base_price}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Account Password</label>
+                  <label>Jersey Number (Optional)</label>
                   <input
-                    type="password"
-                    name="password"
-                    placeholder="Create a password for your account"
-                    value={formData.password}
+                    type="number"
+                    name="jersey_number"
+                    placeholder="e.g. 7 or 18"
+                    value={formData.jersey_number}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   />
                 </div>
               </div>
             </div>
 
             {/* STEP 3: Cricket Playing Profile & Tactical Specs */}
-            <div className={`form-section ${!leagueInfo ? 'disabled-section' : ''}`}>
-              <h3>3. Cricket Playing Profile & Style</h3>
-              <p className="section-hint">Specify how you play so captains can evaluate your role during the auction.</p>
+            <div className="form-section">
+              <h3>3. Cricket Playing Style & Specs</h3>
+              <p className="section-hint">Select how you play so captains can bid accurately for your category pool.</p>
 
-              {/* Primary Role Selector Tabs */}
+              {/* 1-Click Role Selector Tabs */}
               <div className="role-selector-cards">
                 <button
                   type="button"
                   className={`role-select-card ${formData.role === 'batter' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('batter')}
-                  disabled={!leagueInfo}
                 >
                   <span className="role-icon">🏏</span>
                   <div className="role-label">Batter</div>
@@ -366,70 +469,78 @@ const PlayerRegistration: React.FC = () => {
                   type="button"
                   className={`role-select-card ${formData.role === 'bowler' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('bowler')}
-                  disabled={!leagueInfo}
                 >
                   <span className="role-icon">🎯</span>
                   <div className="role-label">Bowler</div>
-                  <small>Pace / Spin Specialist</small>
+                  <small>Pace / Spin</small>
                 </button>
 
                 <button
                   type="button"
                   className={`role-select-card ${formData.role === 'all-rounder' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('all-rounder')}
-                  disabled={!leagueInfo}
                 >
                   <span className="role-icon">⚡</span>
                   <div className="role-label">All-Rounder</div>
-                  <small>Batting or Bowling</small>
+                  <small>Bat & Bowl</small>
                 </button>
 
                 <button
                   type="button"
                   className={`role-select-card ${formData.role === 'wicketkeeper' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('wicketkeeper')}
-                  disabled={!leagueInfo}
                 >
                   <span className="role-icon">🧤</span>
                   <div className="role-label">Wicketkeeper</div>
-                  <small>Wk + Batsman</small>
+                  <small>WK-Batter</small>
                 </button>
               </div>
 
-              {/* CONDITIONAL SPECS BASED ON ROLE */}
-              <div className="cricket-style-details-box">
+              {/* TACTICAL PILL SELECTORS */}
+              <div className="cricket-style-details-box" style={{ marginTop: '16px' }}>
                 {/* 1. BATTER SPECS */}
                 {formData.role === 'batter' && (
                   <div className="role-specific-inputs">
                     <div className="spec-heading">🏏 Batsman Profile</div>
-                    <div className="form-grid">
-                      <div className="form-group">
-                        <label>Batting Hand *</label>
-                        <select
-                          name="batting_hand"
-                          value={formData.batting_hand}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
-                        >
-                          <option value="right">Right-Hand Bat (RHB)</option>
-                          <option value="left">Left-Hand Bat (LHB)</option>
-                        </select>
-                      </div>
 
-                      <div className="form-group">
-                        <label>Batting Position / Specialty *</label>
-                        <select
-                          name="batting_position"
-                          value={formData.batting_position}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Hand:</label>
+                      <div className="fast-pill-btn-group">
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.batting_hand === 'right' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, batting_hand: 'right' })}
                         >
-                          <option value="opener">Opener (Powerplay Specialist)</option>
-                          <option value="top-order">Top Order (No. 3 / Anchor)</option>
-                          <option value="middle-order">Middle Order (Stabilizer / Rotator)</option>
-                          <option value="finisher">Finisher (Death Overs Power Hitter)</option>
-                          <option value="wk-batter">Wicketkeeper-Batter</option>
-                        </select>
+                          🏏 Right-Hand Bat (RHB)
+                        </button>
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.batting_hand === 'left' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, batting_hand: 'left' })}
+                        >
+                          🏏 Left-Hand Bat (LHB)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Position:</label>
+                      <div className="fast-pill-btn-group">
+                        {[
+                          { id: 'opener', label: 'Opener (Powerplay)' },
+                          { id: 'top-order', label: 'Top Order (No. 3)' },
+                          { id: 'middle-order', label: 'Middle Order' },
+                          { id: 'finisher', label: 'Finisher (Death Overs)' }
+                        ].map(pos => (
+                          <button
+                            key={pos.id}
+                            type="button"
+                            className={`fast-pill-btn ${formData.batting_position === pos.id ? 'active' : ''}`}
+                            onClick={() => setFormData({ ...formData, batting_position: pos.id as any })}
+                          >
+                            {pos.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
 
@@ -440,7 +551,6 @@ const PlayerRegistration: React.FC = () => {
                           name="is_wicketkeeper"
                           checked={formData.is_wicketkeeper}
                           onChange={handleInputChange}
-                          disabled={!leagueInfo}
                         />
                         <span>🧤 Can also perform Wicketkeeping duties</span>
                       </label>
@@ -452,83 +562,105 @@ const PlayerRegistration: React.FC = () => {
                 {formData.role === 'bowler' && (
                   <div className="role-specific-inputs">
                     <div className="spec-heading">🎯 Bowler Profile</div>
-                    <div className="form-grid">
-                      <div className="form-group">
-                        <label>Bowling Arm *</label>
-                        <select
-                          name="bowling_arm"
-                          value={formData.bowling_arm}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
+
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Bowling Category:</label>
+                      <div className="fast-pill-btn-group">
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.bowling_category === 'pace' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, bowling_category: 'pace', bowling_type: 'fast-medium' })}
                         >
-                          <option value="right">Right-Arm</option>
-                          <option value="left">Left-Arm</option>
-                        </select>
+                          🚀 Fast / Pace Bowling
+                        </button>
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.bowling_category === 'spin' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, bowling_category: 'spin', bowling_type: 'off-spin' })}
+                        >
+                          🌀 Spin Bowling
+                        </button>
                       </div>
+                    </div>
 
-                      <div className="form-group">
-                        <label>Bowling Category *</label>
-                        <select
-                          name="bowling_category"
-                          value={formData.bowling_category}
-                          onChange={(e) => {
-                            const cat = e.target.value as 'pace' | 'spin';
-                            setFormData(prev => ({
-                              ...prev,
-                              bowling_category: cat,
-                              bowling_type: cat === 'pace' ? 'fast-medium' : 'off-spin'
-                            }));
-                          }}
-                          disabled={!leagueInfo}
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Bowling Arm:</label>
+                      <div className="fast-pill-btn-group">
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.bowling_arm === 'right' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, bowling_arm: 'right' })}
                         >
-                          <option value="pace">Pace / Fast Bowling</option>
-                          <option value="spin">Spin Bowling</option>
-                        </select>
+                          Right-Arm
+                        </button>
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.bowling_arm === 'left' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, bowling_arm: 'left' })}
+                        >
+                          Left-Arm
+                        </button>
                       </div>
+                    </div>
 
-                      {formData.bowling_category === 'pace' ? (
-                        <div className="form-group">
-                          <label>Pace Type *</label>
-                          <select
-                            name="bowling_type"
-                            value={formData.bowling_type}
-                            onChange={handleInputChange}
-                            disabled={!leagueInfo}
-                          >
-                            <option value="fast">Express Fast</option>
-                            <option value="fast-medium">Fast-Medium (Swing)</option>
-                            <option value="medium-fast">Medium-Fast (Seam)</option>
-                            <option value="medium">Medium Pace</option>
-                          </select>
-                        </div>
-                      ) : (
-                        <div className="form-group">
-                          <label>Spin Type *</label>
-                          <select
-                            name="bowling_type"
-                            value={formData.bowling_type}
-                            onChange={handleInputChange}
-                            disabled={!leagueInfo}
-                          >
-                            <option value="off-spin">Off-Spin (Finger Spin)</option>
-                            <option value="leg-spin">Leg-Spin (Wrist Spin)</option>
-                            <option value="orthodox">Left-Arm Orthodox</option>
-                            <option value="chinaman">Left-Arm Chinaman / Unorthodox</option>
-                          </select>
-                        </div>
-                      )}
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>
+                        {formData.bowling_category === 'pace' ? 'Pace Type:' : 'Spin Type:'}
+                      </label>
+                      <div className="fast-pill-btn-group">
+                        {formData.bowling_category === 'pace' ? (
+                          [
+                            { id: 'fast', label: 'Express Fast' },
+                            { id: 'fast-medium', label: 'Fast-Medium (Swing)' },
+                            { id: 'medium-fast', label: 'Medium-Fast (Seam)' },
+                            { id: 'medium', label: 'Medium Pace' }
+                          ].map(b => (
+                            <button
+                              key={b.id}
+                              type="button"
+                              className={`fast-pill-btn ${formData.bowling_type === b.id ? 'active' : ''}`}
+                              onClick={() => setFormData({ ...formData, bowling_type: b.id })}
+                            >
+                              {b.label}
+                            </button>
+                          ))
+                        ) : (
+                          [
+                            { id: 'off-spin', label: 'Off-Spin (Finger)' },
+                            { id: 'leg-spin', label: 'Leg-Spin (Wrist)' },
+                            { id: 'orthodox', label: 'Left-Arm Orthodox' },
+                            { id: 'chinaman', label: 'Left-Arm Chinaman' }
+                          ].map(b => (
+                            <button
+                              key={b.id}
+                              type="button"
+                              className={`fast-pill-btn ${formData.bowling_type === b.id ? 'active' : ''}`}
+                              onClick={() => setFormData({ ...formData, bowling_type: b.id })}
+                            >
+                              {b.label}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
 
-                      <div className="form-group">
-                        <label>Batting Hand (Tailender / Lower Order)</label>
-                        <select
-                          name="batting_hand"
-                          value={formData.batting_hand}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Hand (Tailender):</label>
+                      <div className="fast-pill-btn-group">
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.batting_hand === 'right' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, batting_hand: 'right' })}
                         >
-                          <option value="right">Right-Hand Bat</option>
-                          <option value="left">Left-Hand Bat</option>
-                        </select>
+                          Right-Hand Bat
+                        </button>
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.batting_hand === 'left' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, batting_hand: 'left' })}
+                        >
+                          Left-Hand Bat
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -538,43 +670,34 @@ const PlayerRegistration: React.FC = () => {
                 {formData.role === 'all-rounder' && (
                   <div className="role-specific-inputs">
                     <div className="spec-heading">⚡ All-Rounder Profile</div>
-                    
-                    <div className="form-group full-width-group">
-                      <label>All-Rounder Primary Dominance *</label>
-                      <div className="chip-options-row">
-                        <label className={`chip-label ${formData.allrounder_type === 'batting-allrounder' ? 'chip-active' : ''}`}>
-                          <input
-                            type="radio"
-                            name="allrounder_type"
-                            value="batting-allrounder"
-                            checked={formData.allrounder_type === 'batting-allrounder'}
-                            onChange={handleInputChange}
-                            disabled={!leagueInfo}
-                          />
-                          🏏 Batting All-Rounder (Primary batsman who bowls)
-                        </label>
-                        <label className={`chip-label ${formData.allrounder_type === 'bowling-allrounder' ? 'chip-active' : ''}`}>
-                          <input
-                            type="radio"
-                            name="allrounder_type"
-                            value="bowling-allrounder"
-                            checked={formData.allrounder_type === 'bowling-allrounder'}
-                            onChange={handleInputChange}
-                            disabled={!leagueInfo}
-                          />
-                          🎯 Bowling All-Rounder (Primary bowler who bats)
-                        </label>
+
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Primary Dominance:</label>
+                      <div className="fast-pill-btn-group">
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.allrounder_type === 'batting-allrounder' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, allrounder_type: 'batting-allrounder' })}
+                        >
+                          🏏 Batting All-Rounder (Batsman who bowls)
+                        </button>
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.allrounder_type === 'bowling-allrounder' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, allrounder_type: 'bowling-allrounder' })}
+                        >
+                          🎯 Bowling All-Rounder (Bowler who bats)
+                        </button>
                       </div>
                     </div>
 
                     <div className="form-grid">
                       <div className="form-group">
-                        <label>Batting Hand *</label>
+                        <label>Batting Hand</label>
                         <select
                           name="batting_hand"
                           value={formData.batting_hand}
                           onChange={handleInputChange}
-                          disabled={!leagueInfo}
                         >
                           <option value="right">Right-Hand Bat</option>
                           <option value="left">Left-Hand Bat</option>
@@ -582,12 +705,11 @@ const PlayerRegistration: React.FC = () => {
                       </div>
 
                       <div className="form-group">
-                        <label>Batting Position *</label>
+                        <label>Batting Position</label>
                         <select
                           name="batting_position"
                           value={formData.batting_position}
                           onChange={handleInputChange}
-                          disabled={!leagueInfo}
                         >
                           <option value="opener">Opener</option>
                           <option value="top-order">Top Order</option>
@@ -597,32 +719,18 @@ const PlayerRegistration: React.FC = () => {
                       </div>
 
                       <div className="form-group">
-                        <label>Bowling Arm *</label>
-                        <select
-                          name="bowling_arm"
-                          value={formData.bowling_arm}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
-                        >
-                          <option value="right">Right-Arm</option>
-                          <option value="left">Left-Arm</option>
-                        </select>
-                      </div>
-
-                      <div className="form-group">
-                        <label>Bowling Category *</label>
+                        <label>Bowling Category</label>
                         <select
                           name="bowling_category"
                           value={formData.bowling_category}
                           onChange={(e) => {
                             const cat = e.target.value as 'pace' | 'spin';
-                            setFormData(prev => ({
-                              ...prev,
+                            setFormData({
+                              ...formData,
                               bowling_category: cat,
                               bowling_type: cat === 'pace' ? 'fast-medium' : 'off-spin'
-                            }));
+                            });
                           }}
-                          disabled={!leagueInfo}
                         >
                           <option value="pace">Pace / Fast</option>
                           <option value="spin">Spin</option>
@@ -630,28 +738,14 @@ const PlayerRegistration: React.FC = () => {
                       </div>
 
                       <div className="form-group">
-                        <label>Bowling Subtype *</label>
+                        <label>Bowling Arm</label>
                         <select
-                          name="bowling_type"
-                          value={formData.bowling_type}
+                          name="bowling_arm"
+                          value={formData.bowling_arm}
                           onChange={handleInputChange}
-                          disabled={!leagueInfo}
                         >
-                          {formData.bowling_category === 'pace' ? (
-                            <>
-                              <option value="fast">Express Fast</option>
-                              <option value="fast-medium">Fast-Medium</option>
-                              <option value="medium-fast">Medium-Fast</option>
-                              <option value="medium">Medium Pace</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="off-spin">Off-Spin</option>
-                              <option value="leg-spin">Leg-Spin</option>
-                              <option value="orthodox">Left-Arm Orthodox</option>
-                              <option value="chinaman">Left-Arm Chinaman</option>
-                            </>
-                          )}
+                          <option value="right">Right-Arm</option>
+                          <option value="left">Left-Arm</option>
                         </select>
                       </div>
                     </div>
@@ -661,91 +755,76 @@ const PlayerRegistration: React.FC = () => {
                 {/* 4. WICKETKEEPER SPECS */}
                 {formData.role === 'wicketkeeper' && (
                   <div className="role-specific-inputs">
-                    <div className="spec-heading">🧤 Wicketkeeper-Batter Profile</div>
-                    <div className="form-grid">
-                      <div className="form-group">
-                        <label>Batting Hand *</label>
-                        <select
-                          name="batting_hand"
-                          value={formData.batting_hand}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
-                        >
-                          <option value="right">Right-Hand Bat</option>
-                          <option value="left">Left-Hand Bat</option>
-                        </select>
-                      </div>
+                    <div className="spec-heading">🧤 Wicketkeeper Profile</div>
 
-                      <div className="form-group">
-                        <label>Batting Position *</label>
-                        <select
-                          name="batting_position"
-                          value={formData.batting_position}
-                          onChange={handleInputChange}
-                          disabled={!leagueInfo}
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Hand:</label>
+                      <div className="fast-pill-btn-group">
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.batting_hand === 'right' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, batting_hand: 'right' })}
                         >
-                          <option value="opener">Opener / Top Order</option>
-                          <option value="middle-order">Middle Order</option>
-                          <option value="finisher">Finisher</option>
-                          <option value="wk-batter">Wicketkeeper-Batter</option>
-                        </select>
+                          🏏 Right-Hand Bat (RHB)
+                        </button>
+                        <button
+                          type="button"
+                          className={`fast-pill-btn ${formData.batting_hand === 'left' ? 'active' : ''}`}
+                          onClick={() => setFormData({ ...formData, batting_hand: 'left' })}
+                        >
+                          🏏 Left-Hand Bat (LHB)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Position:</label>
+                      <div className="fast-pill-btn-group">
+                        {[
+                          { id: 'opener', label: 'WK-Opener' },
+                          { id: 'top-order', label: 'WK-Top Order (3)' },
+                          { id: 'middle-order', label: 'WK-Middle Order' },
+                          { id: 'finisher', label: 'WK-Finisher' }
+                        ].map(pos => (
+                          <button
+                            key={pos.id}
+                            type="button"
+                            className={`fast-pill-btn ${formData.batting_position === pos.id ? 'active' : ''}`}
+                            onClick={() => setFormData({ ...formData, batting_position: pos.id as any })}
+                          >
+                            {pos.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* ADDITIONAL TOURNAMENT DETAILS */}
-                <div className="extra-specs-container">
-                  <div className="spec-heading">⭐ Additional Playing Details & Strengths</div>
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label>Preferred Jersey Number</label>
-                      <input
-                        type="number"
-                        name="jersey_number"
-                        placeholder="e.g. 7, 18, 45, 99"
-                        min="1"
-                        max="999"
-                        value={formData.jersey_number}
-                        onChange={handleInputChange}
-                        disabled={!leagueInfo}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label>Playing Experience Level</label>
-                      <select
-                        name="experience_level"
-                        value={formData.experience_level}
-                        onChange={handleInputChange}
-                        disabled={!leagueInfo}
-                      >
-                        <option value="" disabled>Select Experience Level</option>
-                        <option value="College Team">College Team Player</option>
-                        <option value="Club / Academy">Club / Cricket Academy</option>
-                        <option value="Hostel League">Hostel / Inter-Department</option>
-                        <option value="Casual / Box Cricket">Casual / Box Cricket</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group full-width-group">
-                      <label>Key Strengths & Special Skills (Optional)</label>
-                      <input
-                        type="text"
-                        name="special_skills"
-                        placeholder="e.g. Death-over yorker specialist, powerplay boundary hitter, agile slip fielder"
-                        value={formData.special_skills}
-                        onChange={handleInputChange}
-                        disabled={!leagueInfo}
-                      />
-                    </div>
-                  </div>
+                {/* Strengths & Skills */}
+                <div style={{ marginTop: '14px' }}>
+                  <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Special Strengths / Playing Notes (Optional):</label>
+                  <input
+                    type="text"
+                    name="special_skills"
+                    placeholder="e.g. Powerplay hitter, death-overs yorkers, agile slip catcher"
+                    value={formData.special_skills}
+                    onChange={handleInputChange}
+                    style={{
+                      width: '100%',
+                      background: '#0f172a',
+                      border: '1px solid #334155',
+                      color: '#fff',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      marginTop: '6px'
+                    }}
+                  />
                 </div>
               </div>
             </div>
 
             {/* STEP 4: Availability Confirmation */}
-            <div className={`form-section ${!leagueInfo ? 'disabled-section' : ''}`}>
+            <div className="form-section">
               <h3>4. Availability Confirmation</h3>
               <div className="availability-checkbox-group">
                 <label className="checkbox-label">
@@ -754,12 +833,11 @@ const PlayerRegistration: React.FC = () => {
                     name="is_available"
                     checked={formData.is_available}
                     onChange={handleInputChange}
-                    disabled={!leagueInfo}
                   />
                   <span>
-                    <strong>I confirm my availability to play in {leagueInfo?.name || 'this league'}</strong>
+                    <strong>I confirm my availability to play in {leagueInfo?.name || 'this tournament'}</strong>
                     <br />
-                    <small>By checking this, team captains can view your profile and bid to pick you in their squad during the live auction.</small>
+                    <small>Team captains will evaluate your profile and bid to pick you during the live auction.</small>
                   </span>
                 </label>
               </div>
@@ -776,7 +854,7 @@ const PlayerRegistration: React.FC = () => {
               className="btn-submit-reg"
               disabled={!leagueInfo || isSubmitting}
             >
-              {isSubmitting ? 'Registering Player...' : 'Complete Player Registration'}
+              {isSubmitting ? '⚡ Registering Player...' : '⚡ Submit Registration Instantly'}
             </button>
           </form>
         )}

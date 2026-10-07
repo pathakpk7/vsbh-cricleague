@@ -8,7 +8,71 @@ const getLeagueId = (req) => {
 };
 
 /**
- * Start the auction for a specific league
+ * Determine which category pool a player belongs to:
+ * - batters: pure batters (openers, middle order, finishers)
+ * - wicketkeepers: designated wicketkeepers or WK-batters
+ * - allrounders: batting or bowling all-rounders
+ * - pacers: fast or medium-fast bowlers
+ * - spinners: off-spin, leg-spin, left-arm orthodox, chinaman
+ */
+const getPlayerPoolCategory = (player) => {
+  if (!player) return 'batters';
+  const role = (player.role || '').toLowerCase();
+  const isWk = player.is_wicketkeeper || role === 'wicketkeeper' || player.batting_position === 'wk-batter';
+  if (isWk) return 'wicketkeepers';
+  if (role === 'all-rounder') return 'allrounders';
+  if (role === 'bowler') {
+    const isSpin = player.bowling_category === 'spin' || 
+      (player.bowling_type && (player.bowling_type.includes('spin') || player.bowling_type.includes('orthodox') || player.bowling_type.includes('chinaman')));
+    return isSpin ? 'spinners' : 'pacers';
+  }
+  return 'batters';
+};
+
+const categorizePlayersIntoPools = (players) => {
+  const pools = {
+    batters: [],
+    wicketkeepers: [],
+    allrounders: [],
+    pacers: [],
+    spinners: [],
+    other: []
+  };
+
+  (players || []).forEach(p => {
+    const cat = getPlayerPoolCategory(p);
+    if (pools[cat]) {
+      pools[cat].push(p);
+    } else {
+      pools.other.push(p);
+    }
+  });
+
+  return pools;
+};
+
+const getNextPlayerInQueue = (leagueId, preferredCategory) => {
+  const availablePlayers = db.getPlayers(leagueId, { status: 'available' });
+  if (availablePlayers.length === 0) return null;
+  const pools = categorizePlayersIntoPools(availablePlayers);
+
+  // If there are still players in the preferred category pool, pick next one
+  if (preferredCategory && pools[preferredCategory] && pools[preferredCategory].length > 0) {
+    return pools[preferredCategory][0];
+  }
+
+  // Otherwise, advance category pool: Batters -> Wicketkeepers -> All-Rounders -> Pacers -> Spinners
+  return pools.batters[0] ||
+    pools.wicketkeepers[0] ||
+    pools.allrounders[0] ||
+    pools.pacers[0] ||
+    pools.spinners[0] ||
+    availablePlayers[0] ||
+    null;
+};
+
+/**
+ * Start the auction for a specific league (optionally targeting a specific pool or player)
  */
 const startAuction = async (req, res) => {
   try {
@@ -27,7 +91,27 @@ const startAuction = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No available players found for this league' });
     }
 
-    const firstPlayer = availablePlayers[0];
+    const { playerId, poolCategory } = req.body || {};
+    let firstPlayer = null;
+
+    if (playerId) {
+      firstPlayer = availablePlayers.find(p => p.id === playerId);
+    } else if (poolCategory) {
+      const pools = categorizePlayersIntoPools(availablePlayers);
+      firstPlayer = (pools[poolCategory] && pools[poolCategory][0]) || null;
+    }
+
+    if (!firstPlayer) {
+      // Disclosed pool sequence: Batters -> Wicketkeepers -> All-Rounders -> Pacers -> Spinners
+      const pools = categorizePlayersIntoPools(availablePlayers);
+      firstPlayer = pools.batters[0] ||
+        pools.wicketkeepers[0] ||
+        pools.allrounders[0] ||
+        pools.pacers[0] ||
+        pools.spinners[0] ||
+        availablePlayers[0];
+    }
+
     const updatedState = db.updateAuctionState(leagueId, {
       current_player_id: firstPlayer.id,
       current_bid: firstPlayer.base_price || 10,
@@ -41,7 +125,12 @@ const startAuction = async (req, res) => {
 
     if (global.io) {
       const room = `auction-room-${leagueId}`;
-      const payload = { leagueId, auction: updatedState, currentPlayer: firstPlayer };
+      const payload = {
+        leagueId,
+        auction: updatedState,
+        currentPlayer: firstPlayer,
+        poolCategory: getPlayerPoolCategory(firstPlayer)
+      };
       global.io.to(room).emit('auction-started', payload);
       global.io.to('auction-room').emit('auction-started', payload);
       global.io.to(room).emit('auction-update', updatedState);
@@ -54,7 +143,8 @@ const startAuction = async (req, res) => {
       data: {
         leagueId,
         auction: updatedState,
-        currentPlayer: firstPlayer
+        currentPlayer: firstPlayer,
+        poolCategory: getPlayerPoolCategory(firstPlayer)
       }
     });
   } catch (error) {
@@ -128,6 +218,17 @@ const placeBid = async (req, res) => {
     // Calculate new bid
     const newBidAmount = state.current_team_id ? state.current_bid + Number(bidIncrement) : state.current_bid;
 
+    // Check squad limit (default 15 players per team, customizable per league)
+    const maxPlayers = league.max_players_per_team || 15;
+    const currentSquadCount = team.team_players?.length || 0;
+    if (currentSquadCount >= maxPlayers) {
+      leagueLocks.set(leagueId, false);
+      return res.status(400).json({
+        success: false,
+        message: `Squad limit reached (${currentSquadCount}/${maxPlayers} players). Team cannot bid for more players.`
+      });
+    }
+
     // Check budget
     if (team.budget < newBidAmount) {
       leagueLocks.set(leagueId, false);
@@ -195,9 +296,10 @@ const sellPlayer = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Cannot sell: no leading bid or player' });
     }
 
+    const currentPlayerObj = db.getPlayerById(state.current_player_id);
+    const currentCat = getPlayerPoolCategory(currentPlayerObj);
     const result = db.recordPlayerSold(leagueId, state.current_player_id, state.current_team_id, state.current_bid);
-    const availablePlayers = db.getPlayers(leagueId, { status: 'available' });
-    const nextPlayer = availablePlayers[0] || null;
+    const nextPlayer = getNextPlayerInQueue(leagueId, currentCat);
 
     if (nextPlayer) {
       db.updateAuctionState(leagueId, {
@@ -225,6 +327,7 @@ const sellPlayer = async (req, res) => {
       team: result.team,
       finalBid: state.current_bid,
       nextPlayer,
+      poolCategory: nextPlayer ? getPlayerPoolCategory(nextPlayer) : null,
       auction: updatedState
     };
 
@@ -258,9 +361,10 @@ const skipPlayer = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No player to skip' });
     }
 
+    const currentPlayerObj = db.getPlayerById(state.current_player_id);
+    const currentCat = getPlayerPoolCategory(currentPlayerObj);
     const unsoldPlayer = db.recordPlayerUnsold(leagueId, state.current_player_id);
-    const availablePlayers = db.getPlayers(leagueId, { status: 'available' });
-    const nextPlayer = availablePlayers[0] || null;
+    const nextPlayer = getNextPlayerInQueue(leagueId, currentCat);
 
     if (nextPlayer) {
       db.updateAuctionState(leagueId, {
@@ -287,6 +391,7 @@ const skipPlayer = async (req, res) => {
       skippedPlayerId: unsoldPlayer?.id,
       player: unsoldPlayer,
       nextPlayer,
+      poolCategory: nextPlayer ? getPlayerPoolCategory(nextPlayer) : null,
       auction: updatedState,
       auctionEnded: !nextPlayer
     };
@@ -408,6 +513,44 @@ const getAuctionHistory = async (req, res) => {
   }
 };
 
+/**
+ * Get disclosed category pools for a league
+ */
+const getAuctionPools = async (req, res) => {
+  try {
+    const leagueId = getLeagueId(req);
+    if (!leagueId) {
+      return res.status(400).json({ success: false, message: 'League ID is required' });
+    }
+
+    const league = db.getLeagueById(leagueId);
+    const players = db.getPlayers(leagueId);
+    const pools = categorizePlayersIntoPools(players);
+
+    const counts = {
+      batters: pools.batters.length,
+      wicketkeepers: pools.wicketkeepers.length,
+      allrounders: pools.allrounders.length,
+      pacers: pools.pacers.length,
+      spinners: pools.spinners.length,
+      total: players.length
+    };
+
+    res.json({
+      success: true,
+      data: {
+        leagueId,
+        leagueName: league?.name,
+        pools,
+        counts,
+        categoryOrder: ['batters', 'wicketkeepers', 'allrounders', 'pacers', 'spinners']
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   startAuction,
   placeBid,
@@ -415,5 +558,6 @@ module.exports = {
   skipPlayer,
   stopAuction,
   loginCaptain,
-  getAuctionHistory
+  getAuctionHistory,
+  getAuctionPools
 };

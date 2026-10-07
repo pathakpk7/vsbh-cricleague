@@ -8,7 +8,8 @@ const {
   skipPlayer,
   stopAuction,
   loginCaptain,
-  getAuctionHistory 
+  getAuctionHistory,
+  getAuctionPools
 } = require('../controllers/auctionController');
 
 // Get current auction state (by leagueId)
@@ -70,6 +71,9 @@ router.post('/login-captain', loginCaptain);
 
 // Auction history
 router.get('/history', getAuctionHistory);
+
+// Auction disclosed category pools
+router.get('/pools', getAuctionPools);
 
 // Reset auction system for a league (Admin only)
 router.post('/reset', async (req, res) => {

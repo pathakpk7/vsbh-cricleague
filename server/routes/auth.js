@@ -174,7 +174,9 @@ router.post('/player-register', (req, res) => {
         league: {
           id: league.id,
           name: league.name,
-          code: league.code
+          code: league.code,
+          auction_date_time: league.auction_date_time,
+          registration_deadline: league.registration_deadline
         }
       }
     });

@@ -38,7 +38,19 @@ router.get('/:idOrCode', (req, res) => {
 // Register / Create a new cricket league
 router.post('/', (req, res) => {
   try {
-    const { name, admin_name, admin_email, admin_password, number_of_teams, team_names } = req.body;
+    const {
+      name,
+      admin_name,
+      admin_email,
+      admin_password,
+      number_of_teams,
+      team_names,
+      default_team_purse,
+      max_players_per_team,
+      registration_start_date,
+      registration_deadline,
+      auction_date_time
+    } = req.body;
     
     if (!name || !admin_email || !admin_password) {
       return res.status(400).json({
@@ -53,7 +65,12 @@ router.post('/', (req, res) => {
       admin_email,
       admin_password,
       number_of_teams: number_of_teams ? parseInt(number_of_teams, 10) : undefined,
-      team_names
+      team_names,
+      default_team_purse: default_team_purse ? parseFloat(default_team_purse) : 100,
+      max_players_per_team: max_players_per_team ? parseInt(max_players_per_team, 10) : 15,
+      registration_start_date,
+      registration_deadline,
+      auction_date_time
     });
 
     res.status(201).json({

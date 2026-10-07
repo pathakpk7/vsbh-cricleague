@@ -82,7 +82,19 @@ class DatabaseService {
     return this.data.leagues.find(l => l.code.toUpperCase() === code.trim().toUpperCase());
   }
 
-  createLeague({ name, admin_name, admin_email, admin_password, number_of_teams, team_names = [] }) {
+  createLeague({
+    name,
+    admin_name,
+    admin_email,
+    admin_password,
+    number_of_teams,
+    team_names = [],
+    default_team_purse = 100,
+    max_players_per_team = 15,
+    registration_start_date,
+    registration_deadline,
+    auction_date_time
+  }) {
     // Generate unique league code (e.g. LEAGUE-8A49)
     const randomHex = crypto.randomBytes(2).toString('hex').toUpperCase();
     const code = `LEAGUE-${randomHex}`;
@@ -95,6 +107,8 @@ class DatabaseService {
       : [];
 
     const numTeams = parseInt(number_of_teams, 10) || validTeamNames.length || 0;
+    const purse = parseFloat(default_team_purse) || 100;
+    const maxPlayers = parseInt(max_players_per_team, 10) || 15;
 
     const newLeague = {
       id,
@@ -104,9 +118,12 @@ class DatabaseService {
       admin_email: admin_email.trim().toLowerCase(),
       admin_password: admin_password || '',
       number_of_teams: numTeams,
-      registration_deadline: '',
+      default_team_purse: purse,
+      max_players_per_team: maxPlayers,
+      registration_start_date: registration_start_date || new Date().toISOString(),
+      registration_deadline: registration_deadline || '',
       registration_status: 'open',
-      auction_date_time: '',
+      auction_date_time: auction_date_time || '',
       captain_auction_key: captainKey,
       auction_status: 'draft',
       created_at: new Date().toISOString()
@@ -127,13 +144,13 @@ class DatabaseService {
     };
 
     // ONLY create teams if valid names were explicitly provided
-    // Absolutely NO fake placeholder teams or fake captain names!
+    // Teams inherit the configured league team purse
     validTeamNames.forEach((tName) => {
       this.data.teams.push({
         id: generateId(),
         league_id: id,
         name: tName,
-        budget: 100,
+        budget: purse,
         captain_name: '',
         logo: '',
         created_at: new Date().toISOString()
@@ -199,14 +216,19 @@ class DatabaseService {
     return { ...team, team_players: teamPlayers };
   }
 
-  createTeam({ league_id, name, budget = 100, captain_name = '', logo = '' }) {
+  createTeam({ league_id, name, budget, captain_name = '', logo = '' }) {
+    let teamBudget = budget;
+    if (teamBudget === undefined || teamBudget === null || isNaN(Number(teamBudget))) {
+      const league = this.getLeagueById(league_id);
+      teamBudget = league?.default_team_purse || 100;
+    }
     const newTeam = {
       id: generateId(),
       league_id,
       name: name.trim(),
-      budget: Number(budget) || 100,
+      budget: Number(teamBudget) || 100,
       captain_name: captain_name.trim(),
-      logo: logo || 'default_team.png',
+      logo: logo || '',
       created_at: new Date().toISOString()
     };
     this.data.teams.push(newTeam);
@@ -302,6 +324,7 @@ class DatabaseService {
       experience_level: experience_level || '',
       jersey_number: jersey_number ? Number(jersey_number) : null,
       special_skills: special_skills ? special_skills.trim() : '',
+      registered_at: new Date().toISOString(),
       created_at: new Date().toISOString()
     };
     this.data.players.push(newPlayer);

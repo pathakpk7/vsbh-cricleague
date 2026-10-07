@@ -5,6 +5,9 @@ export interface League {
   admin_name?: string;
   admin_email: string;
   number_of_teams: number;
+  default_team_purse?: number;
+  max_players_per_team?: number;
+  registration_start_date?: string;
   registration_deadline?: string;
   registration_status: 'open' | 'closed';
   auction_date_time?: string;
@@ -28,6 +31,7 @@ export interface Player {
   sold_to_team?: string | null;
   status: 'available' | 'sold' | 'unsold';
   created_at: string;
+  registered_at?: string;
   sold_at?: string;
   email?: string;
   phone?: string;
