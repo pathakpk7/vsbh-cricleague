@@ -23,9 +23,10 @@ const LeagueManagement: React.FC = () => {
     admin_name: '',
     admin_email: '',
     admin_password: '',
-    number_of_teams: 6,
-    team_names: ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6']
+    number_of_teams: '' as number | string
   });
+
+  const [initialTeamNames, setInitialTeamNames] = useState<string[]>(['', '']);
 
   // Edit Team State
   const [newTeamName, setNewTeamName] = useState('');
@@ -114,11 +115,18 @@ const LeagueManagement: React.FC = () => {
     e.preventDefault();
     setStatusMessage(null);
     setLoading(true);
+
+    const validTeams = initialTeamNames.map(t => t.trim()).filter(t => t.length > 0);
+
     try {
       const res = await fetch('/api/leagues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLeague)
+        body: JSON.stringify({
+          ...newLeague,
+          number_of_teams: newLeague.number_of_teams ? Number(newLeague.number_of_teams) : (validTeams.length || undefined),
+          team_names: validTeams
+        })
       });
       const data = await res.json();
 
@@ -130,6 +138,14 @@ const LeagueManagement: React.FC = () => {
           text: `🎉 League "${createdLeague.name}" registered! Unique Player Key: ${createdLeague.code} | Captain Key: ${createdLeague.captain_auction_key}`,
           type: 'success'
         });
+        setNewLeague({
+          name: '',
+          admin_name: '',
+          admin_email: '',
+          admin_password: '',
+          number_of_teams: ''
+        });
+        setInitialTeamNames(['', '']);
         await fetchLeagues();
         await loadLeagueDetails(createdLeague.id);
         setActiveTab('manage');
@@ -355,37 +371,72 @@ const LeagueManagement: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label>Number of Teams (e.g. 4, 6, 8) *</label>
+                <label>Expected Number of Teams (Optional)</label>
                 <input
                   type="number"
                   min="2"
-                  max="16"
+                  max="32"
+                  placeholder="e.g. 4, 6, 8 (or leave blank)"
                   value={newLeague.number_of_teams}
-                  onChange={(e) => {
-                    const count = parseInt(e.target.value, 10) || 6;
-                    const defaultNames = Array.from({ length: count }, (_, i) => newLeague.team_names[i] || `Team ${i + 1}`);
-                    setNewLeague({ ...newLeague, number_of_teams: count, team_names: defaultNames });
-                  }}
-                  required
+                  onChange={(e) => setNewLeague({ ...newLeague, number_of_teams: e.target.value })}
                 />
               </div>
             </div>
 
             <div className="teams-initial-list">
-              <label>Initial Team Names</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ margin: 0, fontWeight: 600 }}>Initial Team Names (Optional)</label>
+                <button
+                  type="button"
+                  onClick={() => setInitialTeamNames(prev => [...prev, ''])}
+                  style={{
+                    background: 'rgba(0, 240, 255, 0.15)',
+                    border: '1px solid rgba(0, 240, 255, 0.4)',
+                    color: '#00f0ff',
+                    borderRadius: '8px',
+                    padding: '6px 14px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  + Add Team Field
+                </button>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '14px' }}>
+                Optionally enter your tournament team names now, or leave blank to add teams later in the Manage tab.
+              </p>
               <div className="team-names-grid">
-                {newLeague.team_names.slice(0, newLeague.number_of_teams).map((name, idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    value={name}
-                    placeholder={`Team ${idx + 1}`}
-                    onChange={(e) => {
-                      const updated = [...newLeague.team_names];
-                      updated[idx] = e.target.value;
-                      setNewLeague({ ...newLeague, team_names: updated });
-                    }}
-                  />
+                {initialTeamNames.map((name, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      value={name}
+                      placeholder={`Team ${idx + 1} Name (e.g. Royal Strikers)`}
+                      onChange={(e) => {
+                        const updated = [...initialTeamNames];
+                        updated[idx] = e.target.value;
+                        setInitialTeamNames(updated);
+                      }}
+                    />
+                    {initialTeamNames.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setInitialTeamNames(prev => prev.filter((_, i) => i !== idx))}
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.15)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          color: '#ef4444',
+                          borderRadius: '8px',
+                          padding: '10px 14px',
+                          cursor: 'pointer'
+                        }}
+                        title="Remove team"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

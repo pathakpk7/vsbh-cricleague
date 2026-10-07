@@ -26,8 +26,8 @@ const LiveMatchCenter: React.FC = () => {
   const [newMatchData, setNewMatchData] = useState({
     team1_name: '',
     team2_name: '',
-    venue: 'Campus Main Ground',
-    match_date: new Date().toISOString().slice(0, 16)
+    venue: '',
+    match_date: ''
   });
 
   const isLeagueAdmin = user?.role === 'admin' && (

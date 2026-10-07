@@ -21,7 +21,7 @@ const PlayerRegistration: React.FC = () => {
     role: 'all-rounder' as 'batter' | 'bowler' | 'all-rounder' | 'wicketkeeper',
     department: '',
     college_id: '',
-    year: '3rd',
+    year: '',
     base_price: 10,
     password: '',
     is_available: true,
@@ -33,7 +33,7 @@ const PlayerRegistration: React.FC = () => {
     bowling_type: 'fast-medium',
     allrounder_type: 'batting-allrounder' as 'batting-allrounder' | 'bowling-allrounder',
     is_wicketkeeper: false,
-    experience_level: 'College Team',
+    experience_level: '',
     jersey_number: '',
     special_skills: ''
   });
@@ -308,6 +308,7 @@ const PlayerRegistration: React.FC = () => {
                     onChange={handleInputChange}
                     disabled={!leagueInfo}
                   >
+                    <option value="" disabled>Select Year</option>
                     <option value="1st">1st Year</option>
                     <option value="2nd">2nd Year</option>
                     <option value="3rd">3rd Year</option>
@@ -719,6 +720,7 @@ const PlayerRegistration: React.FC = () => {
                         onChange={handleInputChange}
                         disabled={!leagueInfo}
                       >
+                        <option value="" disabled>Select Experience Level</option>
                         <option value="College Team">College Team Player</option>
                         <option value="Club / Academy">Club / Cricket Academy</option>
                         <option value="Hostel League">Hostel / Inter-Department</option>

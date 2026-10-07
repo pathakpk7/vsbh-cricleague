@@ -62,3 +62,4 @@ yarn.lock
 
 # Config files with sensitive data
 server/config/
+.vercel

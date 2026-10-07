@@ -82,24 +82,31 @@ class DatabaseService {
     return this.data.leagues.find(l => l.code.toUpperCase() === code.trim().toUpperCase());
   }
 
-  createLeague({ name, admin_name, admin_email, admin_password, number_of_teams = 6, team_names = [] }) {
-    // Generate unique league code (e.g. VSBH-8A49)
+  createLeague({ name, admin_name, admin_email, admin_password, number_of_teams, team_names = [] }) {
+    // Generate unique league code (e.g. LEAGUE-8A49)
     const randomHex = crypto.randomBytes(2).toString('hex').toUpperCase();
     const code = `LEAGUE-${randomHex}`;
     const id = generateId();
     const captainKey = `CAP-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
+    // Filter to real non-empty team names explicitly entered by organizer
+    const validTeamNames = Array.isArray(team_names)
+      ? team_names.map(t => typeof t === 'string' ? t.trim() : '').filter(t => t.length > 0)
+      : [];
+
+    const numTeams = parseInt(number_of_teams, 10) || validTeamNames.length || 0;
+
     const newLeague = {
       id,
       name: name.trim(),
       code,
-      admin_name: admin_name || 'Admin',
+      admin_name: admin_name ? admin_name.trim() : '',
       admin_email: admin_email.trim().toLowerCase(),
-      admin_password: admin_password || 'admin123',
-      number_of_teams: parseInt(number_of_teams, 10) || 6,
-      registration_deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      admin_password: admin_password || '',
+      number_of_teams: numTeams,
+      registration_deadline: '',
       registration_status: 'open',
-      auction_date_time: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+      auction_date_time: '',
       captain_auction_key: captainKey,
       auction_status: 'draft',
       created_at: new Date().toISOString()
@@ -112,26 +119,23 @@ class DatabaseService {
       league_id: id,
       current_player_id: null,
       current_team_id: null,
-      current_bid: 10,
+      current_bid: 0,
       timer_seconds: 30,
       is_active: false,
       auction_round: 1,
       updated_at: new Date().toISOString()
     };
 
-    // Auto-create initial teams if provided or create placeholders
-    const teamsToCreate = team_names && team_names.length > 0 
-      ? team_names 
-      : Array.from({ length: newLeague.number_of_teams }, (_, i) => `Team ${i + 1}`);
-
-    teamsToCreate.slice(0, newLeague.number_of_teams).forEach((tName, idx) => {
+    // ONLY create teams if valid names were explicitly provided
+    // Absolutely NO fake placeholder teams or fake captain names!
+    validTeamNames.forEach((tName) => {
       this.data.teams.push({
         id: generateId(),
         league_id: id,
-        name: typeof tName === 'string' ? tName.trim() : `Team ${idx + 1}`,
+        name: tName,
         budget: 100,
-        captain_name: `Captain ${idx + 1}`,
-        logo: `team_${idx + 1}.png`,
+        captain_name: '',
+        logo: '',
         created_at: new Date().toISOString()
       });
     });

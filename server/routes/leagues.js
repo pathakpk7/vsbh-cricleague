@@ -52,7 +52,7 @@ router.post('/', (req, res) => {
       admin_name,
       admin_email,
       admin_password,
-      number_of_teams: parseInt(number_of_teams, 10) || 6,
+      number_of_teams: number_of_teams ? parseInt(number_of_teams, 10) : undefined,
       team_names
     });
 
