@@ -189,3 +189,110 @@
     gap: 4px;
   }
 }
+
+/* ==========================================================================
+   AUCTION ARENA DEDICATED SLIM TELEMETRY FOOTER
+   ========================================================================== */
+
+.soc-auction-footer {
+  margin-top: auto;
+  background: rgba(6, 10, 18, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+  padding: 10px 0;
+  position: relative;
+  z-index: 10;
+}
+
+.soc-auction-footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 0.03em;
+}
+
+.auction-footer-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.4; transform: scale(0.9); }
+}
+
+.auction-status-tag {
+  color: #00f0ff;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.auction-telemetry-text {
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.auction-footer-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.auction-center-hint {
+  color: #64748b;
+}
+
+.auction-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auction-footer-exit-link {
+  color: #00f0ff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 11px;
+  transition: color 0.15s ease;
+}
+
+.auction-footer-exit-link:hover {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+.auction-footer-copy {
+  color: #475569;
+}
+
+@media (max-width: 768px) {
+  .soc-auction-footer-inner {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}
+

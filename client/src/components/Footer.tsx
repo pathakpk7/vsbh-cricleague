@@ -1,8 +1,42 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './Footer.css';
 
 const Footer: React.FC = () => {
+  const location = useLocation();
+  const isAuctionPage = location.pathname === '/auction';
+
+  // Live Auction Arena uses an ultra-slim, dedicated broadcast telemetry strip
+  if (isAuctionPage) {
+    return (
+      <footer className="soc-auction-footer">
+        <div className="soc-auction-footer-inner">
+          <div className="auction-footer-status">
+            <span className="live-dot-pulse"></span>
+            <span className="auction-status-tag">LIVE AUCTION ROOM</span>
+            <span className="soc-footer-sep">•</span>
+            <span className="auction-telemetry-text">REAL-TIME SOCKET FEED ACTIVE</span>
+          </div>
+
+          <div className="auction-footer-center">
+            <span>VSBH SPORTS OPERATIONS CENTER</span>
+            <span className="soc-footer-sep">•</span>
+            <span className="auction-center-hint">OFFICIAL BIDDING ARENA</span>
+          </div>
+
+          <div className="auction-footer-actions">
+            <Link to="/" className="auction-footer-exit-link">
+              ← Return to Deck
+            </Link>
+            <span className="soc-footer-sep">•</span>
+            <span className="auction-footer-copy">&copy; {new Date().getFullYear()} VSBH-CL</span>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Standard Website Compact Footer for other pages
   return (
     <footer className="soc-compact-footer">
       <div className="soc-footer-container">
