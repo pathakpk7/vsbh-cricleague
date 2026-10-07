@@ -39,6 +39,7 @@ const Auction: React.FC = () => {
 
   useEffect(() => {
     fetchLeagues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

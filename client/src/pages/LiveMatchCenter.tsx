@@ -36,12 +36,14 @@ const LiveMatchCenter: React.FC = () => {
 
   useEffect(() => {
     fetchLeagues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (selectedLeagueId) {
       fetchMatches(selectedLeagueId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLeagueId]);
 
   useEffect(() => {

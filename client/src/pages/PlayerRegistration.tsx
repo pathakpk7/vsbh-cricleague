@@ -47,6 +47,7 @@ const PlayerRegistration: React.FC = () => {
     if (leagueCode) {
       verifyLeagueCode(leagueCode);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const verifyLeagueCode = async (codeToVerify: string) => {

@@ -35,6 +35,7 @@ const LeagueManagement: React.FC = () => {
 
   useEffect(() => {
     fetchLeagues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const LeagueManagement: React.FC = () => {
     } else if (leagues.length > 0) {
       loadLeagueDetails(leagues[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeLeagueId, leagues]);
 
   const fetchLeagues = async () => {
