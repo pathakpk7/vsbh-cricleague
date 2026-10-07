@@ -77,19 +77,25 @@ const sanitizeObject = (obj) => {
  */
 const sanitizeRequest = (req, res, next) => {
   try {
-    // Sanitize request body
-    if (req.body) {
-      req.body = sanitizeObject(req.body);
+    // Sanitize request body safely
+    if (req.body && typeof req.body === 'object') {
+      for (const key of Object.keys(req.body)) {
+        req.body[key] = sanitizeObject(req.body[key]);
+      }
     }
     
-    // Sanitize query parameters
-    if (req.query) {
-      req.query = sanitizeObject(req.query);
+    // Sanitize query parameters safely without replacing getter reference
+    if (req.query && typeof req.query === 'object') {
+      for (const key of Object.keys(req.query)) {
+        req.query[key] = sanitizeObject(req.query[key]);
+      }
     }
     
-    // Sanitize URL parameters
-    if (req.params) {
-      req.params = sanitizeObject(req.params);
+    // Sanitize URL parameters safely without replacing getter reference
+    if (req.params && typeof req.params === 'object') {
+      for (const key of Object.keys(req.params)) {
+        req.params[key] = sanitizeObject(req.params[key]);
+      }
     }
     
     next();

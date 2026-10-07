@@ -101,8 +101,8 @@ const rateLimits = {
   
   // Rate limit for team creation
   teamCreation: createRateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 3, // Only 3 teams per hour per IP
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200, // Generous limit for league administration
     message: {
       success: false,
       message: 'Team creation limit exceeded, please try again later.'

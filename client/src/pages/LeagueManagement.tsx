@@ -14,6 +14,8 @@ const LeagueManagement: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // New League Form State
   const [newLeague, setNewLeague] = useState({
@@ -41,7 +43,7 @@ const LeagueManagement: React.FC = () => {
   useEffect(() => {
     if (activeLeagueId) {
       loadLeagueDetails(activeLeagueId);
-    } else if (leagues.length > 0) {
+    } else if (leagues.length > 0 && !currentLeague) {
       loadLeagueDetails(leagues[0].id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,6 +56,15 @@ const LeagueManagement: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.success) {
         setLeagues(data.data);
+        if (data.data.length === 0) {
+          setActiveTab('create');
+        } else if (!currentLeague) {
+          const selected = activeLeagueId 
+            ? data.data.find((l: League) => l.id === activeLeagueId) || data.data[0]
+            : data.data[0];
+          setCurrentLeague(selected);
+          setActiveLeagueId(selected.id);
+        }
       }
     } catch (e) {
       console.error('Error fetching leagues:', e);
@@ -63,7 +74,9 @@ const LeagueManagement: React.FC = () => {
   };
 
   const loadLeagueDetails = async (leagueId: string) => {
+    if (!leagueId) return;
     try {
+      setLoading(true);
       const leagueRes = await fetch(`/api/leagues/${leagueId}`);
       const leagueData = await leagueRes.json();
       if (leagueRes.ok && leagueData.success) {
@@ -79,25 +92,28 @@ const LeagueManagement: React.FC = () => {
 
       // Fetch teams
       const teamsRes = await fetch(`/api/teams?leagueId=${leagueId}`);
-      const teamsData = await teamsRes.json();
       if (teamsRes.ok) {
-        setTeams(teamsData);
+        const teamsData = await teamsRes.json();
+        setTeams(Array.isArray(teamsData) ? teamsData : []);
       }
 
       // Fetch players
       const playersRes = await fetch(`/api/players?leagueId=${leagueId}`);
-      const playersData = await playersRes.json();
       if (playersRes.ok) {
-        setPlayers(playersData);
+        const playersData = await playersRes.json();
+        setPlayers(Array.isArray(playersData) ? playersData : []);
       }
     } catch (e) {
       console.error('Error loading league details:', e);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCreateLeague = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMessage(null);
+    setLoading(true);
     try {
       const res = await fetch('/api/leagues', {
         method: 'POST',
@@ -107,20 +123,30 @@ const LeagueManagement: React.FC = () => {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setStatusMessage({ text: `League created! Share Code: ${data.data.code}`, type: 'success' });
+        const createdLeague = data.data;
+        setCurrentLeague(createdLeague);
+        setActiveLeagueId(createdLeague.id);
+        setStatusMessage({
+          text: `🎉 League "${createdLeague.name}" registered! Unique Player Key: ${createdLeague.code} | Captain Key: ${createdLeague.captain_auction_key}`,
+          type: 'success'
+        });
         await fetchLeagues();
-        loadLeagueDetails(data.data.id);
+        await loadLeagueDetails(createdLeague.id);
         setActiveTab('manage');
       } else {
         setStatusMessage({ text: data.message || 'Failed to create league', type: 'error' });
       }
     } catch (e) {
-      setStatusMessage({ text: 'Error connecting to server', type: 'error' });
+      console.error('Error creating league:', e);
+      setStatusMessage({ text: 'Error connecting to server. Please try again.', type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAddTeam = async () => {
     if (!newTeamName.trim() || !currentLeague) return;
+    setLoading(true);
     try {
       const res = await fetch('/api/teams', {
         method: 'POST',
@@ -131,13 +157,19 @@ const LeagueManagement: React.FC = () => {
           budget: newTeamBudget
         })
       });
+      const data = await res.json();
       if (res.ok) {
+        const addedName = newTeamName.trim();
         setNewTeamName('');
-        loadLeagueDetails(currentLeague.id);
-        setStatusMessage({ text: 'Team added successfully', type: 'success' });
+        await loadLeagueDetails(currentLeague.id);
+        setStatusMessage({ text: `✅ Team "${addedName}" registered successfully!`, type: 'success' });
+      } else {
+        setStatusMessage({ text: data.error || data.message || 'Failed to add team', type: 'error' });
       }
     } catch (e) {
       setStatusMessage({ text: 'Failed to add team', type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -234,8 +266,11 @@ const LeagueManagement: React.FC = () => {
   };
 
   const copyToClipboard = (text: string, label: string) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
-    setStatusMessage({ text: `${label} copied to clipboard!`, type: 'success' });
+    setCopiedKey(label);
+    setStatusMessage({ text: `✓ ${label} copied to clipboard!`, type: 'success' });
+    setTimeout(() => setCopiedKey(null), 2500);
   };
 
   return (
@@ -355,8 +390,8 @@ const LeagueManagement: React.FC = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn-create-submit">
-              Register League & Generate Unique Keys
+            <button type="submit" className="btn-create-submit" disabled={loading}>
+              {loading ? '⏳ Registering League & Generating Keys...' : 'Register League & Generate Unique Keys'}
             </button>
           </form>
         </div>
@@ -389,7 +424,7 @@ const LeagueManagement: React.FC = () => {
                     className="btn-copy"
                     onClick={() => copyToClipboard(currentLeague.code, 'League Player Key')}
                   >
-                    📋 Copy Player Key
+                    {copiedKey === 'League Player Key' ? '✅ Copied!' : '📋 Copy Player Key'}
                   </button>
                 </div>
 
@@ -402,7 +437,7 @@ const LeagueManagement: React.FC = () => {
                       className="btn-copy"
                       onClick={() => copyToClipboard(currentLeague.captain_auction_key || '', 'Captain Auction Key')}
                     >
-                      📋 Copy Captain Key
+                      {copiedKey === 'Captain Auction Key' ? '✅ Copied!' : '📋 Copy Captain Key'}
                     </button>
                     <button className="btn-regen" onClick={handleRegenerateCaptainKey}>
                       🔄 Regenerate Key
@@ -476,8 +511,8 @@ const LeagueManagement: React.FC = () => {
                     onChange={(e) => setNewTeamBudget(Number(e.target.value))}
                     style={{ width: '120px' }}
                   />
-                  <button className="btn-add-team" onClick={handleAddTeam}>
-                    + Add Team
+                  <button className="btn-add-team" onClick={handleAddTeam} disabled={loading}>
+                    {loading ? 'Adding...' : '+ Add Team'}
                   </button>
                 </div>
 
@@ -564,7 +599,17 @@ const LeagueManagement: React.FC = () => {
               </div>
             </div>
           ) : (
-            <p>No leagues found. Register your first league above!</p>
+            <div className="empty-leagues-prompt" style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(16,23,38,0.7)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <h3 style={{ color: '#38bdf8', fontSize: '20px', marginBottom: '10px' }}>No Active Leagues Found</h3>
+              <p style={{ color: '#94a3b8', marginBottom: '24px' }}>Register your cricket league to automatically generate the Player Registration Key and Captain Auction Key.</p>
+              <button 
+                className="btn-create-submit"
+                style={{ width: 'auto', padding: '14px 32px', display: 'inline-block' }}
+                onClick={() => setActiveTab('create')}
+              >
+                ➕ Register New Cricket League Now
+              </button>
+            </div>
           )}
         </div>
       )}
