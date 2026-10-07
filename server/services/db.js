@@ -7,181 +7,16 @@ const DB_FILE = path.join(__dirname, '..', 'data', 'store.json');
 // Helper to generate IDs
 const generateId = () => crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
 
-// Initial default seed state
+// Initial default clean state (Starts completely fresh)
 const getInitialState = () => {
-  const defaultLeagueId = 'league-vsbh-2026';
-  const defaultLeague = {
-    id: defaultLeagueId,
-    name: 'VSBH Premier League 2026',
-    code: 'VSBH-2026',
-    admin_name: 'League Administrator',
-    admin_email: 'admin@vsbh.com',
-    admin_password: 'admin123', // In production, hash with bcrypt
-    number_of_teams: 6,
-    registration_deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    registration_status: 'open',
-    auction_date_time: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-    captain_auction_key: 'CAPT-VSBH-77',
-    auction_status: 'scheduled',
-    created_at: new Date().toISOString()
-  };
-
-  const defaultTeams = [
-    { id: 'team-warriors', league_id: defaultLeagueId, name: 'Warriors', budget: 100, captain_name: 'Rohit Sharma', logo: 'warriors.png', created_at: new Date().toISOString() },
-    { id: 'team-titans', league_id: defaultLeagueId, name: 'Titans', budget: 100, captain_name: 'Hardik Pandya', logo: 'titans.png', created_at: new Date().toISOString() },
-    { id: 'team-royals', league_id: defaultLeagueId, name: 'Royals', budget: 100, captain_name: 'Sanju Samson', logo: 'royals.png', created_at: new Date().toISOString() },
-    { id: 'team-superstars', league_id: defaultLeagueId, name: 'Superstars', budget: 100, captain_name: 'KL Rahul', logo: 'superstars.png', created_at: new Date().toISOString() },
-    { id: 'team-champions', league_id: defaultLeagueId, name: 'Champions', budget: 100, captain_name: 'Shreyas Iyer', logo: 'champions.png', created_at: new Date().toISOString() },
-    { id: 'team-legends', league_id: defaultLeagueId, name: 'Legends', budget: 100, captain_name: 'MS Dhoni', logo: 'legends.png', created_at: new Date().toISOString() }
-  ];
-
-  const defaultPlayers = [
-    {
-      id: 'player-1',
-      league_id: defaultLeagueId,
-      name: 'Aarav Sharma',
-      email: 'aarav@example.com',
-      phone: '9876543210',
-      role: 'batter',
-      department: 'Computer Science',
-      college_id: 'CS-2023-01',
-      year: '3rd',
-      base_price: 10,
-      sold_price: null,
-      sold_to_team: null,
-      status: 'available',
-      is_mvp: true,
-      is_available: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'player-2',
-      league_id: defaultLeagueId,
-      name: 'Rohan Verma',
-      email: 'rohan@example.com',
-      phone: '9876543211',
-      role: 'bowler',
-      department: 'Mechanical',
-      college_id: 'ME-2023-04',
-      year: '3rd',
-      base_price: 10,
-      sold_price: null,
-      sold_to_team: null,
-      status: 'available',
-      is_mvp: false,
-      is_available: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'player-3',
-      league_id: defaultLeagueId,
-      name: 'Ishaan Patel',
-      email: 'ishaan@example.com',
-      phone: '9876543212',
-      role: 'all-rounder',
-      department: 'Electrical',
-      college_id: 'EE-2024-12',
-      year: '2nd',
-      base_price: 15,
-      sold_price: null,
-      sold_to_team: null,
-      status: 'available',
-      is_mvp: true,
-      is_available: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'player-4',
-      league_id: defaultLeagueId,
-      name: 'Kabir Singh',
-      email: 'kabir@example.com',
-      phone: '9876543213',
-      role: 'wicketkeeper',
-      department: 'Civil',
-      college_id: 'CE-2022-09',
-      year: '4th',
-      base_price: 10,
-      sold_price: null,
-      sold_to_team: null,
-      status: 'available',
-      is_mvp: false,
-      is_available: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'player-5',
-      league_id: defaultLeagueId,
-      name: 'Devraj Chauhan',
-      email: 'devraj@example.com',
-      phone: '9876543214',
-      role: 'batter',
-      department: 'IT',
-      college_id: 'IT-2023-15',
-      year: '3rd',
-      base_price: 10,
-      sold_price: null,
-      sold_to_team: null,
-      status: 'available',
-      is_mvp: false,
-      is_available: true,
-      created_at: new Date().toISOString()
-    }
-  ];
-
-  const defaultAuctionStates = {
-    [defaultLeagueId]: {
-      league_id: defaultLeagueId,
-      current_player_id: defaultPlayers[0].id,
-      current_team_id: null,
-      current_bid: 10,
-      timer_seconds: 30,
-      is_active: false,
-      auction_round: 1,
-      updated_at: new Date().toISOString()
-    }
-  };
-
-  const defaultMatches = [
-    {
-      id: 'match-1',
-      league_id: defaultLeagueId,
-      team1_id: 'team-warriors',
-      team2_id: 'team-titans',
-      team1_name: 'Warriors',
-      team2_name: 'Titans',
-      team1_score: 168,
-      team1_wickets: 5,
-      team1_overs: '20.0',
-      team2_score: 142,
-      team2_wickets: 4,
-      team2_overs: '17.3',
-      target: 169,
-      current_batting_team_id: 'team-titans',
-      status: 'live',
-      venue: 'Campus Sports Ground - Pitch A',
-      match_date: new Date().toISOString(),
-      current_striker: 'Hardik Pandya (34* off 19)',
-      current_non_striker: 'Shubman Gill (58* off 41)',
-      current_bowler: 'Jasprit Bumrah (3.3-0-24-2)',
-      recent_balls: ['1', '4', '2', '0', '6', '1'],
-      commentary: [
-        { id: 'c1', over: '17.3', text: 'Single taken towards long-off. Good running between wickets.', runs: 1, isWicket: false, timestamp: new Date().toISOString() },
-        { id: 'c2', over: '17.2', text: 'SIX! What a massive strike over deep mid-wicket!', runs: 6, isWicket: false, timestamp: new Date(Date.now() - 30000).toISOString() },
-        { id: 'c3', over: '17.1', text: 'Dot ball. Yorker fired right in the blockhole.', runs: 0, isWicket: false, timestamp: new Date(Date.now() - 60000).toISOString() }
-      ],
-      play_documentation: 'Titans need 27 runs in 15 balls. High tension match! Warriors fielders are up inside the circle. Pitch playing true with good bounce.',
-      updated_at: new Date().toISOString()
-    }
-  ];
-
   return {
-    leagues: [defaultLeague],
-    teams: defaultTeams,
-    players: defaultPlayers,
+    leagues: [],
+    teams: [],
+    players: [],
     team_players: [],
-    auction_states: defaultAuctionStates,
+    auction_states: {},
     auction_logs: [],
-    matches: defaultMatches
+    matches: []
   };
 };
 
@@ -221,6 +56,12 @@ class DatabaseService {
     } catch (e) {
       console.error('Failed to save db file:', e);
     }
+  }
+
+  clearAllData() {
+    this.data = getInitialState();
+    this.save();
+    return this.data;
   }
 
   // --- LEAGUES ---

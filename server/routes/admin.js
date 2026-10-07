@@ -96,6 +96,25 @@ router.post('/reset',
 );
 
 /**
+ * Flush/wipe all leagues, teams, players, matches and auction data permanently
+ * POST /api/admin/flush-all-data
+ */
+router.post('/flush-all-data',
+  rateLimits.admin,
+  isAdmin,
+  asyncHandler(async (req, res) => {
+    db.clearAllData();
+    if (global.io) {
+      global.io.emit('system-reset', { message: 'All platform data has been cleared.' });
+    }
+    res.json({
+      success: true,
+      message: 'All system data has been wiped. Platform is now fresh.'
+    });
+  })
+);
+
+/**
  * Get system status (admin only)
  * GET /api/admin/status
  */

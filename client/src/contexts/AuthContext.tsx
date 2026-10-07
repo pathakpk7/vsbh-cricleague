@@ -83,13 +83,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const storedUser = localStorage.getItem('vsbh_user');
       if (storedUser) {
         const parsedUser: User = JSON.parse(storedUser);
-        setUser(parsedUser);
-        if (parsedUser.leagueId) {
-          setActiveLeagueId(parsedUser.leagueId);
+        if (parsedUser.leagueId === 'league-vsbh-2026') {
+          localStorage.removeItem('vsbh_user');
+          localStorage.removeItem('vsbh_active_league');
+          setUser(null);
+          setActiveLeagueId(null);
+        } else {
+          setUser(parsedUser);
+          if (parsedUser.leagueId) {
+            setActiveLeagueId(parsedUser.leagueId);
+          }
         }
       }
       const savedLeague = localStorage.getItem('vsbh_active_league');
-      if (savedLeague && !activeLeagueId) {
+      if (savedLeague === 'league-vsbh-2026') {
+        localStorage.removeItem('vsbh_active_league');
+      } else if (savedLeague && !activeLeagueId) {
         setActiveLeagueId(savedLeague);
       }
     } catch (err) {

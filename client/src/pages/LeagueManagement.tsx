@@ -22,7 +22,7 @@ const LeagueManagement: React.FC = () => {
     admin_email: '',
     admin_password: '',
     number_of_teams: 6,
-    team_names: ['Warriors', 'Titans', 'Royals', 'Superstars', 'Champions', 'Legends']
+    team_names: ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6']
   });
 
   // Edit Team State
