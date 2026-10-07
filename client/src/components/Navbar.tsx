@@ -28,8 +28,9 @@ const Navbar: React.FC = () => {
             <span className={menuOpen ? 'open' : ''}></span>
             <span className={menuOpen ? 'open' : ''}></span>
           </button>
-          <div className="navbar-brand">
+          <div className="navbar-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <img src="/logo_vsbh.png" alt="VSBH-CL" className="navbar-logo" />
+            <span className="navbar-title">VSBH-CL</span>
           </div>
         </div>
         
@@ -46,7 +47,28 @@ const Navbar: React.FC = () => {
             className={`nav-link ${isActive('/auction') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            Auction
+            🎯 Live Auction
+          </Link>
+          <Link 
+            to="/live-matches" 
+            className={`nav-link ${isActive('/live-matches') ? 'active' : ''}`}
+            onClick={handleNavClick}
+          >
+            🔴 Match Center
+          </Link>
+          <Link 
+            to="/register-player" 
+            className={`nav-link ${isActive('/register-player') ? 'active' : ''}`}
+            onClick={handleNavClick}
+          >
+            🏏 Register Player
+          </Link>
+          <Link 
+            to="/league-admin" 
+            className={`nav-link ${isActive('/league-admin') ? 'active' : ''}`}
+            onClick={handleNavClick}
+          >
+            🏆 League Hub
           </Link>
           <Link 
             to="/teams" 
@@ -67,7 +89,7 @@ const Navbar: React.FC = () => {
             className={`nav-link ${isActive('/points-table') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            Points Table
+            Points
           </Link>
           <Link 
             to="/stats" 
@@ -76,13 +98,6 @@ const Navbar: React.FC = () => {
           >
             Stats
           </Link>
-          <Link 
-            to="/history" 
-            className={`nav-link ${isActive('/history') ? 'active' : ''}`}
-            onClick={handleNavClick}
-          >
-            History
-          </Link>
         </div>
 
         <div className="navbar-actions">
@@ -90,9 +105,10 @@ const Navbar: React.FC = () => {
             <div className="user-menu">
               <div className="user-info">
                 <span className="user-name">{user.name}</span>
-                <span className="user-role">
-                  {user.role === 'admin' ? 'Admin' : 
-                   user.role === 'captain' ? 'Captain' : 'Player'}
+                <span className={`user-role role-${user.role}`}>
+                  {user.role === 'admin' ? '🛡️ Admin' : 
+                   user.role === 'captain' ? `👑 Captain` : 
+                   user.role === 'player' ? '🏏 Player' : 'Spectator'}
                 </span>
               </div>
               <button className="btn btn-logout" onClick={logout}>
@@ -104,7 +120,7 @@ const Navbar: React.FC = () => {
               className="btn btn-secondary" 
               onClick={() => navigate('/login')}
             >
-              Login
+              Sign In
             </button>
           )}
         </div>

@@ -1,29 +1,56 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
-  universityId: string;
-  cricHeroesId: string;
-  role: 'admin' | 'captain' | 'player';
+  role: 'admin' | 'captain' | 'player' | 'viewer';
+  leagueId?: string;
+  leagueName?: string;
+  leagueCode?: string;
   teamId?: string;
+  teamName?: string;
+  captainKey?: string;
+  token?: string;
   isAuthenticated: boolean;
+}
+
+export interface AdminCredentials {
+  email: string;
+  password?: string;
+  admin_key?: string;
+}
+
+export interface CaptainCredentials {
+  leagueCodeOrId: string;
+  teamId: string;
+  captainKey: string;
+}
+
+export interface PlayerCredentials {
+  email: string;
+  password?: string;
+}
+
+export interface LegacyLoginCredentials {
+  name?: string;
+  email: string;
+  universityId?: string;
+  cricHeroesId?: string;
+  password?: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (credentials: LoginCredentials) => Promise<boolean>;
+  loginAdmin: (credentials: AdminCredentials) => Promise<boolean>;
+  loginCaptain: (credentials: CaptainCredentials) => Promise<boolean>;
+  loginPlayer: (credentials: PlayerCredentials) => Promise<boolean>;
+  login: (credentials: LegacyLoginCredentials | AdminCredentials) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
-}
-
-interface LoginCredentials {
-  name: string;
-  universityId: string;
-  cricHeroesId: string;
-  email: string;
+  activeLeagueId: string | null;
+  setActiveLeagueId: (id: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,11 +69,11 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [activeLeagueId, setActiveLeagueId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for existing session on mount
     checkExistingSession();
   }, []);
 
@@ -54,123 +81,197 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const storedUser = localStorage.getItem('vsbh_user');
       if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
+        const parsedUser: User = JSON.parse(storedUser);
         setUser(parsedUser);
+        if (parsedUser.leagueId) {
+          setActiveLeagueId(parsedUser.leagueId);
+        }
       }
-    } catch (error) {
-      console.error('Error checking existing session:', error);
+      const savedLeague = localStorage.getItem('vsbh_active_league');
+      if (savedLeague && !activeLeagueId) {
+        setActiveLeagueId(savedLeague);
+      }
+    } catch (err) {
+      console.error('Error checking existing session:', err);
       localStorage.removeItem('vsbh_user');
     }
   };
 
-  const validateUserFromGoogleSheets = async (credentials: LoginCredentials): Promise<User | null> => {
-    try {
-      // Admin validation
-      if (credentials.email === 'prasoon7pathak@gmail.com' && 
-          credentials.name.toLowerCase().includes('prasoon')) {
-        return {
-          id: 'admin_001',
-          name: credentials.name,
-          email: credentials.email,
-          universityId: credentials.universityId,
-          cricHeroesId: credentials.cricHeroesId,
-          role: 'admin',
-          isAuthenticated: true
-        };
-      }
-
-      // Simulate captain validation from Google Sheets
-      const mockCaptainData = [
-        {
-          name: 'John Captain',
-          email: 'captain@university.edu',
-          universityId: 'U001',
-          cricHeroesId: 'CH001',
-          teamId: '1',
-          role: 'captain' as const
-        },
-        {
-          name: 'Jane Leader',
-          email: 'leader@university.edu', 
-          universityId: 'U002',
-          cricHeroesId: 'CH002',
-          teamId: '2',
-          role: 'captain' as const
-        }
-      ];
-
-      const captain = mockCaptainData.find(
-        c => c.email === credentials.email && 
-             c.name === credentials.name &&
-             c.universityId === credentials.universityId &&
-             c.cricHeroesId === credentials.cricHeroesId
-      );
-
-      if (captain) {
-        return {
-          id: `captain_${captain.teamId}`,
-          name: captain.name,
-          email: captain.email,
-          universityId: captain.universityId,
-          cricHeroesId: captain.cricHeroesId,
-          role: captain.role,
-          teamId: captain.teamId,
-          isAuthenticated: true
-        };
-      }
-
-      // Allow any user to login as a player (no restrictions)
-      return {
-        id: `player_${credentials.universityId}`,
-        name: credentials.name,
-        email: credentials.email,
-        universityId: credentials.universityId,
-        cricHeroesId: credentials.cricHeroesId,
-        role: 'player',
-        isAuthenticated: true
-      };
-
-    } catch (error) {
-      console.error('Error validating user from Google Sheets:', error);
-      return null;
+  const setAndStoreUser = (newUser: User) => {
+    setUser(newUser);
+    localStorage.setItem('vsbh_user', JSON.stringify(newUser));
+    if (newUser.leagueId) {
+      setActiveLeagueId(newUser.leagueId);
+      localStorage.setItem('vsbh_active_league', newUser.leagueId);
+    }
+    if (newUser.role === 'captain' && newUser.teamId && newUser.captainKey) {
+      localStorage.setItem('captainCode', newUser.captainKey);
+      localStorage.setItem('teamId', newUser.teamId);
+      if (newUser.teamName) localStorage.setItem('teamName', newUser.teamName);
     }
   };
 
-  const login = async (credentials: LoginCredentials): Promise<boolean> => {
+  // League Admin Login
+  const loginAdmin = async (credentials: AdminCredentials): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-
     try {
-      // Validate all required fields
-      if (!credentials.name || !credentials.universityId || 
-          !credentials.cricHeroesId || !credentials.email) {
-        setError('All fields are required');
+      const response = await fetch('/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Admin authentication failed');
         return false;
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(credentials.email)) {
-        setError('Invalid email format');
-        return false;
-      }
+      const adminUser: User = {
+        id: data.data.league_id ? `admin_${data.data.league_id}` : 'admin_super',
+        name: data.data.admin_name || 'League Admin',
+        email: data.data.admin_email || credentials.email,
+        role: 'admin',
+        leagueId: data.data.league_id,
+        leagueName: data.data.league_name,
+        leagueCode: data.data.league_code,
+        token: data.data.token,
+        isAuthenticated: true
+      };
 
-      // Validate against Google Sheets data
-      const validatedUser = await validateUserFromGoogleSheets(credentials);
-      
-      if (!validatedUser) {
-        setError('Login failed. Please check your credentials and try again.');
-        return false;
-      }
-
-      // Store user session
-      setUser(validatedUser);
-      localStorage.setItem('vsbh_user', JSON.stringify(validatedUser));
-      
+      setAndStoreUser(adminUser);
       return true;
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Login failed. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Server connection error during admin login');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Team Captain Login with Unique Captain Auction Key
+  const loginCaptain = async (credentials: CaptainCredentials): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/auth/captain-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Invalid Captain Auction Key');
+        return false;
+      }
+
+      const captainUser: User = {
+        id: `captain_${data.data.teamId}`,
+        name: `${data.data.teamName} Captain`,
+        email: `captain@${data.data.teamId}.cl`,
+        role: 'captain',
+        teamId: data.data.teamId,
+        teamName: data.data.teamName,
+        captainKey: credentials.captainKey,
+        leagueId: data.data.league_id,
+        leagueName: data.data.league_name,
+        leagueCode: data.data.league_code,
+        token: data.data.token,
+        isAuthenticated: true
+      };
+
+      setAndStoreUser(captainUser);
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Server connection error during captain login');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Player Login
+  const loginPlayer = async (credentials: PlayerCredentials): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/auth/player-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Invalid player credentials');
+        return false;
+      }
+
+      const playerUser: User = {
+        id: data.data.id,
+        name: data.data.name,
+        email: data.data.email,
+        role: 'player',
+        leagueId: data.data.league_id,
+        leagueName: data.data.league_name,
+        leagueCode: data.data.league_code,
+        token: data.data.token,
+        isAuthenticated: true
+      };
+
+      setAndStoreUser(playerUser);
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Server connection error during player login');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Backward-compatible generic login method
+  const login = async (credentials: any): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (credentials.captainKey && credentials.teamId) {
+        return await loginCaptain({
+          leagueCodeOrId: credentials.leagueCodeOrId || activeLeagueId || '',
+          teamId: credentials.teamId,
+          captainKey: credentials.captainKey
+        });
+      }
+
+      if (credentials.password) {
+        // Try admin first, fallback to player
+        const isAdminOk = await loginAdmin({
+          email: credentials.email,
+          password: credentials.password
+        });
+        if (isAdminOk) return true;
+
+        const isPlayerOk = await loginPlayer({
+          email: credentials.email,
+          password: credentials.password
+        });
+        if (isPlayerOk) return true;
+      }
+
+      // Guest / Player fallback
+      const guestUser: User = {
+        id: `user_${Date.now()}`,
+        name: credentials.name || 'Cricket Fan',
+        email: credentials.email,
+        role: 'viewer',
+        leagueId: activeLeagueId || undefined,
+        isAuthenticated: true
+      };
+      setAndStoreUser(guestUser);
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
       return false;
     } finally {
       setIsLoading(false);
@@ -180,19 +281,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('vsbh_user');
+    localStorage.removeItem('captainCode');
+    localStorage.removeItem('teamId');
+    localStorage.removeItem('teamName');
     setError(null);
   };
 
-  const value: AuthContextType = {
-    user,
-    login,
-    logout,
-    isLoading,
-    error
+  const handleSetActiveLeague = (id: string | null) => {
+    setActiveLeagueId(id);
+    if (id) {
+      localStorage.setItem('vsbh_active_league', id);
+    } else {
+      localStorage.removeItem('vsbh_active_league');
+    }
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loginAdmin,
+        loginCaptain,
+        loginPlayer,
+        login,
+        logout,
+        isLoading,
+        error,
+        activeLeagueId,
+        setActiveLeagueId: handleSetActiveLeague
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

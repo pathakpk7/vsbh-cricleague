@@ -1,82 +1,83 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../config/supabase');
+const db = require('../services/db');
 
-// Get all teams
-router.get('/', async (req, res) => {
+// Get all teams (optionally filtered by leagueId)
+router.get('/', (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('teams')
-      .select(`
-        *,
-        team_players (
-          player_id,
-          players (
-            id,
-            name,
-            role,
-            base_price,
-            sold_price
-          )
-        )
-      `);
-
-    if (error) throw error;
-    res.json(data);
+    const { leagueId } = req.query;
+    const teams = db.getTeams(leagueId);
+    res.json(teams);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // Get team by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', (req, res) => {
   try {
     const { id } = req.params;
-    
-    const { data, error } = await supabase
-      .from('teams')
-      .select(`
-        *,
-        team_players (
-          player_id,
-          players (
-            id,
-            name,
-            role,
-            base_price,
-            sold_price
-          )
-        )
-      `)
-      .eq('id', id)
-      .single();
-
-    if (error) throw error;
-    res.json(data);
+    const team = db.getTeamById(id);
+    if (!team) {
+      return res.status(404).json({ error: 'Team not found' });
+    }
+    res.json(team);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Initialize teams (6 teams)
-router.post('/initialize', async (req, res) => {
+// Create new team under a league (League Admin right)
+router.post('/', (req, res) => {
   try {
-    const teams = [
-      { name: 'Warriors', budget: 100, logo: 'warriors.png' },
-      { name: 'Titans', budget: 100, logo: 'titans.png' },
-      { name: 'Royals', budget: 100, logo: 'royals.png' },
-      { name: 'Superstars', budget: 100, logo: 'superstars.png' },
-      { name: 'Champions', budget: 100, logo: 'champions.png' },
-      { name: 'Legends', budget: 100, logo: 'legends.png' }
-    ];
+    const { league_id, name, budget, captain_name, logo } = req.body;
+    if (!name) {
+      return res.status(400).json({ error: 'Team name is required' });
+    }
 
-    const { data, error } = await supabase
-      .from('teams')
-      .insert(teams)
-      .select();
+    let targetLeagueId = league_id;
+    if (!targetLeagueId) {
+      const leagues = db.getLeagues();
+      targetLeagueId = leagues[0]?.id;
+    }
 
-    if (error) throw error;
-    res.json(data);
+    const newTeam = db.createTeam({
+      league_id: targetLeagueId,
+      name,
+      budget: budget || 100,
+      captain_name: captain_name || '',
+      logo: logo || ''
+    });
+
+    res.status(201).json(newTeam);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update team details (name, budget, captain)
+router.put('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = db.updateTeam(id, req.body);
+    if (!updated) {
+      return res.status(404).json({ error: 'Team not found' });
+    }
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete team
+router.delete('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = db.deleteTeam(id);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Team not found' });
+    }
+    res.json({ success: true, message: 'Team deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

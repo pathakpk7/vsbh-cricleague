@@ -5,7 +5,7 @@ import './styles/global.css';
 // Context
 import { AuthProvider } from './contexts/AuthContext';
 
-// Components
+// Components & Pages
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
@@ -15,6 +15,9 @@ import Fixtures from './pages/Fixtures';
 import PointsTable from './pages/PointsTable';
 import Stats from './pages/Stats';
 import Login from './pages/Login';
+import PlayerRegistration from './pages/PlayerRegistration';
+import LeagueManagement from './pages/LeagueManagement';
+import LiveMatchCenter from './pages/LiveMatchCenter';
 
 function App() {
   return (
@@ -26,6 +29,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/auction" element={<Auction />} />
+              <Route path="/live-matches" element={<LiveMatchCenter />} />
+              <Route path="/register-player" element={<PlayerRegistration />} />
+              <Route path="/league-admin" element={<LeagueManagement />} />
               <Route path="/teams" element={<Teams />} />
               <Route path="/fixtures" element={<Fixtures />} />
               <Route path="/points-table" element={<PointsTable />} />

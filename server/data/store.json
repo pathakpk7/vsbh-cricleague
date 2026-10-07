@@ -1,0 +1,241 @@
+{
+  "leagues": [
+    {
+      "id": "league-vsbh-2026",
+      "name": "VSBH Premier League 2026",
+      "code": "VSBH-2026",
+      "admin_name": "League Administrator",
+      "admin_email": "admin@vsbh.com",
+      "admin_password": "admin123",
+      "number_of_teams": 6,
+      "registration_deadline": "2026-10-14T08:17:40.091Z",
+      "registration_status": "open",
+      "auction_date_time": "2026-10-17T08:17:40.102Z",
+      "captain_auction_key": "CAPT-VSBH-77",
+      "auction_status": "scheduled",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    }
+  ],
+  "teams": [
+    {
+      "id": "team-warriors",
+      "league_id": "league-vsbh-2026",
+      "name": "Warriors",
+      "budget": 100,
+      "captain_name": "Rohit Sharma",
+      "logo": "warriors.png",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "team-titans",
+      "league_id": "league-vsbh-2026",
+      "name": "Titans",
+      "budget": 100,
+      "captain_name": "Hardik Pandya",
+      "logo": "titans.png",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "team-royals",
+      "league_id": "league-vsbh-2026",
+      "name": "Royals",
+      "budget": 100,
+      "captain_name": "Sanju Samson",
+      "logo": "royals.png",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "team-superstars",
+      "league_id": "league-vsbh-2026",
+      "name": "Superstars",
+      "budget": 100,
+      "captain_name": "KL Rahul",
+      "logo": "superstars.png",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "team-champions",
+      "league_id": "league-vsbh-2026",
+      "name": "Champions",
+      "budget": 100,
+      "captain_name": "Shreyas Iyer",
+      "logo": "champions.png",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "team-legends",
+      "league_id": "league-vsbh-2026",
+      "name": "Legends",
+      "budget": 100,
+      "captain_name": "MS Dhoni",
+      "logo": "legends.png",
+      "created_at": "2026-10-07T08:17:40.102Z"
+    }
+  ],
+  "players": [
+    {
+      "id": "player-1",
+      "league_id": "league-vsbh-2026",
+      "name": "Aarav Sharma",
+      "email": "aarav@example.com",
+      "phone": "9876543210",
+      "role": "batter",
+      "department": "Computer Science",
+      "college_id": "CS-2023-01",
+      "year": "3rd",
+      "base_price": 10,
+      "sold_price": null,
+      "sold_to_team": null,
+      "status": "available",
+      "is_mvp": true,
+      "is_available": true,
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "player-2",
+      "league_id": "league-vsbh-2026",
+      "name": "Rohan Verma",
+      "email": "rohan@example.com",
+      "phone": "9876543211",
+      "role": "bowler",
+      "department": "Mechanical",
+      "college_id": "ME-2023-04",
+      "year": "3rd",
+      "base_price": 10,
+      "sold_price": null,
+      "sold_to_team": null,
+      "status": "available",
+      "is_mvp": false,
+      "is_available": true,
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "player-3",
+      "league_id": "league-vsbh-2026",
+      "name": "Ishaan Patel",
+      "email": "ishaan@example.com",
+      "phone": "9876543212",
+      "role": "all-rounder",
+      "department": "Electrical",
+      "college_id": "EE-2024-12",
+      "year": "2nd",
+      "base_price": 15,
+      "sold_price": null,
+      "sold_to_team": null,
+      "status": "available",
+      "is_mvp": true,
+      "is_available": true,
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "player-4",
+      "league_id": "league-vsbh-2026",
+      "name": "Kabir Singh",
+      "email": "kabir@example.com",
+      "phone": "9876543213",
+      "role": "wicketkeeper",
+      "department": "Civil",
+      "college_id": "CE-2022-09",
+      "year": "4th",
+      "base_price": 10,
+      "sold_price": null,
+      "sold_to_team": null,
+      "status": "available",
+      "is_mvp": false,
+      "is_available": true,
+      "created_at": "2026-10-07T08:17:40.102Z"
+    },
+    {
+      "id": "player-5",
+      "league_id": "league-vsbh-2026",
+      "name": "Devraj Chauhan",
+      "email": "devraj@example.com",
+      "phone": "9876543214",
+      "role": "batter",
+      "department": "IT",
+      "college_id": "IT-2023-15",
+      "year": "3rd",
+      "base_price": 10,
+      "sold_price": null,
+      "sold_to_team": null,
+      "status": "available",
+      "is_mvp": false,
+      "is_available": true,
+      "created_at": "2026-10-07T08:17:40.102Z"
+    }
+  ],
+  "team_players": [],
+  "auction_states": {
+    "league-vsbh-2026": {
+      "league_id": "league-vsbh-2026",
+      "current_player_id": "player-1",
+      "current_team_id": null,
+      "current_bid": 10,
+      "timer_seconds": 30,
+      "is_active": false,
+      "auction_round": 1,
+      "updated_at": "2026-10-07T08:17:40.102Z"
+    }
+  },
+  "auction_logs": [],
+  "matches": [
+    {
+      "id": "match-1",
+      "league_id": "league-vsbh-2026",
+      "team1_id": "team-warriors",
+      "team2_id": "team-titans",
+      "team1_name": "Warriors",
+      "team2_name": "Titans",
+      "team1_score": 168,
+      "team1_wickets": 5,
+      "team1_overs": "20.0",
+      "team2_score": 142,
+      "team2_wickets": 4,
+      "team2_overs": "17.3",
+      "target": 169,
+      "current_batting_team_id": "team-titans",
+      "status": "live",
+      "venue": "Campus Sports Ground - Pitch A",
+      "match_date": "2026-10-07T08:17:40.102Z",
+      "current_striker": "Hardik Pandya (34* off 19)",
+      "current_non_striker": "Shubman Gill (58* off 41)",
+      "current_bowler": "Jasprit Bumrah (3.3-0-24-2)",
+      "recent_balls": [
+        "1",
+        "4",
+        "2",
+        "0",
+        "6",
+        "1"
+      ],
+      "commentary": [
+        {
+          "id": "c1",
+          "over": "17.3",
+          "text": "Single taken towards long-off. Good running between wickets.",
+          "runs": 1,
+          "isWicket": false,
+          "timestamp": "2026-10-07T08:17:40.102Z"
+        },
+        {
+          "id": "c2",
+          "over": "17.2",
+          "text": "SIX! What a massive strike over deep mid-wicket!",
+          "runs": 6,
+          "isWicket": false,
+          "timestamp": "2026-10-07T08:17:10.102Z"
+        },
+        {
+          "id": "c3",
+          "over": "17.1",
+          "text": "Dot ball. Yorker fired right in the blockhole.",
+          "runs": 0,
+          "isWicket": false,
+          "timestamp": "2026-10-07T08:16:40.102Z"
+        }
+      ],
+      "play_documentation": "Titans need 27 runs in 15 balls. High tension match! Warriors fielders are up inside the circle. Pitch playing true with good bounce.",
+      "updated_at": "2026-10-07T08:17:40.102Z"
+    }
+  ]
+}

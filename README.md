@@ -12,11 +12,12 @@
 - **Admin Panel**: https://vsbh-cl-backend.onrender.com/admin-test.html ✅
 - **Health Check**: https://vsbh-cl-backend.onrender.com/health ✅
 
-### 🔐 **Login Credentials**
-- **Admin Key**: `unitedvsbh@321` (for admin panel access)
-- **User Login**: Any email/name works (no restrictions)
-- **Test Email**: `prasoon7pathak@gmail.com`
-- **Captain Code**: Any unique code during team creation
+### 🔐 **Authentication & Multi-League Roles**
+- **League Admin**: Native login with League Admin Email & Password (or Master Key: `unitedvsbh@321`). Any admin can create and manage their own league with isolated teams, players, and auctions.
+- **Captain Auction Access**: Captains authenticate into Auction Mode using their team and their league's **Unique Captain Auction Key**.
+- **Player Registration**: Players register natively in-app by entering their league's unique code (e.g. `VSBH-2026`) and declaring availability.
+- **Spectators / Viewers**: Can watch real-time auction bidding, team rosters, and live match scores without credentials.
+
 
 ### � **Mobile Features**
 - ✅ **Responsive Design**: Optimized for mobile, tablet, and desktop

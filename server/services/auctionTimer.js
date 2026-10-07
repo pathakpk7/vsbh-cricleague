@@ -1,197 +1,149 @@
-const { supabase } = require('../config/supabase');
-const { sellPlayer } = require('../controllers/auctionController');
+const db = require('./db');
 
-// Global flag to ensure only one timer runs
 let timerInterval = null;
 let isTimerRunning = false;
 
 /**
- * Start the auction timer service
+ * Start the multi-league auction timer service
  * @param {Object} io - Socket.IO instance
  */
 const startAuctionTimer = (io) => {
-  // Prevent duplicate timers
   if (isTimerRunning && timerInterval) {
-    console.log('Auction timer already running');
     return;
   }
 
   isTimerRunning = true;
-  console.log('Starting auction timer service');
+  console.log('Starting multi-league auction timer service');
 
   timerInterval = setInterval(async () => {
     try {
-      // Fetch auction_state (id = 1)
-      const { data: auctionState, error: auctionError } = await supabase
-        .from('auction_state')
-        .select('*')
-        .eq('id', 1)
-        .single();
+      const leagues = db.getLeagues();
 
-      if (auctionError || !auctionState) {
-        console.error('Error fetching auction state:', auctionError);
-        return;
-      }
+      for (const league of leagues) {
+        const leagueId = league.id;
+        const state = db.getAuctionState(leagueId);
 
-      // IF auction is active
-      if (auctionState && auctionState.is_active) {
-        // Decrease timer_seconds by 1
-        const newTimerSeconds = Math.max(0, auctionState.timer_seconds - 1);
+        if (state && state.is_active) {
+          const newTimerSeconds = Math.max(0, (state.timer_seconds || 30) - 1);
+          db.updateAuctionState(leagueId, { timer_seconds: newTimerSeconds });
 
-        // Update in database
-        const { data: updatedState, error: updateError } = await supabase
-          .from('auction_state')
-          .update({
-            timer_seconds: newTimerSeconds,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', 1)
-          .select();
-
-        if (updateError) {
-          console.error('Error updating auction timer:', updateError);
-          return;
-        }
-
-        // Emit timer update to clients
-        if (global.io) {
-          global.io.emit('timer-update', {
+          const roomName = `auction-room-${leagueId}`;
+          const timerPayload = {
+            leagueId,
             timer_seconds: newTimerSeconds,
             is_active: true,
-            auction_state: updatedState
-          });
-        }
+            current_bid: state.current_bid,
+            current_team_id: state.current_team_id,
+            current_player_id: state.current_player_id
+          };
 
-        // IF timer reaches 0
-        if (newTimerSeconds === 0) {
-          // IF current_team_id exists
-          if (auctionState.current_team_id) {
-            try {
-              // Call sellPlayer()
-              const mockReq = { body: {} };
-              const mockRes = {
-                status: (code) => ({
-                  json: (response) => {
-                    if (response.success) {
-                      io.to('auction-room').emit('player-sold', response.data);
-                    } else {
-                      io.to('auction-room').emit('error', response.message);
-                    }
-                  }
-                })
-              };
+          if (io) {
+            io.to(roomName).emit('timer-update', timerPayload);
+            io.to('auction-room').emit('timer-update', timerPayload);
+          }
 
-              await sellPlayer(mockReq, mockRes);
-              console.log('Player sold automatically when timer expired');
-            } catch (error) {
-              console.error('Error auto-selling player:', error);
-              io.to('auction-room').emit('error', 'Failed to sell player');
-            }
-          } else {
-            // ELSE: mark player as unsold
-            try {
-              // Mark current player as unsold
-              if (auctionState.current_player_id) {
-                await supabase
-                  .from('players')
-                  .update({
-                    status: 'unsold',
-                    sold_at: new Date().toISOString()
-                  })
-                  .eq('id', auctionState.current_player_id);
+          // If timer expires
+          if (newTimerSeconds === 0) {
+            if (state.current_team_id && state.current_player_id) {
+              // Sell player to leading bidder
+              const finalBid = state.current_bid;
+              const result = db.recordPlayerSold(leagueId, state.current_player_id, state.current_team_id, finalBid);
 
-                // Get next available player
-                const { data: nextPlayer } = await supabase
-                  .from('players')
-                  .select('*')
-                  .eq('status', 'available')
-                  .order('created_at', { ascending: true })
-                  .limit(1)
-                  .single();
+              // Get next available player
+              const remainingPlayers = db.getPlayers(leagueId, { status: 'available' });
+              const nextPlayer = remainingPlayers[0] || null;
 
-                // Update auction state for next player or end auction
-                if (nextPlayer) {
-                  const { data: updatedAuction } = await supabase
-                    .from('auction_state')
-                    .update({
-                      current_player_id: nextPlayer.id,
-                      current_bid: nextPlayer.base_price || 10,
-                      current_team_id: null,
-                      timer_seconds: 30,
-                      updated_at: new Date().toISOString()
-                    })
-                    .eq('id', 1)
-                    .select()
-                    .single();
-
-                  io.to('auction-room').emit('player-unsold', {
-                    skippedPlayerId: auctionState.current_player_id,
-                    nextPlayer: nextPlayer,
-                    auction: updatedAuction
-                  });
-                } else {
-                  // No more players - end auction
-                  await supabase
-                    .from('auction_state')
-                    .update({
-                      is_active: false,
-                      current_player_id: null,
-                      current_bid: 0,
-                      current_team_id: null,
-                      timer_seconds: 0,
-                      auction_ended_at: new Date().toISOString(),
-                      updated_at: new Date().toISOString()
-                    })
-                    .eq('id', 1);
-
-                  io.to('auction-room').emit('player-unsold', {
-                    skippedPlayerId: auctionState.current_player_id,
-                    auctionEnded: true
-                  });
-                }
+              if (nextPlayer) {
+                db.updateAuctionState(leagueId, {
+                  current_player_id: nextPlayer.id,
+                  current_team_id: null,
+                  current_bid: nextPlayer.base_price || 10,
+                  timer_seconds: 30,
+                  is_active: true
+                });
+              } else {
+                db.updateAuctionState(leagueId, {
+                  current_player_id: null,
+                  current_team_id: null,
+                  is_active: false,
+                  timer_seconds: 0
+                });
+                db.updateLeague(leagueId, { auction_status: 'completed' });
               }
 
-              console.log('Player marked as unsold (no bids)');
-            } catch (error) {
-              console.error('Error marking player unsold:', error);
-              io.to('auction-room').emit('error', 'Failed to skip player');
+              const updatedAuction = db.getAuctionState(leagueId);
+              const soldPayload = {
+                leagueId,
+                player: result.player,
+                team: result.team,
+                finalBid,
+                nextPlayer,
+                auction: updatedAuction
+              };
+
+              if (io) {
+                io.to(roomName).emit('player-sold', soldPayload);
+                io.to('auction-room').emit('player-sold', soldPayload);
+              }
+              console.log(`[League ${league.name}] Player ${result.player?.name} SOLD to team ${result.team?.name} for ₹${finalBid}`);
+            } else if (state.current_player_id) {
+              // No bid placed - mark unsold
+              const unsoldPlayer = db.recordPlayerUnsold(leagueId, state.current_player_id);
+              const remainingPlayers = db.getPlayers(leagueId, { status: 'available' });
+              const nextPlayer = remainingPlayers[0] || null;
+
+              if (nextPlayer) {
+                db.updateAuctionState(leagueId, {
+                  current_player_id: nextPlayer.id,
+                  current_team_id: null,
+                  current_bid: nextPlayer.base_price || 10,
+                  timer_seconds: 30,
+                  is_active: true
+                });
+              } else {
+                db.updateAuctionState(leagueId, {
+                  current_player_id: null,
+                  current_team_id: null,
+                  is_active: false,
+                  timer_seconds: 0
+                });
+                db.updateLeague(leagueId, { auction_status: 'completed' });
+              }
+
+              const updatedAuction = db.getAuctionState(leagueId);
+              const unsoldPayload = {
+                leagueId,
+                skippedPlayerId: unsoldPlayer?.id,
+                player: unsoldPlayer,
+                nextPlayer,
+                auction: updatedAuction,
+                auctionEnded: !nextPlayer
+              };
+
+              if (io) {
+                io.to(roomName).emit('player-unsold', unsoldPayload);
+                io.to('auction-room').emit('player-unsold', unsoldPayload);
+              }
+              console.log(`[League ${league.name}] Player ${unsoldPlayer?.name} UNSOLD`);
             }
           }
         }
       }
     } catch (error) {
-      console.error('Auction timer error:', error);
-      io.to('auction-room').emit('error', 'Timer service error');
+      console.error('Auction timer service error:', error);
     }
-  }, 1000); // Runs every 1 second
-
-  console.log('Auction timer started successfully');
+  }, 1000);
 };
 
-/**
- * Stop the auction timer service
- */
 const stopAuctionTimer = () => {
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
     isTimerRunning = false;
-    console.log('Auction timer stopped');
   }
-};
-
-/**
- * Get timer status
- */
-const getTimerStatus = () => {
-  return {
-    isRunning: isTimerRunning,
-    intervalId: timerInterval
-  };
 };
 
 module.exports = {
   startAuctionTimer,
-  stopAuctionTimer,
-  getTimerStatus
+  stopAuctionTimer
 };

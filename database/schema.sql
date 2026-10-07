@@ -14,11 +14,32 @@ CREATE TABLE users (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Leagues table (Multi-organization support)
+CREATE TABLE leagues (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  code VARCHAR(50) UNIQUE NOT NULL,
+  admin_name VARCHAR(255),
+  admin_email VARCHAR(255) NOT NULL,
+  admin_password VARCHAR(255),
+  number_of_teams INTEGER DEFAULT 6,
+  registration_deadline TIMESTAMP WITH TIME ZONE,
+  registration_status VARCHAR(50) DEFAULT 'open' CHECK (registration_status IN ('open', 'closed')),
+  auction_date_time TIMESTAMP WITH TIME ZONE,
+  captain_auction_key VARCHAR(100),
+  auction_status VARCHAR(50) DEFAULT 'draft' CHECK (auction_status IN ('draft', 'scheduled', 'live', 'completed')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Teams table
 CREATE TABLE teams (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name VARCHAR(255) UNIQUE NOT NULL,
+  league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
   budget INTEGER DEFAULT 100,
+  captain_name VARCHAR(255),
+  captain_email VARCHAR(255),
   logo VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -27,18 +48,30 @@ CREATE TABLE teams (
 -- Players table
 CREATE TABLE players (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   role VARCHAR(50) CHECK (role IN ('batter', 'bowler', 'all-rounder', 'wicketkeeper')),
   department VARCHAR(255),
-  college_id VARCHAR(100), -- Added college ID for authentication
-  year VARCHAR(20), -- Academic year (1st, 2nd, 3rd, 4th)
-  is_mvp BOOLEAN DEFAULT false, -- MVP status
+  college_id VARCHAR(100),
+  year VARCHAR(20),
+  is_mvp BOOLEAN DEFAULT false,
+  is_available BOOLEAN DEFAULT true,
   base_price INTEGER DEFAULT 10,
   sold_price INTEGER,
   sold_to_team UUID REFERENCES teams(id),
   status VARCHAR(50) DEFAULT 'available' CHECK (status IN ('available', 'sold', 'unsold')),
   email VARCHAR(255),
   phone VARCHAR(20),
+  batting_hand VARCHAR(20) CHECK (batting_hand IN ('right', 'left')),
+  batting_position VARCHAR(50) CHECK (batting_position IN ('opener', 'top-order', 'middle-order', 'finisher', 'wk-batter')),
+  bowling_arm VARCHAR(20) CHECK (bowling_arm IN ('right', 'left')),
+  bowling_category VARCHAR(20) CHECK (bowling_category IN ('pace', 'spin')),
+  bowling_type VARCHAR(50),
+  allrounder_type VARCHAR(50) CHECK (allrounder_type IN ('batting-allrounder', 'bowling-allrounder')),
+  is_wicketkeeper BOOLEAN DEFAULT false,
+  experience_level VARCHAR(50),
+  jersey_number INTEGER,
+  special_skills TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   sold_at TIMESTAMP WITH TIME ZONE
 );
@@ -46,31 +79,41 @@ CREATE TABLE players (
 -- Team_players junction table
 CREATE TABLE team_players (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   player_id UUID REFERENCES players(id) ON DELETE CASCADE,
   sold_price INTEGER NOT NULL,
-  college_id VARCHAR(100), -- Track which college ID picked this player
-  picked_by VARCHAR(255), -- Track who picked the player (team manager name)
-  picked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Track when player was picked
+  picked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(team_id, player_id)
 );
 
--- Matches table
+-- Matches table (with dedicated live scoring and play documentation)
 CREATE TABLE matches (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  league_id UUID REFERENCES leagues(id) ON DELETE CASCADE,
   team1_id UUID REFERENCES teams(id),
   team2_id UUID REFERENCES teams(id),
-  team1_score INTEGER,
-  team2_score INTEGER,
-  team1_wickets INTEGER,
-  team2_wickets INTEGER,
-  team1_overs DECIMAL(4,1),
-  team2_overs DECIMAL(4,1),
+  team1_name VARCHAR(255),
+  team2_name VARCHAR(255),
+  team1_score INTEGER DEFAULT 0,
+  team2_score INTEGER DEFAULT 0,
+  team1_wickets INTEGER DEFAULT 0,
+  team2_wickets INTEGER DEFAULT 0,
+  team1_overs VARCHAR(10) DEFAULT '0.0',
+  team2_overs VARCHAR(10) DEFAULT '0.0',
+  target INTEGER,
+  current_batting_team_id UUID REFERENCES teams(id),
   status VARCHAR(50) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'live', 'finished')),
   match_date TIMESTAMP WITH TIME ZONE,
   venue VARCHAR(255),
-  group_stage VARCHAR(50) CHECK (group_stage IN ('A', 'B', 'semi-final', 'final')),
+  group_stage VARCHAR(50),
+  current_striker VARCHAR(255),
+  current_non_striker VARCHAR(255),
+  current_bowler VARCHAR(255),
+  recent_balls JSONB DEFAULT '[]'::jsonb,
+  commentary JSONB DEFAULT '[]'::jsonb,
+  play_documentation TEXT, -- Dedicated live play documentation editable only by league admin
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

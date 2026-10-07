@@ -1,50 +1,120 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../config/supabase');
+const db = require('../services/db');
 
-// Get all players
-router.get('/', async (req, res) => {
+// Get all players (optionally by leagueId and filters)
+router.get('/', (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('players')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    res.json(data);
+    const { leagueId, status, role } = req.query;
+    const players = db.getPlayers(leagueId, { status, role });
+    res.json(players);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get available players for auction
-router.get('/available', async (req, res) => {
+// Get available players for auction (optionally by leagueId)
+router.get('/available', (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('players')
-      .select('*')
-      .eq('status', 'available')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    res.json(data);
+    const { leagueId } = req.query;
+    const players = db.getPlayers(leagueId, { status: 'available' });
+    res.json(players);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Add new player
-router.post('/', async (req, res) => {
+// Get player by ID
+router.get('/:id', (req, res) => {
   try {
-    const { name, role, department, base_price = 10 } = req.body;
+    const player = db.getPlayerById(req.params.id);
+    if (!player) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+    res.json(player);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add new player under a league
+router.post('/', (req, res) => {
+  try {
+    const {
+      league_id,
+      leagueCode,
+      name,
+      role,
+      department,
+      college_id,
+      year,
+      base_price,
+      email,
+      phone,
+      password,
+      is_available,
+      batting_hand,
+      batting_position,
+      bowling_arm,
+      bowling_category,
+      bowling_type,
+      allrounder_type,
+      is_wicketkeeper,
+      experience_level,
+      jersey_number,
+      special_skills
+    } = req.body;
     
-    const { data, error } = await supabase
-      .from('players')
-      .insert([{ name, role, department, base_price, status: 'available' }])
-      .select();
+    let targetLeagueId = league_id;
+    if (!targetLeagueId && leagueCode) {
+      const league = db.getLeagueByCode(leagueCode);
+      if (league) targetLeagueId = league.id;
+    }
 
-    if (error) throw error;
-    res.json(data[0]);
+    if (!targetLeagueId) {
+      // Fallback to first league if single league mode
+      const leagues = db.getLeagues();
+      targetLeagueId = leagues[0]?.id;
+    }
+
+    const player = db.createPlayer({
+      league_id: targetLeagueId,
+      name,
+      role,
+      department,
+      college_id,
+      year,
+      base_price: base_price || 10,
+      email: email || `${name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+      phone,
+      password,
+      is_available,
+      batting_hand,
+      batting_position,
+      bowling_arm,
+      bowling_category,
+      bowling_type,
+      allrounder_type,
+      is_wicketkeeper,
+      experience_level,
+      jersey_number,
+      special_skills
+    });
+
+    res.json(player);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update player
+router.put('/:id', (req, res) => {
+  try {
+    const updated = db.updatePlayer(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

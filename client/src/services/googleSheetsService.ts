@@ -63,7 +63,7 @@ class GoogleSheetsService {
     cricHeroesId: string;
   }): GoogleSheetsUser | null {
     // Admin user validation
-    if (credentials.email === 'prasoon7pathak@gmail.com') {
+    if (credentials.email.toLowerCase().startsWith('admin@')) {
       return {
         name: credentials.name,
         email: credentials.email,
@@ -130,8 +130,8 @@ class GoogleSheetsService {
       // Mock data for development
       return [
         {
-          name: 'Admin User',
-          email: 'prasoon7pathak@gmail.com',
+          name: 'League Admin',
+          email: 'admin@league.com',
           universityId: 'ADMIN001',
           cricHeroesId: 'ADMIN_CH',
           role: 'admin',
