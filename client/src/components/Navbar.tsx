@@ -16,111 +16,134 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-content">
-        <div className="navbar-left">
+    <nav className="soc-navbar">
+      <div className="soc-navbar-container">
+        {/* Brand Left */}
+        <div className="soc-nav-left">
           <button 
-            className="hamburger-menu"
+            className={`soc-hamburger ${menuOpen ? 'is-active' : ''}`}
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle navigation menu"
           >
-            <span className={menuOpen ? 'open' : ''}></span>
-            <span className={menuOpen ? 'open' : ''}></span>
-            <span className={menuOpen ? 'open' : ''}></span>
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
-          <div className="navbar-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <img src="/logo_vsbh.png" alt="VSBH-CL" className="navbar-logo" />
-            <span className="navbar-title">VSBH-CL</span>
+          
+          <div className="soc-nav-brand" onClick={() => navigate('/')}>
+            <div className="brand-logo-frame">
+              <img src="/logo_vsbh.png" alt="VSBH" className="soc-brand-logo" />
+            </div>
+            <div className="brand-text-block">
+              <span className="soc-brand-title">VSBH<span className="brand-accent">_CL</span></span>
+              <span className="soc-edition-tag">SPORTS OPS CENTER</span>
+            </div>
           </div>
         </div>
-        
-        <div className={`navbar-links ${menuOpen ? 'mobile-open' : ''}`}>
+
+        {/* Center Nav Links */}
+        <div className={`soc-nav-links ${menuOpen ? 'mobile-drawer-open' : ''}`}>
           <Link 
             to="/" 
-            className={`nav-link ${isActive('/') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            Dashboard
+            <span className="nav-link-dot"></span>
+            Command Deck
           </Link>
+          
           <Link 
             to="/auction" 
-            className={`nav-link ${isActive('/auction') ? 'active' : ''}`}
+            className={`soc-nav-link live-pulse-link ${isActive('/auction') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            🎯 Live Auction
+            <span className="nav-beacon-live"></span>
+            Live Auction
           </Link>
+
           <Link 
             to="/live-matches" 
-            className={`nav-link ${isActive('/live-matches') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/live-matches') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            🔴 Match Center
+            Match Center
           </Link>
+
           <Link 
             to="/register-player" 
-            className={`nav-link ${isActive('/register-player') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/register-player') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            🏏 Register Player
+            Register Player
           </Link>
+
           <Link 
             to="/league-admin" 
-            className={`nav-link ${isActive('/league-admin') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/league-admin') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            🏆 League Hub
+            League Hub
           </Link>
+
           <Link 
             to="/teams" 
-            className={`nav-link ${isActive('/teams') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/teams') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            Teams
+            Squads
           </Link>
+
           <Link 
             to="/fixtures" 
-            className={`nav-link ${isActive('/fixtures') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/fixtures') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
             Fixtures
           </Link>
+
           <Link 
             to="/points-table" 
-            className={`nav-link ${isActive('/points-table') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/points-table') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            Points
+            Standings
           </Link>
+
           <Link 
             to="/stats" 
-            className={`nav-link ${isActive('/stats') ? 'active' : ''}`}
+            className={`soc-nav-link ${isActive('/stats') ? 'active' : ''}`}
             onClick={handleNavClick}
           >
-            Stats
+            Analytics
           </Link>
         </div>
 
-        <div className="navbar-actions">
+        {/* Actions / Auth Right */}
+        <div className="soc-nav-actions">
           {user ? (
-            <div className="user-menu">
-              <div className="user-info">
-                <span className="user-name">{user.name}</span>
-                <span className={`user-role role-${user.role}`}>
-                  {user.role === 'admin' ? '🛡️ Admin' : 
-                   user.role === 'captain' ? `👑 Captain` : 
-                   user.role === 'player' ? '🏏 Player' : 'Spectator'}
-                </span>
+            <div className="soc-user-badge-container">
+              <div className="soc-user-pill">
+                <span className="user-avatar-initial">{user.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                <div className="user-details-mini">
+                  <span className="user-name-label">{user.name}</span>
+                  <span className={`user-role-chip role-${user.role}`}>
+                    {user.role === 'admin' ? '🛡️ LEAGUE ADMIN' : 
+                     user.role === 'captain' ? `👑 CAPTAIN` : 
+                     user.role === 'player' ? '🏏 SQUAD PLAYER' : 'SPECTATOR'}
+                  </span>
+                </div>
               </div>
-              <button className="btn btn-logout" onClick={logout}>
+              <button className="soc-btn-logout" onClick={logout} title="Sign Out">
                 Logout
               </button>
             </div>
           ) : (
             <button 
-              className="btn btn-secondary" 
+              className="soc-btn-signin" 
               onClick={() => navigate('/login')}
             >
-              Sign In
+              <span className="signin-icon">🔑</span>
+              <span>Sign In</span>
             </button>
           )}
         </div>

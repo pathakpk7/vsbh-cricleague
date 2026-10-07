@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { League } from '../types';
+import { Link, useNavigate } from 'react-router-dom';
+import { League, Player } from '../types';
+import LiveOperationsBanner from '../components/soc/LiveOperationsBanner';
+import StatTelemetryCard from '../components/soc/StatTelemetryCard';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalPlayers: 0,
     totalTeams: 0,
     totalMatches: 0,
     soldPlayers: 0,
-    availablePlayers: 0
+    availablePlayers: 0,
+    liveMatchesCount: 0
   });
   const [leagues, setLeagues] = useState<League[]>([]);
+  const [recentPlayers, setRecentPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,8 +56,12 @@ const Dashboard: React.FC = () => {
           totalTeams: Array.isArray(teams) ? teams.length : 0,
           totalMatches: Array.isArray(matches) ? matches.length : 0,
           soldPlayers: sold,
-          availablePlayers: available
+          availablePlayers: available,
+          liveMatchesCount: Array.isArray(matches) ? matches.filter((m: any) => m.status === 'live').length : 0
         });
+
+        // Take last 4 players
+        setRecentPlayers(players.slice(-4).reverse());
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -63,151 +72,239 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="dashboard">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading cricket leagues dashboard...</p>
-        </div>
+      <div className="soc-dashboard-loading">
+        <div className="soc-spinner-pulse"></div>
+        <p>INITIALIZING SPORTS OPERATIONS DECK...</p>
       </div>
     );
   }
 
+  const primaryLeague = leagues[0];
+  const soldPercent = stats.totalPlayers > 0 ? Math.round((stats.soldPlayers / stats.totalPlayers) * 100) : 0;
+
   return (
-    <div className="dashboard fade-in">
-      <div className="dashboard-header">
-        <div className="dashboard-title">
-          <img src="/logo_vsbh.png" alt="VSBH-CL" className="dashboard-logo" />
-          <div>
-            <h1>VSBH Cricket League System</h1>
-            <p className="dashboard-subtitle">Multi-League Auction & Live Match Documentation Arena</p>
-          </div>
-        </div>
+    <div className="soc-dashboard-container">
+      {/* 1. Command Hero Deck */}
+      <LiveOperationsBanner 
+        activeLeagueName={primaryLeague?.name}
+        activeLeagueCode={primaryLeague?.code}
+        totalLeaguesCount={leagues.length}
+        totalLiveMatches={stats.liveMatchesCount}
+        isAuctionActive={primaryLeague?.auction_status === 'live'}
+      />
+
+      {/* 2. Real-Time Telemetry HUD Grid */}
+      <div className="soc-telemetry-grid">
+        <StatTelemetryCard 
+          icon="🏏"
+          title="Auction Pool Velocity"
+          value={stats.totalPlayers}
+          subValue={`${stats.availablePlayers} Available • ${stats.soldPlayers} Signed`}
+          badge={{ text: 'ROSTER POOL', type: 'info' }}
+          progress={{ percent: soldPercent, color: 'cyan' }}
+          accentColor="cyan"
+          onClick={() => navigate('/register-player')}
+        />
+
+        <StatTelemetryCard 
+          icon="🛡️"
+          title="Franchise Squads"
+          value={stats.totalTeams}
+          subValue={`Multi-tenant franchise squads across leagues`}
+          badge={{ text: 'CONCURRENT', type: 'ready' }}
+          progress={{ percent: 100, color: 'emerald' }}
+          accentColor="emerald"
+          onClick={() => navigate('/teams')}
+        />
+
+        <StatTelemetryCard 
+          icon="⚡"
+          title="Active Tournament Hubs"
+          value={leagues.length}
+          subValue={`Isolated rooms with Captain Key security`}
+          badge={{ text: 'ISOLATED', type: 'ready' }}
+          progress={{ percent: 80, color: 'gold' }}
+          accentColor="gold"
+          onClick={() => navigate('/league-admin')}
+        />
+
+        <StatTelemetryCard 
+          icon="🔴"
+          title="Match Operations"
+          value={stats.totalMatches}
+          subValue={`${stats.liveMatchesCount} In-play • Ball-by-ball play doc`}
+          badge={{ text: stats.liveMatchesCount > 0 ? 'LIVE ON AIR' : 'READY', type: stats.liveMatchesCount > 0 ? 'live' : 'ready' }}
+          progress={{ percent: stats.totalMatches > 0 ? 100 : 0, color: 'rose' }}
+          accentColor="rose"
+          onClick={() => navigate('/live-matches')}
+        />
       </div>
 
-      {/* Main Stats Row */}
-      <div className="grid grid-3">
-        <div className="card">
-          <div className="card-header">
-            <h3>📊 Registered Players</h3>
-            <span className="live-indicator"></span>
-          </div>
-          <div className="card-body">
-            <div className="stat-content">
-              <div className="stat-number">{stats.totalPlayers}</div>
-              <div className="stat-details">
-                <span className="available">{stats.availablePlayers} Available for Auction</span>
-                <span className="sold">{stats.soldPlayers} Sold</span>
+      {/* 3. Main Dashboard Operations Deck: Two Columns */}
+      <div className="soc-deck-columns">
+        {/* Left Column: Active Leagues Command Deck */}
+        <div className="soc-deck-left">
+          <div className="soc-card-wrapper">
+            <div className="soc-card-header">
+              <div className="header-title-group">
+                <span className="header-glyph">🏆</span>
+                <div>
+                  <h3>Cricket Tournaments & Leagues</h3>
+                  <small>Independent concurrent leagues with unique player codes</small>
+                </div>
               </div>
+              <Link to="/league-admin" className="soc-btn-primary-sm">
+                + New League
+              </Link>
+            </div>
+
+            <div className="soc-leagues-deck-grid">
+              {leagues.map(league => (
+                <div key={league.id} className="soc-league-unit-card">
+                  <div className="unit-header-strip">
+                    <span className="unit-title">{league.name}</span>
+                    <span className={`soc-status-chip-sm chip-${league.registration_status}`}>
+                      {league.registration_status === 'open' ? 'REG OPEN' : 'REG CLOSED'}
+                    </span>
+                  </div>
+
+                  <div className="unit-data-pills">
+                    <div className="data-pill">
+                      <span className="pill-k">KEY</span>
+                      <code className="pill-v-code">{league.code}</code>
+                    </div>
+                    <div className="data-pill">
+                      <span className="pill-k">SQUADS</span>
+                      <span className="pill-v">{league.number_of_teams}</span>
+                    </div>
+                    <div className="data-pill">
+                      <span className="pill-k">AUCTION</span>
+                      <span className="pill-v uppercase">{league.auction_status || 'DRAFT'}</span>
+                    </div>
+                  </div>
+
+                  <div className="unit-actions-row">
+                    <Link to={`/register-player?league=${league.code}`} className="soc-unit-action-btn reg-btn">
+                      🏏 Register Player
+                    </Link>
+                    <Link to={`/auction?league=${league.id}`} className="soc-unit-action-btn auction-btn">
+                      🎯 Arena Entry
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-header">
-            <h3>🏆 Active Teams</h3>
-          </div>
-          <div className="card-body">
-            <div className="stat-content">
-              <div className="stat-number">{stats.totalTeams}</div>
-              <div className="stat-details">
-                <span>Teams Registered Across Leagues</span>
+        {/* Right Column: Player Scouting & Tactical Radar */}
+        <div className="soc-deck-right">
+          <div className="soc-card-wrapper">
+            <div className="soc-card-header">
+              <div className="header-title-group">
+                <span className="header-glyph">📡</span>
+                <div>
+                  <h3>Player Scouting Radar</h3>
+                  <small>Recent registrations with playing styles</small>
+                </div>
               </div>
+              <Link to="/register-player" className="soc-link-accent">
+                Register Self →
+              </Link>
             </div>
-          </div>
-        </div>
 
-        <div className="card">
-          <div className="card-header">
-            <h3>📅 Live & Upcoming Matches</h3>
-          </div>
-          <div className="card-body">
-            <div className="stat-content">
-              <div className="stat-number">{stats.totalMatches}</div>
-              <div className="stat-details">
-                <span>Documented Matches</span>
-              </div>
+            <div className="soc-recent-players-list">
+              {recentPlayers.length > 0 ? (
+                recentPlayers.map(player => (
+                  <div key={player.id} className="soc-scouting-player-item">
+                    <div className="player-avatar-badge">
+                      {player.role === 'batter' ? '🏏' : 
+                       player.role === 'bowler' ? '🎯' : 
+                       player.role === 'wicketkeeper' ? '🧤' : '⚡'}
+                    </div>
+
+                    <div className="player-info-meta">
+                      <div className="player-name-row">
+                        <strong>{player.name}</strong>
+                        <span className="player-role-tag">{player.role.toUpperCase()}</span>
+                      </div>
+                      
+                      <div className="player-tactical-specs">
+                        {player.batting_hand && (
+                          <span className="mini-spec">
+                            {player.batting_hand.toUpperCase()} Bat
+                            {player.batting_position ? ` (${player.batting_position})` : ''}
+                          </span>
+                        )}
+                        {(player.role === 'bowler' || player.role === 'all-rounder') && (player.bowling_arm || player.bowling_type) && (
+                          <span className="mini-spec">
+                            • {player.bowling_arm || 'Right'}-arm {player.bowling_category || ''} ({player.bowling_type || 'Medium'})
+                          </span>
+                        )}
+                      </div>
+
+                      {player.special_skills && (
+                        <div className="player-skills-snippet">
+                          ⚡ {player.special_skills}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="player-price-tag">
+                      <span className="price-label">BASE</span>
+                      <span className="price-val">₹{player.base_price}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="soc-empty-radar">
+                  <p>Awaiting player registrations under active league keys.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Active Leagues Directory */}
-      <div className="dashboard-leagues-section">
-        <div className="card">
-          <div className="card-header-flex">
-            <h3>🏆 Active Cricket Leagues</h3>
-            <Link to="/league-admin" className="btn btn-sm btn-primary">
-              + Register New League
-            </Link>
-          </div>
-          <div className="leagues-cards-grid">
-            {leagues.map(league => (
-              <div key={league.id} className="league-overview-card">
-                <div className="league-name-row">
-                  <h4>{league.name}</h4>
-                  <span className={`status-pill ${league.registration_status}`}>
-                    {league.registration_status === 'open' ? '🟢 Registration Open' : '🔴 Closed'}
-                  </span>
-                </div>
-                <div className="league-code-row">
-                  <span className="code-label">Player Key:</span>
-                  <span className="code-badge">{league.code}</span>
-                </div>
-                <div className="league-meta-row">
-                  <span>Teams: {league.number_of_teams}</span> • 
-                  <span>Auction: {league.auction_status?.toUpperCase() || 'SCHEDULED'}</span>
-                </div>
-                <div className="league-card-actions">
-                  <Link to={`/register-player?league=${league.code}`} className="btn-link">
-                    Register as Player →
-                  </Link>
-                  <Link to={`/auction?league=${league.id}`} className="btn-link-highlight">
-                    Join Auction →
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* 4. Operations Command Grid */}
+      <div className="soc-quick-operations-panel">
+        <div className="panel-header">
+          <h3>⚡ Quick Operations Matrix</h3>
+          <span>One-click access to all tournament command centers</span>
         </div>
-      </div>
 
-      {/* Quick Action Hub */}
-      <div className="dashboard-actions">
-        <div className="card">
-          <h3>⚡ Quick Operations</h3>
-          <div className="action-buttons-grid">
-            <Link to="/auction" className="btn btn-action-card">
-              <span className="action-icon">🎯</span>
-              <div>
-                <strong>Live Auction Arena</strong>
-                <p>Bid as Captain or Spectate live team compositions</p>
-              </div>
-            </Link>
+        <div className="operations-matrix-grid">
+          <Link to="/auction" className="matrix-tile">
+            <span className="tile-icon">🎯</span>
+            <div className="tile-text">
+              <strong>Live Auction Arena</strong>
+              <p>Captain Bidding Mode with unique key, real-time timer countdown, and squad rosters</p>
+            </div>
+          </Link>
 
-            <Link to="/live-matches" className="btn btn-action-card">
-              <span className="action-icon">🔴</span>
-              <div>
-                <strong>Live Match Center</strong>
-                <p>Follow live scoring & read admin play documentation</p>
-              </div>
-            </Link>
+          <Link to="/live-matches" className="matrix-tile">
+            <span className="tile-icon">🔴</span>
+            <div className="tile-text">
+              <strong>Match Center & Scoring</strong>
+              <p>Ball-by-ball commentary, runs tracker, and live play documentation</p>
+            </div>
+          </Link>
 
-            <Link to="/register-player" className="btn btn-action-card">
-              <span className="action-icon">🏏</span>
-              <div>
-                <strong>Player Registration</strong>
-                <p>Register yourself directly under your league key</p>
-              </div>
-            </Link>
+          <Link to="/register-player" className="matrix-tile">
+            <span className="tile-icon">🏏</span>
+            <div className="tile-text">
+              <strong>Direct Player Registration</strong>
+              <p>In-website registration with Batting, Bowling, and All-Rounder specifications</p>
+            </div>
+          </Link>
 
-            <Link to="/league-admin" className="btn btn-action-card">
-              <span className="action-icon">🛡️</span>
-              <div>
-                <strong>League Administration</strong>
-                <p>Manage teams, deadlines, and captain keys</p>
-              </div>
-            </Link>
-          </div>
+          <Link to="/league-admin" className="matrix-tile">
+            <span className="tile-icon">🏆</span>
+            <div className="tile-text">
+              <strong>League Administration Hub</strong>
+              <p>Configure number of teams, set registration deadlines, and reveal Captain Auction Keys</p>
+            </div>
+          </Link>
         </div>
       </div>
     </div>

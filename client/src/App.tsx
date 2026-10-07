@@ -18,6 +18,7 @@ import Login from './pages/Login';
 import PlayerRegistration from './pages/PlayerRegistration';
 import LeagueManagement from './pages/LeagueManagement';
 import LiveMatchCenter from './pages/LiveMatchCenter';
+import BroadcastTicker from './components/soc/BroadcastTicker';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <Router>
         <div className="app">
           <Navbar />
+          <BroadcastTicker />
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />

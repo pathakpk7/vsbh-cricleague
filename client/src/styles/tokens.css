@@ -1,0 +1,104 @@
+/* ==========================================================================
+   VSBH-CL DESIGN SYSTEM - SPORTS OPERATIONS CENTER (SOC) TOKENS
+   Separation of Concerns: Central Design Tokens for Broadcast & Command HUD
+   ========================================================================== */
+
+:root {
+  /* Surface & Base Pitch Palettes */
+  --soc-bg-pitch: #07090e;
+  --soc-bg-stadium: #0b0f19;
+  --soc-bg-surface: #101726;
+  --soc-bg-card: rgba(16, 23, 38, 0.75);
+  --soc-bg-card-hover: rgba(22, 33, 54, 0.85);
+  --soc-bg-glass: rgba(13, 19, 33, 0.65);
+  --soc-bg-glass-heavy: rgba(8, 12, 21, 0.88);
+  
+  /* Luminous Cyber Accents */
+  --soc-cyan: #00f0ff;
+  --soc-cyan-dim: #0284c7;
+  --soc-cyan-glow: rgba(0, 240, 255, 0.28);
+  
+  --soc-emerald: #10b981;
+  --soc-emerald-light: #34d399;
+  --soc-emerald-glow: rgba(16, 185, 129, 0.32);
+  
+  --soc-gold: #f59e0b;
+  --soc-gold-light: #fbbf24;
+  --soc-gold-glow: rgba(245, 158, 11, 0.3);
+  
+  --soc-rose: #f43f5e;
+  --soc-rose-glow: rgba(244, 63, 94, 0.35);
+
+  --soc-violet: #8b5cf6;
+  --soc-violet-glow: rgba(139, 92, 246, 0.3);
+
+  /* Typography Colors */
+  --soc-text-pure: #ffffff;
+  --soc-text-bright: #f8fafc;
+  --soc-text-regular: #cbd5e1;
+  --soc-text-muted: #94a3b8;
+  --soc-text-subtle: #64748b;
+
+  /* Borders & Radiance */
+  --soc-border-subtle: rgba(255, 255, 255, 0.08);
+  --soc-border-medium: rgba(255, 255, 255, 0.15);
+  --soc-border-cyan: rgba(0, 240, 255, 0.35);
+  --soc-border-emerald: rgba(16, 185, 129, 0.35);
+  --soc-border-gold: rgba(245, 158, 11, 0.35);
+
+  /* Elevation & Shadows */
+  --soc-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --soc-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
+  --soc-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --soc-shadow-cyan: 0 0 20px rgba(0, 240, 255, 0.22);
+  --soc-shadow-emerald: 0 0 20px rgba(16, 185, 129, 0.22);
+  --soc-shadow-gold: 0 0 20px rgba(245, 158, 11, 0.22);
+
+  /* Blur Backdrops */
+  --soc-backdrop-blur: blur(16px);
+  --soc-backdrop-blur-heavy: blur(24px);
+
+  /* Transitions */
+  --soc-transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --soc-transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Animations */
+@keyframes soc-pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+    box-shadow: 0 0 0 6px rgba(0, 240, 255, 0);
+  }
+}
+
+@keyframes soc-live-radar {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 12px #f43f5e;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+@keyframes soc-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes soc-ticker-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}

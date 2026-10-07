@@ -1,0 +1,110 @@
+.soc-broadcast-ticker {
+  background: linear-gradient(90deg, #070a12 0%, #0d1322 50%, #070a12 100%);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+  height: 38px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  z-index: 90;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.ticker-badge-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(244, 63, 94, 0.15);
+  border-right: 1px solid rgba(244, 63, 94, 0.3);
+  padding: 0 16px;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.live-dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f43f5e;
+  box-shadow: 0 0 8px #f43f5e;
+  animation: soc-live-radar 1.5s infinite;
+}
+
+.live-text {
+  color: #f43f5e;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.ticker-viewport {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+}
+
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: soc-ticker-marquee 45s linear infinite;
+  padding-left: 20px;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-weight: 600;
+  margin-right: 32px;
+}
+
+.ticker-bullet {
+  color: #00f0ff;
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+.ticker-clock-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 240, 255, 0.08);
+  border-left: 1px solid rgba(0, 240, 255, 0.2);
+  padding: 0 16px;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.clock-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.15);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.clock-time {
+  color: #f8fafc;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .ticker-clock-display {
+    display: none;
+  }
+}
