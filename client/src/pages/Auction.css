@@ -1,39 +1,137 @@
-.auction-container {
-  max-width: 1400px;
-  margin: 20px auto;
-  padding: 0 20px;
-  color: #f1f5f9;
+/* ==========================================================================
+   PITCHBID PRO - LIVE CRICKET AUCTION ARENA STYLES
+   ========================================================================== */
+
+:root {
+  --auction-bg-dark: #070b13;
+  --auction-card-bg: rgba(15, 23, 42, 0.75);
+  --auction-card-border: rgba(255, 255, 255, 0.08);
+  --auction-cyan: #00f0ff;
+  --auction-cyan-glow: rgba(0, 240, 255, 0.25);
+  --auction-amber: #facc15;
+  --auction-amber-glow: rgba(250, 204, 21, 0.25);
+  --auction-green: #10b981;
+  --auction-rose: #f43f5e;
 }
 
+.auction-container {
+  max-width: 1480px;
+  margin: 24px auto 60px auto;
+  padding: 0 24px;
+  color: #f1f5f9;
+  font-family: inherit;
+}
+
+/* ==========================================================================
+   TOP COMMAND BAR & LEAGUE SWITCHER
+   ========================================================================== */
 .auction-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(16, 23, 38, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 240, 255, 0.25);
-  border-radius: 18px;
-  padding: 18px 24px;
-  margin-bottom: 24px;
+  background: var(--auction-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 20px;
+  padding: 22px 28px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
-  gap: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  gap: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+.top-bar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.league-info-title .title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stadium-live-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 12px #10b981;
+  display: inline-block;
+  animation: radar-pulse 1.8s infinite;
+}
+
+@keyframes radar-pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 .league-info-title h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .league-subname {
   font-size: 13px;
-  color: #00f0ff;
+  color: #94a3b8;
   margin-top: 4px;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.league-subname strong {
+  color: #f8fafc;
+}
+
+.code-pill {
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #00f0ff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.rules-chip-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.rule-chip-item {
+  background: rgba(11, 16, 28, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.rule-chip-item:hover {
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.rule-chip-icon {
+  font-size: 14px;
+}
+
+.rule-chip-item strong {
+  color: #00f0ff;
+  font-weight: 700;
 }
 
 .top-bar-controls {
@@ -46,42 +144,51 @@
 .league-select-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  background: rgba(11, 16, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 12px;
+  border-radius: 12px;
 }
 
 .league-select-wrapper label {
-  font-size: 12px;
+  font-size: 11px;
   color: #94a3b8;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .league-select-wrapper select {
-  background: #0b0f19;
+  background: transparent;
   color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 8px 14px;
-  border-radius: 8px;
+  border: none;
   font-size: 13px;
   font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  padding-right: 8px;
+}
+
+.league-select-wrapper select option {
+  background: #0f172a;
+  color: #f8fafc;
 }
 
 .mode-badge {
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  padding: 6px 14px;
-  border-radius: 20px;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
-  text-transform: uppercase;
 }
 
 .mode-badge.captain-mode {
   background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.45);
   color: #fbbf24;
   box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
 }
@@ -96,38 +203,48 @@
   background: linear-gradient(135deg, #0284c7, #00f0ff);
   color: #080c14;
   border: none;
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-switch-captain:hover {
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
 }
 
+/* ==========================================================================
+   MAIN AUCTION SPLIT GRID
+   ========================================================================== */
 .auction-content-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) 410px;
+  gap: 28px;
+  align-items: start;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
   .auction-content-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* ==========================================================================
+   LEFT PANEL: LIVE STAGE & BIDDING ARENA
+   ========================================================================== */
 .auction-main-stage {
-  background: rgba(16, 23, 38, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  background: var(--auction-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--auction-card-border);
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
 }
 
 .stage-header {
@@ -135,541 +252,227 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.stage-header h3 {
-  margin: 0;
+.stage-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stage-header-title {
   font-size: 20px;
   font-weight: 800;
   color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.live-on-block-badge {
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid #00f0ff;
+  color: #00f0ff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
 }
 
 .live-indicator-pulse {
   background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.4);
+  border: 1px solid rgba(244, 63, 94, 0.45);
   color: #f43f5e;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
-  padding: 5px 14px;
+  padding: 6px 14px;
   border-radius: 20px;
-  box-shadow: 0 0 12px rgba(244, 63, 94, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.3);
+}
+
+.pulse-circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f43f5e;
+  display: inline-block;
+  animation: pulse-dot 1.2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .paused-indicator {
-  background: rgba(148, 163, 184, 0.15);
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   color: #94a3b8;
   font-size: 11px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
+  letter-spacing: 0.05em;
 }
 
+/* ==========================================================================
+   PLAYER STAGE CARD
+   ========================================================================== */
 .player-stage-card {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Spotlight Header */
+.player-spotlight-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: rgba(11, 16, 28, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+@media (max-width: 640px) {
+  .player-spotlight-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.player-avatar-badge {
+  width: 88px;
+  height: 88px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(14, 165, 233, 0.1));
+  border: 2px solid rgba(0, 240, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.player-avatar-badge .avatar-icon {
+  font-size: 38px;
+}
+
+.jersey-badge-text {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.player-title-info {
+  flex: 1;
 }
 
 .player-meta-strip {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
 .player-role-badge {
   background: rgba(0, 240, 255, 0.15);
   color: #00f0ff;
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(0, 240, 255, 0.35);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
-  padding: 4px 14px;
+  padding: 4px 12px;
   border-radius: 20px;
 }
 
 .mvp-badge {
-  background: rgba(244, 63, 94, 0.15);
+  background: rgba(244, 63, 94, 0.18);
   color: #f43f5e;
-  border: 1px solid rgba(244, 63, 94, 0.4);
+  border: 1px solid rgba(244, 63, 94, 0.45);
   font-size: 11px;
   font-weight: 800;
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 20px;
 }
 
 .dept-tag {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #cbd5e1;
   font-size: 11px;
   font-weight: 600;
-  padding: 4px 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.pool-indicator-tag {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
   border-radius: 20px;
 }
 
 .player-display-name {
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 900;
-  margin: 8px 0;
+  margin: 4px 0 8px 0;
   color: #ffffff;
   letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .player-stats-sub {
   font-size: 13px;
   color: #94a3b8;
-  margin-bottom: 18px;
-}
-
-.bidding-hud {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 36px;
-  background: rgba(11, 16, 28, 0.85);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  border-radius: 20px;
-  padding: 28px;
-  margin-bottom: 26px;
-  box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);
-}
-
-.timer-dial {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  border: 4px solid #00f0ff;
-  background: #070a12;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
-}
-
-.timer-dial.dial-danger {
-  border-color: #f43f5e;
-  box-shadow: 0 0 25px rgba(244, 63, 94, 0.45);
-  animation: pulse-border 1s infinite;
-}
-
-
-@keyframes pulse-border {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.timer-number {
-  font-size: 26px;
-  font-weight: 800;
-  color: #fff;
-}
-
-.timer-label {
-  font-size: 10px;
-  color: #94a3b8;
-  letter-spacing: 1px;
-}
-
-.current-bid-block {
-  text-align: left;
-}
-
-.bid-label {
-  font-size: 12px;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.bid-amount-display {
-  font-size: 42px;
-  font-weight: 800;
-  color: #38bdf8;
-}
-
-.leading-team-banner {
-  font-size: 15px;
-  color: #facc15;
-  margin-top: 4px;
-}
-
-.no-bid-yet {
-  font-size: 13px;
-  color: #64748b;
-  font-style: italic;
-}
-
-.btn-launch-auction {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
-  border: none;
-  padding: 14px 28px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-.awaiting-admin-box {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 16px;
-  border-radius: 10px;
-  color: #94a3b8;
-  font-size: 14px;
-}
-
-.spectator-notice-banner {
-  background: rgba(14, 165, 233, 0.1);
-  border: 1px solid rgba(14, 165, 233, 0.3);
-  padding: 12px 18px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  font-size: 13px;
-  color: #bae6fd;
-  flex-wrap: wrap;
   gap: 10px;
-}
-
-.btn-captain-unlock {
-  background: #ca8a04;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.insufficient-funds-alert {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 16px;
-}
-
-.team-bid-buttons-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.auction-bid-btn {
-  background: #1e293b;
-  border: 2px solid #334155;
-  border-radius: 12px;
-  padding: 14px;
-  color: #fff;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.auction-bid-btn.my-team-btn {
-  border-color: #0284c7;
-  background: rgba(2, 132, 199, 0.15);
-}
-
-.auction-bid-btn.my-team-btn:hover:not(:disabled) {
-  background: #0284c7;
-  transform: translateY(-2px);
-}
-
-.auction-bid-btn.is-leading {
-  border-color: #facc15;
-  background: rgba(234, 179, 8, 0.15);
-}
-
-.auction-bid-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-team-title {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.btn-team-budget {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 4px;
-}
-
-.leading-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: #facc15;
-  margin-top: 6px;
-}
-
-.bid-action-text {
-  font-size: 13px;
-  font-weight: 700;
-  color: #38bdf8;
-  margin-top: 6px;
-}
-
-.admin-inline-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 22px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  justify-content: center;
   flex-wrap: wrap;
 }
 
-.admin-inline-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #94a3b8;
-}
-
-.btn-sell-direct {
-  background: #10b981;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-skip-direct {
-  background: #475569;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Right Panel: Live Team Composition */
-.auction-team-composition-panel {
-  background: #1a1e29;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 22px;
-  max-height: calc(100vh - 150px);
-  overflow-y: auto;
-}
-
-.composition-header h3 {
-  margin: 0;
-  font-size: 18px;
+.stat-sub-item strong {
   color: #e2e8f0;
 }
 
-.composition-header p {
-  font-size: 12px;
-  color: #94a3b8;
-  margin: 4px 0 16px;
+.stat-sub-divider {
+  color: rgba(255, 255, 255, 0.2);
 }
 
-.teams-composition-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.team-roster-card {
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 14px;
-}
-
-.team-roster-card.highlight-leading {
-  border-color: #facc15;
-}
-
-.team-roster-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.roster-team-name {
-  margin: 0;
-  font-size: 16px;
-  color: #fff;
-}
-
-.roster-captain-name {
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.roster-budget-pill {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
-}
-
-.roster-squad-count {
-  font-size: 12px;
-  color: #64748b;
-  margin: 6px 0;
-}
-
-.bought-players-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.player-chip {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 11px;
-  display: flex;
-  gap: 6px;
-}
-
-.chip-name {
-  color: #e2e8f0;
-}
-
-.chip-price {
-  color: #38bdf8;
-  font-weight: 600;
-}
-
-.empty-roster-hint {
-  font-size: 11px;
-  color: #64748b;
-  font-style: italic;
-  margin-top: 6px;
-}
-
-/* Modal */
-.captain-key-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.captain-key-modal-box {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 16px;
-  padding: 28px;
-  max-width: 440px;
-  width: 90%;
-  color: #f1f5f9;
-}
-
-.captain-key-modal-box h3 {
-  margin-top: 0;
-  color: #facc15;
-}
-
-.modal-input-group {
-  margin-bottom: 14px;
-}
-
-.modal-input-group label {
-  font-size: 13px;
-  color: #94a3b8;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.modal-input-group input,
-.modal-input-group select {
-  width: 100%;
-  background: #0f172a;
-  border: 1px solid #475569;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-.modal-error-alert {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  margin-bottom: 14px;
-}
-
-.modal-buttons-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.btn-modal-submit {
-  flex: 1;
-  background: #ca8a04;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-modal-cancel {
-  background: transparent;
-  color: #94a3b8;
-  border: 1px solid #475569;
-  padding: 12px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* Tactical Cricket Profile Pills in Live Stage */
+/* Tactical Cricket Specs Bar */
 .player-tactical-specs-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  justify-content: center;
-  margin: 12px 0 8px 0;
+  align-items: center;
 }
 
 .spec-pill {
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(15, 23, 42, 0.85);
   border: 1px solid rgba(56, 189, 248, 0.3);
   color: #38bdf8;
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 5px 12px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .spec-pill.allrounder-pill {
@@ -684,12 +487,6 @@
   background: rgba(168, 85, 247, 0.1);
 }
 
-.spec-pill.jersey-pill {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #f87171;
-}
-
 .spec-pill.exp-pill {
   background: rgba(52, 211, 153, 0.1);
   border-color: rgba(52, 211, 153, 0.3);
@@ -698,70 +495,586 @@
 
 .player-strengths-box {
   background: rgba(56, 189, 248, 0.08);
-  border: 1px dashed rgba(56, 189, 248, 0.3);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 12px;
+  border: 1px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
   color: #e2e8f0;
-  margin: 8px auto 14px auto;
-  max-width: 500px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .player-strengths-box .strength-label {
   color: #38bdf8;
   font-weight: 700;
-  margin-right: 4px;
+  flex-shrink: 0;
 }
 
-/* Disclosed Category Pools Section */
-.disclosed-pools-section {
-  background: rgba(16, 23, 38, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* ==========================================================================
+   REAL-TIME BID & TIMER HUD (HIGH-TECH 3-CARD SCOREBOARD)
+   ========================================================================== */
+.bidding-hud {
+  display: grid;
+  grid-template-columns: 140px 1.2fr 1.2fr;
+  gap: 16px;
+  align-items: stretch;
+  margin: 4px 0 10px 0;
+}
+
+@media (max-width: 768px) {
+  .bidding-hud {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hud-card {
+  background: rgba(11, 16, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 18px;
-  padding: 24px;
-  margin-top: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.pools-header-row {
+  padding: 20px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
+  text-align: center;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+  position: relative;
 }
 
-.pools-header-row h3 {
-  margin: 0;
+.hud-card-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* Timer Card */
+.hud-timer-card {
+  border-color: rgba(0, 240, 255, 0.2);
+}
+
+.timer-dial {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid #00f0ff;
+  background: #070a12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.3);
+  margin-bottom: 4px;
+}
+
+.timer-dial.dial-danger {
+  border-color: #f43f5e;
+  box-shadow: 0 0 28px rgba(244, 63, 94, 0.5);
+  animation: pulse-border 1s infinite;
+}
+
+@keyframes pulse-border {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.timer-number {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.timer-unit {
+  font-size: 9px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+/* Bid Amount Card */
+.hud-bid-card {
+  border-color: rgba(56, 189, 248, 0.3);
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.1), rgba(11, 16, 28, 0.9));
+}
+
+.bid-amount-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.bid-amount-display .currency-symbol {
+  font-size: 26px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.bid-amount-display .amount-num {
+  font-size: 48px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.bid-amount-display .amount-unit {
   font-size: 20px;
   font-weight: 800;
-  color: #f8fafc;
+  color: #38bdf8;
+  margin-left: 2px;
 }
 
-.pools-header-row p {
-  margin: 4px 0 0 0;
-  font-size: 13px;
+.bid-next-step {
+  font-size: 12px;
   color: #94a3b8;
 }
 
-.pool-category-tabs {
+.bid-next-step strong {
+  color: #00f0ff;
+}
+
+/* Leader Card */
+.hud-leader-card {
+  border-color: rgba(250, 204, 21, 0.3);
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.08), rgba(11, 16, 28, 0.9));
+}
+
+.leading-team-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.leader-crown-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #facc15;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.leading-team-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.leader-purse-left {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.leader-purse-left strong {
+  color: #34d399;
+}
+
+.no-bid-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.no-bid-pulse-icon {
+  font-size: 22px;
+  color: #94a3b8;
+}
+
+.no-bid-yet {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.no-bid-sub {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   AUCTION ACTION HUB & TEAM BID BUTTONS
+   ========================================================================== */
+.auction-action-hub {
+  margin-top: 10px;
+}
+
+.spectator-notice-banner {
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  padding: 14px 20px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #bae6fd;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.notice-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notice-icon {
+  font-size: 18px;
+}
+
+.btn-captain-unlock {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #080c14;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-captain-unlock:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(234, 179, 8, 0.5);
+}
+
+.insufficient-funds-alert {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.team-bid-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.sub-helper {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Team Bid Grid Cards */
+.team-bid-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.auction-bid-btn {
+  background: #111827;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 18px;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auction-bid-btn:hover:not(:disabled) {
+  border-color: rgba(0, 240, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.bid-btn-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.bid-btn-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #f8fafc;
+  flex-shrink: 0;
+}
+
+.bid-btn-team-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-team-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-team-pill {
+  font-size: 9px;
+  font-weight: 800;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.bid-btn-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.btn-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.btn-stat-label {
+  color: #94a3b8;
+}
+
+.btn-stat-val {
+  color: #f1f5f9;
+  font-weight: 700;
+}
+
+.btn-purse-mini-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.btn-purse-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #00f0ff);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.bid-btn-footer {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.auction-bid-btn.my-team-btn {
+  border-color: #0284c7;
+  background: linear-gradient(180deg, rgba(2, 132, 199, 0.15), rgba(17, 24, 39, 0.95));
+}
+
+.auction-bid-btn.my-team-btn:hover:not(:disabled) {
+  border-color: #00f0ff;
+  box-shadow: 0 8px 24px rgba(0, 240, 255, 0.25);
+}
+
+.bid-action-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #00f0ff;
+  text-align: center;
+  background: rgba(0, 240, 255, 0.12);
+  padding: 6px;
+  border-radius: 8px;
+  letter-spacing: 0.02em;
+}
+
+.auction-bid-btn.is-leading {
+  border-color: #facc15;
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.18), rgba(17, 24, 39, 0.95));
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.15);
+}
+
+.leading-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #facc15;
+  text-align: center;
+  background: rgba(250, 204, 21, 0.12);
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.squad-full-warning {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.team-status-inactive {
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+}
+
+.auction-bid-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Admin Inline Controls */
+.admin-inline-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.admin-inline-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+}
+
+.btn-sell-direct {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-sell-direct:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+}
+
+.btn-skip-direct {
+  background: #334155;
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-skip-direct:hover {
+  background: #475569;
+}
+
+/* ==========================================================================
+   STANDBY ROSTRUM / NO PLAYERS STAGE
+   ========================================================================== */
+.no-players-stage {
+  text-align: center;
+  padding: 50px 24px;
+  background: rgba(11, 16, 28, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+}
+
+.podium-icon {
+  font-size: 54px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.3));
+}
+
+.no-players-stage h3 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+}
+
+.no-players-stage p {
+  font-size: 14px;
+  color: #94a3b8;
+  max-width: 580px;
+  margin: 0 auto 24px auto;
+  line-height: 1.6;
+}
+
+.standby-pools-quick-launch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.quick-launch-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quick-launch-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 20px;
+  justify-content: center;
 }
 
-.pool-tab-btn {
-  background: #0b0f19;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-  padding: 10px 18px;
+.btn-quick-pool {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  padding: 8px 16px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -770,8 +1083,415 @@
   transition: all 0.2s ease;
 }
 
-.pool-tab-btn:hover {
+.btn-quick-pool:hover,
+.btn-quick-pool.active {
+  background: rgba(0, 240, 255, 0.15);
   border-color: #00f0ff;
+  color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+}
+
+.pool-count-tag {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.btn-quick-pool.active .pool-count-tag {
+  background: #00f0ff;
+  color: #080c14;
+  font-weight: 800;
+}
+
+.btn-launch-auction-hero {
+  background: linear-gradient(135deg, #00f0ff, #0284c7);
+  color: #080c14;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-launch-auction-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(0, 240, 255, 0.5);
+}
+
+.awaiting-admin-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   RIGHT PANEL: LIVE TEAM COMPOSITION & ROSTERS
+   ========================================================================== */
+.auction-team-composition-panel {
+  background: var(--auction-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--auction-card-border);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  max-height: 860px;
+  display: flex;
+  flex-direction: column;
+}
+
+.composition-header {
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comp-header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comp-header-title h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.teams-count-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.composition-header p {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 4px 0 0 0;
+}
+
+.teams-composition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Custom Scrollbar */
+.teams-composition-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.teams-composition-list::-webkit-scrollbar-track {
+  background: rgba(11, 16, 28, 0.5);
+  border-radius: 4px;
+}
+
+.teams-composition-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.teams-composition-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.4);
+}
+
+.team-roster-card {
+  background: rgba(11, 16, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.team-roster-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(11, 16, 28, 0.85);
+}
+
+.team-roster-card.highlight-leading {
+  border-color: #facc15;
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.1), rgba(11, 16, 28, 0.85));
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.15);
+}
+
+.team-roster-card.highlight-my-team {
+  border-color: #00f0ff;
+}
+
+.team-roster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.team-roster-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.team-avatar-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.roster-team-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.my-team-indicator {
+  font-size: 9px;
+  font-weight: 800;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.15);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.leading-indicator {
+  font-size: 12px;
+}
+
+.roster-captain-name {
+  font-size: 11px;
+  color: #94a3b8;
+  display: block;
+}
+
+.roster-budget-pill {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+/* Roster Budget Progress Bar */
+.roster-budget-bar-wrapper {
+  margin: 8px 0 12px 0;
+}
+
+.roster-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.roster-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #00f0ff);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.roster-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.bought-players-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.player-chip {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip-role-icon {
+  font-size: 10px;
+}
+
+.chip-name {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.chip-price {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.empty-roster-hint {
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+  padding: 4px 0;
+}
+
+/* ==========================================================================
+   DISCLOSED CATEGORY POOLS SECTION
+   ========================================================================== */
+.disclosed-pools-section {
+  background: var(--auction-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--auction-card-border);
+  border-radius: 22px;
+  padding: 28px;
+  margin-top: 32px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+}
+
+.pools-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pools-header-row h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.pools-header-row p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.pools-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pool-search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(11, 16, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.pool-search-input-wrapper:focus-within {
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+}
+
+.search-icon {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.pool-search-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  width: 190px;
+}
+
+.clear-search-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.btn-launch-auction-pool {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-launch-auction-pool:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+}
+
+.pool-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.pool-tab-btn {
+  background: rgba(11, 16, 28, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pool-tab-btn:hover {
+  border-color: rgba(0, 240, 255, 0.4);
   color: #fff;
 }
 
@@ -783,23 +1503,26 @@
 }
 
 .pool-badge-count {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   color: #f8fafc;
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 2px 7px;
+  border-radius: 8px;
 }
 
 .pool-tab-btn.active .pool-badge-count {
   background: #00f0ff;
   color: #080c14;
+  font-weight: 800;
 }
 
+/* Disclosed Pool Table */
 .pool-table-wrapper {
   overflow-x: auto;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 16, 28, 0.5);
 }
 
 .disclosed-pool-table {
@@ -815,84 +1538,258 @@
   font-weight: 700;
   text-transform: uppercase;
   font-size: 11px;
-  letter-spacing: 0.05em;
-  padding: 12px 16px;
+  letter-spacing: 0.06em;
+  padding: 14px 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .disclosed-pool-table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   color: #e2e8f0;
+  vertical-align: middle;
 }
 
 .disclosed-pool-table tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .disclosed-pool-table tr.current-live-row {
   background: rgba(0, 240, 255, 0.08);
-  border-left: 3px solid #00f0ff;
+  border-left: 4px solid #00f0ff;
 }
 
-.live-on-block-badge {
-  background: rgba(0, 240, 255, 0.2);
-  border: 1px solid #00f0ff;
-  color: #00f0ff;
+.table-player-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 11px;
   font-weight: 800;
-  padding: 4px 8px;
-  border-radius: 6px;
-  animation: pulse-border 1.5s infinite alternate;
+  color: #00f0ff;
+  flex-shrink: 0;
 }
 
-.squad-full-warning {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #ef4444;
+.table-badge {
+  margin-left: 8px;
+  font-size: 9px;
+  padding: 2px 6px;
+}
+
+.table-price-tag {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.status-pill {
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
   display: inline-block;
+  text-transform: capitalize;
 }
 
-.rules-chip-bar {
+.status-pill.available {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.status-pill.sold {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.status-pill.unsold {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #f87171;
+}
+
+.btn-table-block {
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid #00f0ff;
+  color: #00f0ff;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.btn-table-block:hover {
+  background: #00f0ff;
+  color: #080c14;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+/* ==========================================================================
+   CAPTAIN KEY MODAL
+   ========================================================================== */
+.captain-key-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.captain-key-modal-box {
+  background: #0f172a;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 460px;
+  width: 90%;
+  color: #f1f5f9;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
+}
+
+.captain-key-modal-box h3 {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #facc15;
+}
+
+.captain-key-modal-box p {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal-input-group {
+  margin-bottom: 16px;
+}
+
+.modal-input-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.modal-input-group input,
+.modal-input-group select {
+  width: 100%;
+  background: #070b13;
+  border: 1px solid #334155;
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.modal-input-group input:focus,
+.modal-input-group select:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
+}
+
+.modal-error-alert {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.modal-buttons-row {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
+  margin-top: 22px;
 }
 
-.rule-chip-item {
+.btn-modal-submit {
+  flex: 1;
+  background: linear-gradient(135deg, #facc15, #ca8a04);
+  color: #080c14;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-submit:hover {
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.4);
+}
+
+.btn-modal-cancel {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.btn-modal-cancel:hover {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  color: #cbd5e1;
+  color: #fff;
 }
 
-.rule-chip-item strong {
+/* ==========================================================================
+   EMPTY STATE & LOADING
+   ========================================================================== */
+.loading-spinner-pulse {
+  font-size: 48px;
   color: #00f0ff;
+  animation: pulse-spin 1.5s infinite;
+}
+
+@keyframes pulse-spin {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
 }
 
 .auction-empty-state-card {
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--auction-card-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  border-radius: 20px;
-  padding: 60px 30px;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 24px;
+  padding: 60px 32px;
   text-align: center;
-  max-width: 600px;
-  margin: 40px auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  max-width: 620px;
+  margin: 50px auto;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65);
 }
 
 .empty-state-icon {
-  font-size: 54px;
+  font-size: 58px;
   margin-bottom: 16px;
 }
 
@@ -907,26 +1804,26 @@
   font-size: 14px;
   color: #94a3b8;
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .empty-state-actions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .btn-primary-action {
-  background: linear-gradient(135deg, #00f0ff, #00a8ff);
-  color: #050b14;
+  background: linear-gradient(135deg, #00f0ff, #0284c7);
+  color: #080c14;
   border: none;
-  padding: 12px 24px;
+  padding: 13px 26px;
   border-radius: 12px;
   font-weight: 800;
   font-size: 13px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-primary-action:hover {
@@ -938,15 +1835,14 @@
   background: rgba(255, 255, 255, 0.05);
   color: #f1f5f9;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 12px 24px;
+  padding: 13px 24px;
   border-radius: 12px;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.2s ease;
 }
 
 .btn-secondary-action:hover {
   background: rgba(255, 255, 255, 0.1);
 }
-

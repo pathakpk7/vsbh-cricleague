@@ -42,6 +42,7 @@ const Auction: React.FC = () => {
     spinners: []
   });
   const [activePoolTab, setActivePoolTab] = useState<'batters' | 'wicketkeepers' | 'allrounders' | 'pacers' | 'spinners'>('batters');
+  const [poolSearchQuery, setPoolSearchQuery] = useState('');
 
   // Captain Key Modal State (for players wanting to enter bidding mode)
   const [showCaptainModal, setShowCaptainModal] = useState(false);
@@ -55,6 +56,7 @@ const Auction: React.FC = () => {
   const captainTeam = teams.find(t => t.id === user?.teamId);
 
   const squadLimit = currentLeague?.max_players_per_team || 15;
+  const defaultPurse = currentLeague?.default_team_purse || 100;
   const isCaptainSquadFull = captainTeam ? (captainTeam.team_players?.length || 0) >= squadLimit : false;
   const nextBidAmount = currentBid + 5;
   const hasInsufficientFunds = isCaptain && captainTeam ? captainTeam.budget < nextBidAmount : false;
@@ -332,11 +334,24 @@ const Auction: React.FC = () => {
 
   const getTeamById = (teamId: string) => teams.find(t => t.id === teamId);
 
+  // Filtered pool players based on search query
+  const filteredPoolPlayers = (pools[activePoolTab] || []).filter(p => {
+    if (!poolSearchQuery.trim()) return true;
+    const query = poolSearchQuery.toLowerCase();
+    return (
+      p.name?.toLowerCase().includes(query) ||
+      p.college_id?.toLowerCase().includes(query) ||
+      p.department?.toLowerCase().includes(query) ||
+      p.special_skills?.toLowerCase().includes(query)
+    );
+  });
+
   if (isLoading && leagues.length === 0) {
     return (
       <div className="auction-container">
-        <div style={{ textAlign: 'center', padding: '60px', color: '#94a3b8' }}>
-          Loading live cricket auction arena...
+        <div style={{ textAlign: 'center', padding: '80px 20px', color: '#94a3b8' }}>
+          <div className="loading-spinner-pulse">⚡</div>
+          <p style={{ marginTop: '16px', fontSize: '16px', fontWeight: 600 }}>Entering PitchBid Pro Auction Arena...</p>
         </div>
       </div>
     );
@@ -368,33 +383,44 @@ const Auction: React.FC = () => {
     <div className="auction-container">
       {/* Top Banner & League Switcher */}
       <div className="auction-top-bar">
-        <div>
+        <div className="top-bar-left">
           <div className="league-info-title">
-            <h2>🎯 Live Cricket Auction Arena</h2>
+            <div className="title-row">
+              <span className="stadium-live-dot" />
+              <h2>PitchBid Pro Live Auction Arena</h2>
+            </div>
             <div className="league-subname">
-              Tournament: <strong>{currentLeague?.name || 'Loading...'}</strong> ({currentLeague?.code})
+              Tournament: <strong>{currentLeague?.name || 'Loading...'}</strong>
+              <span className="code-pill">{currentLeague?.code}</span>
             </div>
           </div>
 
           {/* Tournament Rules Chips */}
-          <div className="rules-chip-bar" style={{ marginTop: '10px' }}>
+          <div className="rules-chip-bar">
             <div className="rule-chip-item">
-              💰 Default Purse: <strong>₹{currentLeague?.default_team_purse || 100} Cr</strong>
+              <span className="rule-chip-icon">🪙</span>
+              <span>Default Purse: <strong>₹{defaultPurse} Cr</strong></span>
             </div>
             <div className="rule-chip-item">
-              👥 Max Squad: <strong>{squadLimit} Players</strong>
+              <span className="rule-chip-icon">👥</span>
+              <span>Squad Limit: <strong>{squadLimit} Players</strong></span>
             </div>
             {currentLeague?.auction_date_time && (
               <div className="rule-chip-item">
-                🔨 Auction Date: <strong>{new Date(currentLeague.auction_date_time).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</strong>
+                <span className="rule-chip-icon">📅</span>
+                <span>Date: <strong>{new Date(currentLeague.auction_date_time).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</strong></span>
               </div>
             )}
+            <div className="rule-chip-item">
+              <span className="rule-chip-icon">🏟️</span>
+              <span>Teams: <strong>{teams.length}</strong></span>
+            </div>
           </div>
         </div>
 
         <div className="top-bar-controls">
           <div className="league-select-wrapper">
-            <label>League:</label>
+            <label>Tournament</label>
             <select
               value={currentLeagueId}
               onChange={(e) => {
@@ -413,13 +439,13 @@ const Auction: React.FC = () => {
           {/* Mode Indicator */}
           {isCaptain ? (
             <div className="mode-badge captain-mode">
-              👑 Captain Bidding Mode: <strong>{captainTeam?.name}</strong>
+              👑 Captain Bidding: <strong>{captainTeam?.name}</strong>
             </div>
           ) : (
             <div className="mode-badge spectator-mode">
-              👀 Live Spectator Mode
+              <span>👀 Spectator</span>
               <button className="btn-switch-captain" onClick={() => setShowCaptainModal(true)}>
-                Enter as Captain
+                Enter Captain Key
               </button>
             </div>
           )}
@@ -487,34 +513,53 @@ const Auction: React.FC = () => {
         {/* LEFT PANEL: LIVE PLAYER & BIDDING */}
         <div className="auction-main-stage">
           <div className="stage-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h3 style={{ margin: 0 }}>Auction Stage</h3>
+            <div className="stage-title-group">
+              <span className="stage-header-title">Auction Spotlight</span>
               {currentPlayer && (
                 <span className="live-on-block-badge">
-                  POOL: {getPlayerCategory(currentPlayer).toUpperCase()}
+                  LOT ON BLOCK: {getPlayerCategory(currentPlayer).toUpperCase()}
                 </span>
               )}
             </div>
             {isAuctionActive ? (
-              <span className="live-indicator-pulse">🔴 AUCTION LIVE</span>
+              <span className="live-indicator-pulse">
+                <span className="pulse-circle" /> LIVE BIDDING
+              </span>
             ) : (
-              <span className="paused-indicator">PAUSED / READY</span>
+              <span className="paused-indicator">FLOOR STANDBY</span>
             )}
           </div>
 
           {currentPlayer ? (
             <div className="player-stage-card">
-              <div className="player-meta-strip">
-                <span className="player-role-badge">{currentPlayer.role?.toUpperCase()}</span>
-                {currentPlayer.is_mvp && <span className="mvp-badge">★ MVP</span>}
-                <span className="dept-tag">{currentPlayer.department || 'Player'}</span>
-              </div>
+              {/* Player Spotlight Header Banner */}
+              <div className="player-spotlight-header">
+                <div className="player-avatar-badge">
+                  {currentPlayer.jersey_number ? (
+                    <span className="jersey-badge-text">#{currentPlayer.jersey_number}</span>
+                  ) : (
+                    <span className="avatar-icon">🏏</span>
+                  )}
+                </div>
 
-              <h1 className="player-display-name">{currentPlayer.name}</h1>
-              <div className="player-stats-sub">
-                <span>College ID: {currentPlayer.college_id || 'N/A'}</span> • 
-                <span>Year: {currentPlayer.year || '3rd'}</span> • 
-                <span>Base Price: ₹{currentPlayer.base_price}</span>
+                <div className="player-title-info">
+                  <div className="player-meta-strip">
+                    <span className="player-role-badge">{currentPlayer.role?.toUpperCase()}</span>
+                    {currentPlayer.is_mvp && <span className="mvp-badge">★ MVP</span>}
+                    <span className="dept-tag">{currentPlayer.department || 'Cricket Squad'}</span>
+                    <span className="pool-indicator-tag">POOL: {getPlayerCategory(currentPlayer).toUpperCase()}</span>
+                  </div>
+
+                  <h1 className="player-display-name">{currentPlayer.name}</h1>
+
+                  <div className="player-stats-sub">
+                    <span className="stat-sub-item">🎓 <strong>College ID:</strong> {currentPlayer.college_id || 'N/A'}</span>
+                    <span className="stat-sub-divider">•</span>
+                    <span className="stat-sub-item">📅 <strong>Year:</strong> {currentPlayer.year || '3rd Year'}</span>
+                    <span className="stat-sub-divider">•</span>
+                    <span className="stat-sub-item">💰 <strong>Base Price:</strong> ₹{currentPlayer.base_price} Cr</span>
+                  </div>
+                </div>
               </div>
 
               {/* Tactical Cricket Playing Style Badges */}
@@ -540,49 +585,73 @@ const Auction: React.FC = () => {
                 {currentPlayer.is_wicketkeeper && (
                   <span className="spec-pill wk-pill">🧤 Wicketkeeper</span>
                 )}
-                {currentPlayer.jersey_number && (
-                  <span className="spec-pill jersey-pill">#{currentPlayer.jersey_number}</span>
-                )}
                 {currentPlayer.experience_level && (
-                  <span className="spec-pill exp-pill">{currentPlayer.experience_level}</span>
+                  <span className="spec-pill exp-pill">🏆 {currentPlayer.experience_level}</span>
                 )}
               </div>
+
               {currentPlayer.special_skills && (
                 <div className="player-strengths-box">
-                  <span className="strength-label">⚡ Strengths:</span> {currentPlayer.special_skills}
+                  <span className="strength-label">⚡ Scouting Report:</span>
+                  <span>{currentPlayer.special_skills}</span>
                 </div>
               )}
 
-              {/* Real-time Bid & Timer HUD */}
+              {/* Real-time Bid & Timer HUD (High-Tech 3-Block Scoreboard) */}
               <div className="bidding-hud">
-                <div className={`timer-dial ${timer <= 5 ? 'dial-danger' : ''}`}>
-                  <span className="timer-number">{timer}s</span>
-                  <span className="timer-label">TIMER</span>
+                {/* Dial Card */}
+                <div className="hud-card hud-timer-card">
+                  <div className={`timer-dial ${timer <= 5 ? 'dial-danger' : ''}`}>
+                    <span className="timer-number">{timer}</span>
+                    <span className="timer-unit">SEC</span>
+                  </div>
+                  <div className="hud-card-label">ROUND TIMER</div>
                 </div>
 
-                <div className="current-bid-block">
-                  <span className="bid-label">Current Leading Bid</span>
-                  <div className="bid-amount-display">₹{currentBid}</div>
+                {/* Bid Card */}
+                <div className="hud-card hud-bid-card">
+                  <span className="hud-card-label">CURRENT LEADING BID</span>
+                  <div className="bid-amount-display">
+                    <span className="currency-symbol">₹</span>
+                    <span className="amount-num">{currentBid}</span>
+                    <span className="amount-unit">Cr</span>
+                  </div>
+                  <div className="bid-next-step">
+                    Next Minimum Bid: <strong>₹{nextBidAmount} Cr</strong>
+                  </div>
+                </div>
+
+                {/* Leader Card */}
+                <div className="hud-card hud-leader-card">
+                  <span className="hud-card-label">CURRENT HIGH BIDDER</span>
                   {leadingTeamId ? (
-                    <div className="leading-team-banner">
-                      👑 Leading: <strong>{getTeamById(leadingTeamId)?.name}</strong>
+                    <div className="leading-team-box">
+                      <div className="leader-crown-badge">👑 HIGH BIDDER</div>
+                      <div className="leading-team-name">{getTeamById(leadingTeamId)?.name}</div>
+                      <div className="leader-purse-left">
+                        Purse Left: <strong>₹{getTeamById(leadingTeamId)?.budget} Cr</strong>
+                      </div>
                     </div>
                   ) : (
-                    <div className="no-bid-yet">Awaiting opening bid</div>
+                    <div className="no-bid-box">
+                      <div className="no-bid-pulse-icon">⚡</div>
+                      <div className="no-bid-yet">Awaiting Opening Bid</div>
+                      <div className="no-bid-sub">Opening Base: ₹{currentPlayer.base_price || 10} Cr</div>
+                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Bidding Controls */}
+              {/* Bidding Controls Hub */}
               <div className="auction-action-hub">
                 {!isAuctionActive ? (
                   isLeagueAdmin ? (
-                    <button className="btn-launch-auction" onClick={() => handleStartAuction(activePoolTab)}>
-                      ▶ Start Live Auction
+                    <button className="btn-launch-auction-hero" onClick={() => handleStartAuction(activePoolTab)}>
+                      ▶ Start Live Auction Round
                     </button>
                   ) : (
                     <div className="awaiting-admin-box">
-                      ⌛ Auction is scheduled. Waiting for the league administrator to start.
+                      ⌛ Auction round is paused. Waiting for the league administrator to call the next lot.
                     </div>
                   )
                 ) : (
@@ -590,7 +659,10 @@ const Auction: React.FC = () => {
                     {/* Notice for Spectators vs Captains */}
                     {!isCaptain && (
                       <div className="spectator-notice-banner">
-                        <span>👀 You are viewing as a spectator. Captains use their unique auction key to bid.</span>
+                        <div className="notice-left">
+                          <span className="notice-icon">👀</span>
+                          <span>You are viewing in <strong>Live Spectator Mode</strong>. Captains bid directly using their unique captain key.</span>
+                        </div>
                         <button className="btn-captain-unlock" onClick={() => setShowCaptainModal(true)}>
                           Enter as Captain
                         </button>
@@ -599,22 +671,28 @@ const Auction: React.FC = () => {
 
                     {isCaptain && hasInsufficientFunds && (
                       <div className="insufficient-funds-alert">
-                        ⚠️ Insufficient budget! Your team ({captainTeam?.name}) has ₹{captainTeam?.budget} Cr, but next bid is ₹{nextBidAmount}.
+                        ⚠️ Insufficient budget! Your team ({captainTeam?.name}) has ₹{captainTeam?.budget} Cr left, but the next minimum bid is ₹{nextBidAmount} Cr.
                       </div>
                     )}
 
                     {isCaptain && isCaptainSquadFull && (
                       <div className="insufficient-funds-alert" style={{ background: 'rgba(239, 68, 68, 0.15)', borderColor: '#ef4444' }}>
-                        ⚠️ Squad Full! Your team ({captainTeam?.name}) has reached the squad limit of {squadLimit} players.
+                        ⚠️ Squad Full! Your team ({captainTeam?.name}) has reached the tournament squad limit of {squadLimit} players.
                       </div>
                     )}
 
                     {/* Team Bid Buttons Grid */}
+                    <div className="team-bid-section-header">
+                      <span>Bidding Floor Teams</span>
+                      <span className="sub-helper">Click team button to place next bid increment of ₹5 Cr</span>
+                    </div>
+
                     <div className="team-bid-buttons-grid">
                       {teams.map(team => {
                         const isMyTeam = isCaptain && user?.teamId === team.id;
                         const isLeading = team.id === leadingTeamId;
                         const isTeamFull = (team.team_players?.length || 0) >= squadLimit;
+                        const pursePercent = Math.max(0, Math.min(100, (team.budget / defaultPurse) * 100));
 
                         return (
                           <button
@@ -623,11 +701,40 @@ const Auction: React.FC = () => {
                             disabled={!isAuctionActive || !isMyTeam || hasInsufficientFunds || isTeamFull}
                             className={`auction-bid-btn ${isMyTeam ? 'my-team-btn' : 'other-team-btn'} ${isLeading ? 'is-leading' : ''}`}
                           >
-                            <div className="btn-team-title">{team.name}</div>
-                            <div className="btn-team-budget">Budget: ₹{team.budget} Cr</div>
-                            {isLeading && <div className="leading-badge">👑 Current Bidder</div>}
-                            {isTeamFull && <div className="squad-full-warning">Squad Full ({squadLimit})</div>}
-                            {isMyTeam && !isTeamFull && <div className="bid-action-text">+ Bid ₹{nextBidAmount}</div>}
+                            <div className="bid-btn-header">
+                              <div className="bid-btn-avatar">
+                                {team.name.substring(0, 2).toUpperCase()}
+                              </div>
+                              <div className="bid-btn-team-info">
+                                <div className="btn-team-title">{team.name}</div>
+                                {isMyTeam && <span className="my-team-pill">YOUR TEAM</span>}
+                              </div>
+                            </div>
+
+                            <div className="bid-btn-stats">
+                              <div className="btn-stat-row">
+                                <span className="btn-stat-label">Purse:</span>
+                                <span className="btn-stat-val">₹{team.budget} Cr</span>
+                              </div>
+                              <div className="btn-purse-mini-track">
+                                <div className="btn-purse-mini-fill" style={{ width: `${pursePercent}%` }} />
+                              </div>
+                              <div className="btn-stat-row" style={{ marginTop: '4px' }}>
+                                <span className="btn-stat-label">Squad:</span>
+                                <span className="btn-stat-val">{(team.team_players?.length || 0)}/{squadLimit}</span>
+                              </div>
+                            </div>
+
+                            <div className="bid-btn-footer">
+                              {isLeading && <div className="leading-badge">👑 Current High Bidder</div>}
+                              {isTeamFull && <div className="squad-full-warning">⛔ Squad Full</div>}
+                              {isMyTeam && !isTeamFull && !hasInsufficientFunds && (
+                                <div className="bid-action-text">+ Bid ₹{nextBidAmount} Cr</div>
+                              )}
+                              {!isMyTeam && !isLeading && !isTeamFull && (
+                                <div className="team-status-inactive">Captain Managed</div>
+                              )}
+                            </div>
                           </button>
                         );
                       })}
@@ -636,12 +743,12 @@ const Auction: React.FC = () => {
                     {/* League Admin Direct Controls */}
                     {isLeagueAdmin && (
                       <div className="admin-inline-controls">
-                        <span className="admin-inline-label">Admin Controls:</span>
+                        <span className="admin-inline-label">Admin Bidding Controls:</span>
                         <button className="btn-sell-direct" onClick={handleSellPlayer}>
-                          ✓ Sell to {getTeamById(leadingTeamId || '')?.name || 'Leader'}
+                          ✓ Hammer Down (Sell to {getTeamById(leadingTeamId || '')?.name || 'Leader'})
                         </button>
                         <button className="btn-skip-direct" onClick={handleSkipPlayer}>
-                          ✕ Mark Unsold
+                          ✕ Pass / Mark Unsold
                         </button>
                       </div>
                     )}
@@ -651,12 +758,40 @@ const Auction: React.FC = () => {
             </div>
           ) : (
             <div className="no-players-stage">
-              <h3>No active player in auction round.</h3>
-              <p>Select a disclosed pool below to preview players and begin bidding.</p>
-              {isLeagueAdmin && (
-                <button className="btn-launch-auction" onClick={() => handleStartAuction(activePoolTab)}>
-                  Start Auction with {activePoolTab.toUpperCase()} Pool
-                </button>
+              <div className="podium-icon">🏟️</div>
+              <h3>Auction Floor Standby</h3>
+              <p>The bidding floor is currently waiting for the next player lot. Select an upcoming category pool below to review registered players and place a player on the block.</p>
+
+              <div className="standby-pools-quick-launch">
+                <span className="quick-launch-label">Category Pools:</span>
+                <div className="quick-launch-buttons">
+                  {(['batters', 'wicketkeepers', 'allrounders', 'pacers', 'spinners'] as const).map(cat => (
+                    <button
+                      key={cat}
+                      className={`btn-quick-pool ${activePoolTab === cat ? 'active' : ''}`}
+                      onClick={() => setActivePoolTab(cat)}
+                    >
+                      {cat === 'batters' && '🏏 Batters'}
+                      {cat === 'wicketkeepers' && '🧤 Wicketkeepers'}
+                      {cat === 'allrounders' && '⚡ All-Rounders'}
+                      {cat === 'pacers' && '🚀 Pacers'}
+                      {cat === 'spinners' && '🌀 Spinners'}
+                      <span className="pool-count-tag">{pools[cat]?.length || 0}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {isLeagueAdmin ? (
+                <div className="admin-standby-actions">
+                  <button className="btn-launch-auction-hero" onClick={() => handleStartAuction(activePoolTab)}>
+                    ▶ Launch Bidding with {activePoolTab.toUpperCase()} Pool
+                  </button>
+                </div>
+              ) : (
+                <div className="awaiting-admin-pill">
+                  ⌛ Waiting for the League Administrator to call the next lot.
+                </div>
               )}
             </div>
           )}
@@ -665,8 +800,11 @@ const Auction: React.FC = () => {
         {/* RIGHT PANEL: LIVE TEAM COMPOSITION */}
         <div className="auction-team-composition-panel">
           <div className="composition-header">
-            <h3>🏏 Team Composition & Rosters</h3>
-            <p>Track live squad rosters (Max {squadLimit} players) and remaining purse.</p>
+            <div className="comp-header-title">
+              <h3>🏏 Team Rosters & Purses</h3>
+              <span className="teams-count-pill">{teams.length} Teams</span>
+            </div>
+            <p>Live squad rosters (Max {squadLimit} players) and remaining purse.</p>
           </div>
 
           <div className="teams-composition-list">
@@ -674,35 +812,58 @@ const Auction: React.FC = () => {
               const boughtPlayers = team.team_players || [];
               const isLeading = team.id === leadingTeamId;
               const isFull = boughtPlayers.length >= squadLimit;
+              const pursePercent = Math.max(0, Math.min(100, (team.budget / defaultPurse) * 100));
+              const isMyTeam = isCaptain && user?.teamId === team.id;
 
               return (
-                <div key={team.id} className={`team-roster-card ${isLeading ? 'highlight-leading' : ''}`}>
+                <div key={team.id} className={`team-roster-card ${isLeading ? 'highlight-leading' : ''} ${isMyTeam ? 'highlight-my-team' : ''}`}>
                   <div className="team-roster-header">
-                    <div>
-                      <h4 className="roster-team-name">{team.name}</h4>
-                      <span className="roster-captain-name">Captain: {team.captain_name || 'Assigned'}</span>
+                    <div className="team-roster-identity">
+                      <div className="team-avatar-mini">
+                        {team.name.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <h4 className="roster-team-name">
+                          {team.name}
+                          {isMyTeam && <span className="my-team-indicator">YOU</span>}
+                          {isLeading && <span className="leading-indicator">👑</span>}
+                        </h4>
+                        <span className="roster-captain-name">Captain: {team.captain_name || 'Assigned'}</span>
+                      </div>
                     </div>
                     <div className="roster-budget-pill">
-                      ₹{team.budget} Cr Left
+                      ₹{team.budget} Cr
                     </div>
                   </div>
 
-                  <div className="roster-squad-count">
-                    Squad: {boughtPlayers.length} / {squadLimit} Players
-                    {isFull && <span className="squad-full-warning" style={{ marginLeft: '8px' }}>FULL</span>}
+                  {/* Purse Progress Bar */}
+                  <div className="roster-budget-bar-wrapper">
+                    <div className="roster-bar-track">
+                      <div
+                        className="roster-bar-fill"
+                        style={{ width: `${pursePercent}%` }}
+                      />
+                    </div>
+                    <div className="roster-bar-labels">
+                      <span>Purse: {Math.round(pursePercent)}% Left</span>
+                      <span>Squad: {boughtPlayers.length}/{squadLimit}{isFull ? ' (FULL)' : ''}</span>
+                    </div>
                   </div>
 
                   {boughtPlayers.length > 0 ? (
                     <div className="bought-players-chips">
                       {boughtPlayers.map((tp, idx) => (
                         <div key={idx} className="player-chip">
+                          <span className="chip-role-icon">
+                            {tp.player?.role === 'bowler' ? '🎯' : tp.player?.role === 'all-rounder' ? '⚡' : tp.player?.is_wicketkeeper ? '🧤' : '🏏'}
+                          </span>
                           <span className="chip-name">{tp.player?.name || `Player ${idx + 1}`}</span>
-                          <span className="chip-price">₹{tp.sold_price}</span>
+                          <span className="chip-price">₹{tp.sold_price} Cr</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="empty-roster-hint">No players bought yet</div>
+                    <div className="empty-roster-hint">No players drafted yet</div>
                   )}
                 </div>
               );
@@ -718,25 +879,40 @@ const Auction: React.FC = () => {
             <h3>📋 Disclosed Category Player Pools</h3>
             <p>Full list of players in each pool disclosed before and during bidding.</p>
           </div>
-          {isLeagueAdmin && !isAuctionActive && (
-            <button
-              className="btn-launch-auction"
-              style={{ padding: '8px 18px', fontSize: '13px' }}
-              onClick={() => handleStartAuction(activePoolTab)}
-            >
-              ▶ Start {activePoolTab.toUpperCase()} Pool
-            </button>
-          )}
+          <div className="pools-header-controls">
+            <div className="pool-search-input-wrapper">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Search player, college ID..."
+                value={poolSearchQuery}
+                onChange={(e) => setPoolSearchQuery(e.target.value)}
+                className="pool-search-input"
+              />
+              {poolSearchQuery && (
+                <button className="clear-search-btn" onClick={() => setPoolSearchQuery('')}>✕</button>
+              )}
+            </div>
+
+            {isLeagueAdmin && !isAuctionActive && (
+              <button
+                className="btn-launch-auction-pool"
+                onClick={() => handleStartAuction(activePoolTab)}
+              >
+                ▶ Start {activePoolTab.toUpperCase()} Pool
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Category Pool Tabs */}
         <div className="pool-category-tabs">
           {[
-            { id: 'batters', label: '🏏 Batters Pool' },
-            { id: 'wicketkeepers', label: '🧤 Wicketkeepers Pool' },
-            { id: 'allrounders', label: '⚡ All-Rounders Pool' },
-            { id: 'pacers', label: '🚀 Fast Bowlers / Pacers' },
-            { id: 'spinners', label: '🌀 Spinners Pool' }
+            { id: 'batters', label: '🏏 Batters' },
+            { id: 'wicketkeepers', label: '🧤 Wicketkeepers' },
+            { id: 'allrounders', label: '⚡ All-Rounders' },
+            { id: 'pacers', label: '🚀 Fast Bowlers' },
+            { id: 'spinners', label: '🌀 Spinners' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -764,8 +940,8 @@ const Auction: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {(pools[activePoolTab] || []).length > 0 ? (
-                pools[activePoolTab].map(p => {
+              {filteredPoolPlayers.length > 0 ? (
+                filteredPoolPlayers.map(p => {
                   const isCurrent = currentPlayer?.id === p.id;
                   const styleDetails = [
                     p.batting_hand ? `${p.batting_hand === 'left' ? 'LHB' : 'RHB'} (${p.batting_position || 'Middle Order'})` : null,
@@ -777,18 +953,27 @@ const Auction: React.FC = () => {
                   return (
                     <tr key={p.id} className={isCurrent ? 'current-live-row' : ''}>
                       <td>
-                        <strong>{p.name}</strong>
-                        {isCurrent && <span style={{ marginLeft: '8px' }} className="live-on-block-badge">ON BLOCK</span>}
+                        <div className="table-player-cell">
+                          <div className="table-player-avatar">
+                            {p.jersey_number ? `#${p.jersey_number}` : p.name.substring(0, 1)}
+                          </div>
+                          <div>
+                            <strong>{p.name}</strong>
+                            {isCurrent && <span className="live-on-block-badge table-badge">ON BLOCK</span>}
+                          </div>
+                        </div>
                       </td>
                       <td style={{ fontSize: '12px', color: '#cbd5e1' }}>{styleDetails || p.role?.toUpperCase()}</td>
                       <td>{p.department || '-'} / {p.college_id || '-'}</td>
-                      <td>₹{p.base_price}</td>
+                      <td>
+                        <span className="table-price-tag">₹{p.base_price} Cr</span>
+                      </td>
                       <td style={{ fontSize: '12px', color: '#94a3b8' }}>
                         {p.registered_at ? new Date(p.registered_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
                       </td>
                       <td>
                         <span className={`status-pill ${p.status}`}>
-                          {p.status === 'sold' ? `Sold for ₹${p.sold_price}` : p.status}
+                          {p.status === 'sold' ? `Sold: ₹${p.sold_price} Cr` : p.status}
                         </span>
                       </td>
                       {isLeagueAdmin && (
@@ -796,16 +981,7 @@ const Auction: React.FC = () => {
                           {p.status === 'available' && !isCurrent && (
                             <button
                               onClick={() => handleStartAuction(undefined, p.id)}
-                              style={{
-                                background: 'rgba(0, 240, 255, 0.15)',
-                                border: '1px solid #00f0ff',
-                                color: '#00f0ff',
-                                padding: '4px 10px',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                fontSize: '11px',
-                                fontWeight: 600
-                              }}
+                              className="btn-table-block"
                             >
                               Put on Block
                             </button>
@@ -817,8 +993,8 @@ const Auction: React.FC = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={isLeagueAdmin ? 7 : 6} style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
-                    No players currently registered in the {activePoolTab.toUpperCase()} pool for this league.
+                  <td colSpan={isLeagueAdmin ? 7 : 6} style={{ textAlign: 'center', padding: '36px', color: '#94a3b8' }}>
+                    {poolSearchQuery ? `No players found matching "${poolSearchQuery}"` : `No players currently registered in the ${activePoolTab.toUpperCase()} pool for this league.`}
                   </td>
                 </tr>
               )}
