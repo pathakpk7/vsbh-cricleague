@@ -36,18 +36,20 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(14, 165, 233, 0.05));
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(0, 240, 255, 0.08));
+  border: 1px solid rgba(245, 158, 11, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .soc-footer-logo {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
   display: block;
+  border-radius: 4px;
 }
 
 .soc-footer-text {

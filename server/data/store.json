@@ -359,6 +359,24 @@
       "captain_auction_key": "CAP-4F98D1",
       "auction_status": "draft",
       "created_at": "2026-10-08T05:40:12.599Z"
+    },
+    {
+      "id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "name": "Inter-Collegiate Champions League",
+      "code": "LEAGUE-352C",
+      "admin_name": "Tournament Director",
+      "admin_email": "director_1791440735112@university.edu",
+      "admin_password": "director_pass",
+      "number_of_teams": 4,
+      "default_team_purse": 100,
+      "max_players_per_team": 15,
+      "registration_start_date": "2026-10-08T06:25:35.604Z",
+      "registration_deadline": "",
+      "registration_status": "open",
+      "auction_date_time": "",
+      "captain_auction_key": "CAP-E0551B",
+      "auction_status": "draft",
+      "created_at": "2026-10-08T06:25:35.604Z"
     }
   ],
   "teams": [
@@ -1081,6 +1099,42 @@
       "captain_name": "",
       "logo": "",
       "created_at": "2026-10-08T05:40:12.599Z"
+    },
+    {
+      "id": "2430e04b-b6a2-4656-bde2-0443a9bdc011",
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "name": "Strikers",
+      "budget": 100,
+      "captain_name": "",
+      "logo": "",
+      "created_at": "2026-10-08T06:25:35.605Z"
+    },
+    {
+      "id": "480596d7-55d4-4541-92f7-4de31eb8b4b7",
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "name": "Blasters",
+      "budget": 100,
+      "captain_name": "",
+      "logo": "",
+      "created_at": "2026-10-08T06:25:35.605Z"
+    },
+    {
+      "id": "d52ac607-41ae-4abf-a8bb-04dac87c2a29",
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "name": "Hurricanes",
+      "budget": 100,
+      "captain_name": "",
+      "logo": "",
+      "created_at": "2026-10-08T06:25:35.605Z"
+    },
+    {
+      "id": "742ce61c-d837-4e54-aaac-3331b82e4df6",
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "name": "Daredevils",
+      "budget": 100,
+      "captain_name": "",
+      "logo": "",
+      "created_at": "2026-10-08T06:25:35.605Z"
     }
   ],
   "players": [
@@ -1683,6 +1737,36 @@
       "special_skills": "Death over power hitter",
       "registered_at": "2026-10-08T05:40:12.641Z",
       "created_at": "2026-10-08T05:40:12.641Z"
+    },
+    {
+      "id": "fc9aafe7-1f4a-4060-bf27-4514cef8e850",
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "name": "Sameer Khan",
+      "email": "sameer_1791440735112@student.edu",
+      "phone": "9988776655",
+      "role": "all-rounder",
+      "department": "Mechanical",
+      "college_id": "MECH-2025",
+      "year": "2nd",
+      "base_price": 15,
+      "sold_price": null,
+      "sold_to_team": null,
+      "status": "available",
+      "is_mvp": false,
+      "is_available": true,
+      "password": "sameerpass123",
+      "batting_hand": "left",
+      "batting_position": "finisher",
+      "bowling_arm": "right",
+      "bowling_category": "spin",
+      "bowling_type": "off-spin",
+      "allrounder_type": "batting-allrounder",
+      "is_wicketkeeper": false,
+      "experience_level": "",
+      "jersey_number": null,
+      "special_skills": "Death over power hitter",
+      "registered_at": "2026-10-08T06:25:35.710Z",
+      "created_at": "2026-10-08T06:25:35.710Z"
     }
   ],
   "team_players": [],
@@ -1886,6 +1970,16 @@
       "is_active": false,
       "auction_round": 1,
       "updated_at": "2026-10-08T05:40:12.599Z"
+    },
+    "94b1f4ca-57d5-494f-93b3-25262c584069": {
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "current_player_id": null,
+      "current_team_id": null,
+      "current_bid": 0,
+      "timer_seconds": 30,
+      "is_active": false,
+      "auction_round": 1,
+      "updated_at": "2026-10-08T06:25:35.604Z"
     }
   },
   "auction_logs": [],
@@ -2409,6 +2503,32 @@
       "commentary": [],
       "play_documentation": "Powerplay dominated by Strikers. Excellent swing bowling in early overs.",
       "updated_at": "2026-10-08T05:40:12.706Z"
+    },
+    {
+      "id": "b9a72ba2-9c37-497a-b1f9-6d4a9540d3e6",
+      "league_id": "94b1f4ca-57d5-494f-93b3-25262c584069",
+      "team1_id": "2430e04b-b6a2-4656-bde2-0443a9bdc011",
+      "team2_id": "480596d7-55d4-4541-92f7-4de31eb8b4b7",
+      "team1_name": "Strikers",
+      "team2_name": "Blasters",
+      "team1_score": 85,
+      "team1_wickets": 2,
+      "team1_overs": "10.4",
+      "team2_score": 0,
+      "team2_wickets": 0,
+      "team2_overs": "0.0",
+      "target": null,
+      "current_batting_team_id": "2430e04b-b6a2-4656-bde2-0443a9bdc011",
+      "status": "live",
+      "venue": "Main Stadium",
+      "match_date": "2026-10-08T06:25:35.771Z",
+      "current_striker": "Rahul Dravid 40*(32)",
+      "current_non_striker": "",
+      "current_bowler": "Zaheer Khan 3.4-0-22-1",
+      "recent_balls": [],
+      "commentary": [],
+      "play_documentation": "Powerplay dominated by Strikers. Excellent swing bowling in early overs.",
+      "updated_at": "2026-10-08T06:25:35.805Z"
     }
   ]
 }
