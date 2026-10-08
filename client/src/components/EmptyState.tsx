@@ -1,10 +1,11 @@
 import React from 'react';
+import { ClipboardIcon } from './Icons';
 import './EmptyState.css';
 
 interface EmptyStateProps {
   title: string;
   subtitle: string;
-  icon?: string;
+  icon?: React.ReactNode;
   size?: 'small' | 'medium' | 'large';
   showAnimation?: boolean;
 }
@@ -12,7 +13,7 @@ interface EmptyStateProps {
 const EmptyState: React.FC<EmptyStateProps> = ({
   title,
   subtitle,
-  icon = '📋',
+  icon,
   size = 'medium',
   showAnimation = true
 }) => {
@@ -20,7 +21,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     <div className={`empty-state empty-state--${size} ${showAnimation ? 'empty-state--animated' : ''}`}>
       <div className="empty-state__content">
         <div className="empty-state__icon">
-          {icon}
+          {icon || <ClipboardIcon size={size === 'large' ? 56 : size === 'small' ? 32 : 44} color="#64748b" />}
         </div>
         
         <div className="empty-state__text">

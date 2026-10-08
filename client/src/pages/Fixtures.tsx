@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { League } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { CalendarIcon, CricketIcon, LightningIcon, ShieldIcon, LocationPinIcon, ActivityIcon, CheckIcon, ClockIcon } from '../components/Icons';
 import './Fixtures.css';
 
 interface MatchItem {
@@ -88,7 +89,7 @@ const Fixtures: React.FC = () => {
       {/* 1. Header & Controls */}
       <div className="soc-fixtures-top-bar">
         <div className="fixtures-headline-group">
-          <h2>📅 Match Schedule & Operations Hub</h2>
+          <h2><CalendarIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} /> Match Schedule & Operations Hub</h2>
           <p className="fixtures-subtitle">
             Live tournament fixtures, digital scoresheets, and pitch documentation
           </p>
@@ -156,7 +157,7 @@ const Fixtures: React.FC = () => {
       ) : filteredMatches.length === 0 ? (
         /* 3. Empty State */
         <div className="soc-empty-state-card">
-          <div className="soc-empty-radar-icon">🏏</div>
+          <div className="soc-empty-radar-icon"><CricketIcon size={48} color="#64748b" /></div>
           <h3>NO FIXTURES SCHEDULED</h3>
           <p>
             {matches.length === 0 
@@ -166,10 +167,10 @@ const Fixtures: React.FC = () => {
           </p>
           <div className="empty-state-actions">
             <Link to="/live-matches" className="soc-btn-create-league">
-              ⚡ Open Live Match Center
+              <LightningIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Open Live Match Center
             </Link>
             <Link to="/teams" className="soc-btn-primary-sm">
-              🛡️ View Squads
+              <ShieldIcon size={14} color="#10b981" style={{ marginRight: 6 }} /> View Squads
             </Link>
           </div>
         </div>
@@ -190,10 +191,10 @@ const Fixtures: React.FC = () => {
                 {/* Meta Bar */}
                 <div className="fixture-top-meta">
                   <span className="fixture-venue-text">
-                    📍 {match.venue || 'Campus Sports Ground'} • {match.match_date ? new Date(match.match_date).toLocaleDateString() : 'TBD'}
+                    <LocationPinIcon size={13} color="#00f0ff" style={{ marginRight: 4 }} /> {match.venue || 'Campus Sports Ground'} • {match.match_date ? new Date(match.match_date).toLocaleDateString() : 'TBD'}
                   </span>
                   <span className={`fixture-status-badge ${statusBadgeClass}`}>
-                    {isLive ? '🔴 LIVE' : isFinished ? '🏁 FINISHED' : '⏱️ UPCOMING'}
+                    {isLive ? <><ActivityIcon size={12} color="#ef4444" style={{ marginRight: 4 }} /> LIVE</> : isFinished ? <><CheckIcon size={12} color="#10b981" style={{ marginRight: 4 }} /> FINISHED</> : <><ClockIcon size={12} color="#facc15" style={{ marginRight: 4 }} /> UPCOMING</>}
                   </span>
                 </div>
 
@@ -239,7 +240,7 @@ const Fixtures: React.FC = () => {
                 {/* Documentation / Status Equation */}
                 {match.play_documentation && (
                   <div className="fixture-equation-strip">
-                    <span>⚡ {match.play_documentation}</span>
+                    <span><LightningIcon size={13} color="#00f0ff" style={{ marginRight: 4 }} /> {match.play_documentation}</span>
                   </div>
                 )}
 

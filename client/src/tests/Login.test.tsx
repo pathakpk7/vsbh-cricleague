@@ -24,9 +24,9 @@ describe('Login Component', () => {
     renderWithProviders(<Login />);
     
     expect(screen.getByText('VSBH-CL Cricket League')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /🛡️ League Admin/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /👑 Captain Auction/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /🏏 Player/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /League Admin/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Captain Auction/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Player/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Sign In as League Admin/i })).toBeInTheDocument();
     expect(screen.getByText('League Admin Email')).toBeInTheDocument();
     expect(screen.getByText('Password / Admin Key')).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('Login Component', () => {
   test('switches to Captain Auction Login tab', () => {
     renderWithProviders(<Login />);
     
-    const captainTab = screen.getByRole('button', { name: /👑 Captain Auction/i });
+    const captainTab = screen.getByRole('button', { name: /Captain Auction/i });
     fireEvent.click(captainTab);
     
     expect(screen.getByText('Unique Captain Auction Key (e.g. CAP-XXXX)')).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('Login Component', () => {
   test('switches to Player Login tab', () => {
     renderWithProviders(<Login />);
     
-    const playerTab = screen.getByRole('button', { name: /🏏 Player/i });
+    const playerTab = screen.getByRole('button', { name: /Player/i });
     fireEvent.click(playerTab);
     
     expect(screen.getByText('Registered Player Email')).toBeInTheDocument();

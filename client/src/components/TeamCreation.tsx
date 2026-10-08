@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckIcon, InfoIcon, CricketIcon } from './Icons';
 import './TeamCreation.css';
 
 interface TeamCreationProps {
@@ -111,13 +112,13 @@ const TeamCreation: React.FC<TeamCreationProps> = ({ onTeamCreated }) => {
     return (
       <div className="team-creation-success">
         <div className="success-card">
-          <h2>🎉 Team Created Successfully!</h2>
+          <h2><CheckIcon size={22} color="#10b981" style={{ marginRight: 8 }} />Team Created Successfully!</h2>
           <div className="team-info">
             <p><strong>Team Name:</strong> {teamData.teamName}</p>
             <p><strong>Your Captain Code:</strong> <span className="captain-code">{teamData.captainCode}</span></p>
           </div>
           <div className="instructions">
-            <h3>📝️ Important:</h3>
+            <h3><InfoIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} />Important:</h3>
             <p>Save your captain code securely! You'll need it to place bids during the auction.</p>
             <p>Your code has been automatically saved to this browser.</p>
           </div>
@@ -139,7 +140,7 @@ const TeamCreation: React.FC<TeamCreationProps> = ({ onTeamCreated }) => {
   return (
     <div className="team-creation">
       <div className="creation-card">
-        <h2>🏏� Create Your Team</h2>
+        <h2><CricketIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} />Create Your Team</h2>
         <p>Enter your team name to get started with the auction</p>
         
         <form onSubmit={handleSubmit} className="team-form">

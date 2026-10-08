@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PitchBidLogo from './PitchBidLogo';
+import { LightningIcon } from './Icons';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -102,7 +103,7 @@ const Footer: React.FC = () => {
       {/* Sub-bar Copyright */}
       <div className="soc-footer-bottom-strip">
         <span>&copy; {new Date().getFullYear()} VSBH Cricket League • All rights reserved</span>
-        <span className="soc-footer-credit">Developed with ⚡ for college cricket tournaments</span>
+        <span className="soc-footer-credit">Developed with <LightningIcon size={13} color="#00f0ff" style={{ margin: '0 2px' }} /> for college cricket tournaments</span>
       </div>
     </footer>
   );

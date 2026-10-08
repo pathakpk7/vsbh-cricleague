@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { League, Team } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { BarChartIcon, CricketIcon, LightningIcon, ShieldIcon } from '../components/Icons';
 import './PointsTable.css';
 
 interface TeamStanding {
@@ -147,7 +148,7 @@ const PointsTable: React.FC = () => {
       {/* 1. Header & Controls */}
       <div className="soc-standings-top-bar">
         <div className="standings-headline-group">
-          <h2>📊 Tournament Standings & Net Run Rate</h2>
+          <h2><BarChartIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} /> Tournament Standings & Net Run Rate</h2>
           <p className="standings-subtitle">
             Live points table, qualification thresholds, and recent form telemetry
           </p>
@@ -171,7 +172,7 @@ const PointsTable: React.FC = () => {
             </div>
           )}
           <Link to="/live-matches" className="soc-btn-create-league">
-            🏏 Live Scoresheet
+            <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Live Scoresheet
           </Link>
         </div>
       </div>
@@ -200,7 +201,7 @@ const PointsTable: React.FC = () => {
       ) : standings.length === 0 ? (
         /* 4. Empty State */
         <div className="soc-empty-state-card">
-          <div className="soc-empty-radar-icon">📊</div>
+          <div className="soc-empty-radar-icon"><BarChartIcon size={48} color="#64748b" /></div>
           <h3>NO STANDINGS DATA AVAILABLE</h3>
           <p>
             {leagues.length === 0 
@@ -210,10 +211,10 @@ const PointsTable: React.FC = () => {
           </p>
           <div className="empty-state-actions">
             <Link to="/league-admin" className="soc-btn-create-league">
-              ⚡ Open League Operations
+              <LightningIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Open League Operations
             </Link>
             <Link to="/teams" className="soc-btn-primary-sm">
-              🛡️ View Squads
+              <ShieldIcon size={14} color="#10b981" style={{ marginRight: 6 }} /> View Squads
             </Link>
           </div>
         </div>

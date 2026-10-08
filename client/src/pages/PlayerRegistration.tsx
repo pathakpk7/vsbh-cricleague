@@ -2,6 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { League } from '../types';
+import { 
+  CricketIcon, 
+  TargetIcon, 
+  LightningIcon, 
+  GloveIcon, 
+  TrophyIcon, 
+  RocketIcon, 
+  SpinIcon, 
+  ClockIcon, 
+  CalendarIcon, 
+  GavelIcon, 
+  CoinsIcon, 
+  CheckIcon, 
+  PlusIcon, 
+  AlertTriangleIcon 
+} from '../components/Icons';
 import './PlayerRegistration.css';
 
 const PlayerRegistration: React.FC = () => {
@@ -184,14 +200,14 @@ const PlayerRegistration: React.FC = () => {
     <div className="player-reg-container">
       <div className="player-reg-card">
         <div className="player-reg-header">
-          <span className="badge-tag">⚡ Fast Track Cricket Registration</span>
-          <h2>🏏 League Player Registration</h2>
+          <span className="badge-tag"><LightningIcon size={13} color="#00f0ff" style={{ marginRight: 4 }} /> Fast Track Cricket Registration</span>
+          <h2><CricketIcon size={24} color="#00f0ff" style={{ marginRight: 8 }} /> League Player Registration</h2>
           <p>Register your profile and tactical cricket playing style for the upcoming auction in under 30 seconds.</p>
         </div>
 
         {submitSuccess ? (
           <div className="registration-success-card">
-            <div className="success-icon">🎉</div>
+            <div className="success-icon"><CheckIcon size={44} color="#10b981" /></div>
             <h3>Registration Confirmed!</h3>
             <p>You are officially registered for the auction in <strong>{submitSuccess.league?.name}</strong>.</p>
 
@@ -210,13 +226,13 @@ const PlayerRegistration: React.FC = () => {
                 <div><strong>All-Rounder Type:</strong> {submitSuccess.player?.allrounder_type === 'batting-allrounder' ? 'Batting All-Rounder' : 'Bowling All-Rounder'}</div>
               )}
               {submitSuccess.player?.is_wicketkeeper && (
-                <div><strong>Wicketkeeper:</strong> 🧤 Designated Wicketkeeper</div>
+                <div><strong>Wicketkeeper:</strong> <GloveIcon size={14} color="#10b981" style={{ marginRight: 4 }} /> Designated Wicketkeeper</div>
               )}
               <div><strong>Base Price:</strong> ₹{submitSuccess.player?.base_price}</div>
               
               {/* Registration Timestamp & Auction Schedule */}
               <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                <strong>🕒 Registered At:</strong>{' '}
+                <strong><ClockIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Registered At:</strong>{' '}
                 <span style={{ color: '#00f0ff' }}>
                   {submitSuccess.player?.registered_at 
                     ? new Date(submitSuccess.player.registered_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
@@ -224,7 +240,7 @@ const PlayerRegistration: React.FC = () => {
                 </span>
               </div>
               <div>
-                <strong>🔨 Scheduled Auction:</strong>{' '}
+                <strong><GavelIcon size={14} color="#a7f3d0" style={{ marginRight: 4 }} /> Scheduled Auction:</strong>{' '}
                 <span style={{ color: '#a7f3d0' }}>
                   {submitSuccess.league?.auction_date_time
                     ? new Date(submitSuccess.league.auction_date_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
@@ -236,10 +252,10 @@ const PlayerRegistration: React.FC = () => {
 
             <div className="success-actions">
               <button className="btn-primary" onClick={() => navigate(`/auction?league=${submitSuccess.league?.id}`)}>
-                🎯 Go to Live Auction Arena
+                <GavelIcon size={16} color="#000" style={{ marginRight: 6 }} /> Go to Live Auction Arena
               </button>
               <button className="btn-secondary" onClick={() => { setSubmitSuccess(null); }}>
-                ➕ Register Another Player
+                <PlusIcon size={16} color="#00f0ff" style={{ marginRight: 6 }} /> Register Another Player
               </button>
             </div>
           </div>
@@ -291,7 +307,7 @@ const PlayerRegistration: React.FC = () => {
                         className={`tournament-pick-card ${leagueInfo?.id === l.id ? 'active' : ''}`}
                         onClick={() => selectLeague(l)}
                       >
-                        <div className="t-name">🏆 {l.name}</div>
+                        <div className="t-name"><TrophyIcon size={14} color="#facc15" style={{ marginRight: 6 }} />{l.name}</div>
                         <div className="t-code">Key: {l.code}</div>
                       </div>
                     ))}
@@ -301,7 +317,7 @@ const PlayerRegistration: React.FC = () => {
 
               {leagueError && (
                 <div className="league-error-banner" style={{ marginBottom: '14px' }}>
-                  ⚠️ {leagueError}
+                  <AlertTriangleIcon size={14} color="#ef4444" style={{ marginRight: 6 }} />{leagueError}
                 </div>
               )}
 
@@ -309,15 +325,15 @@ const PlayerRegistration: React.FC = () => {
               {leagueInfo && (
                 <div className="schedule-banner-box">
                   <div className="schedule-banner-header">
-                    <span className="tournament-name-tag">🏆 {leagueInfo.name}</span>
+                    <span className="tournament-name-tag"><TrophyIcon size={14} color="#facc15" style={{ marginRight: 6 }} />{leagueInfo.name}</span>
                     <span className={`status-pill ${leagueInfo.registration_status}`}>
-                      {leagueInfo.registration_status === 'open' ? '🟢 Registration Open' : '🔴 Closed'}
+                      {leagueInfo.registration_status === 'open' ? 'Registration Open' : 'Closed'}
                     </span>
                   </div>
 
                   <div className="schedule-grid-pills">
                     <div className="schedule-pill-item">
-                      <div className="pill-label">📅 Registration Deadline</div>
+                      <div className="pill-label"><CalendarIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Registration Deadline</div>
                       <div className="pill-val">
                         {leagueInfo.registration_deadline
                           ? new Date(leagueInfo.registration_deadline).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
@@ -326,7 +342,7 @@ const PlayerRegistration: React.FC = () => {
                     </div>
 
                     <div className="schedule-pill-item">
-                      <div className="pill-label">🔨 Auction Date & Time</div>
+                      <div className="pill-label"><GavelIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Auction Date & Time</div>
                       <div className="pill-val">
                         {leagueInfo.auction_date_time
                           ? new Date(leagueInfo.auction_date_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
@@ -335,7 +351,7 @@ const PlayerRegistration: React.FC = () => {
                     </div>
 
                     <div className="schedule-pill-item">
-                      <div className="pill-label">💰 Team Purse / Squad Limit</div>
+                      <div className="pill-label"><CoinsIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Team Purse / Squad Limit</div>
                       <div className="pill-val">
                         ₹{leagueInfo.default_team_purse || 100} Cr • Max {leagueInfo.max_players_per_team || 15} Players
                       </div>
@@ -460,7 +476,7 @@ const PlayerRegistration: React.FC = () => {
                   className={`role-select-card ${formData.role === 'batter' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('batter')}
                 >
-                  <span className="role-icon">🏏</span>
+                  <span className="role-icon"><CricketIcon size={22} color="#00f0ff" /></span>
                   <div className="role-label">Batter</div>
                   <small>Pure Batsman</small>
                 </button>
@@ -470,7 +486,7 @@ const PlayerRegistration: React.FC = () => {
                   className={`role-select-card ${formData.role === 'bowler' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('bowler')}
                 >
-                  <span className="role-icon">🎯</span>
+                  <span className="role-icon"><TargetIcon size={22} color="#f59e0b" /></span>
                   <div className="role-label">Bowler</div>
                   <small>Pace / Spin</small>
                 </button>
@@ -480,7 +496,7 @@ const PlayerRegistration: React.FC = () => {
                   className={`role-select-card ${formData.role === 'all-rounder' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('all-rounder')}
                 >
-                  <span className="role-icon">⚡</span>
+                  <span className="role-icon"><LightningIcon size={22} color="#a855f7" /></span>
                   <div className="role-label">All-Rounder</div>
                   <small>Bat & Bowl</small>
                 </button>
@@ -490,7 +506,7 @@ const PlayerRegistration: React.FC = () => {
                   className={`role-select-card ${formData.role === 'wicketkeeper' ? 'active' : ''}`}
                   onClick={() => handleRoleSelect('wicketkeeper')}
                 >
-                  <span className="role-icon">🧤</span>
+                  <span className="role-icon"><GloveIcon size={22} color="#10b981" /></span>
                   <div className="role-label">Wicketkeeper</div>
                   <small>WK-Batter</small>
                 </button>
@@ -501,7 +517,7 @@ const PlayerRegistration: React.FC = () => {
                 {/* 1. BATTER SPECS */}
                 {formData.role === 'batter' && (
                   <div className="role-specific-inputs">
-                    <div className="spec-heading">🏏 Batsman Profile</div>
+                    <div className="spec-heading"><CricketIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} />Batsman Profile</div>
 
                     <div style={{ marginBottom: '14px' }}>
                       <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Hand:</label>
@@ -511,14 +527,14 @@ const PlayerRegistration: React.FC = () => {
                           className={`fast-pill-btn ${formData.batting_hand === 'right' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, batting_hand: 'right' })}
                         >
-                          🏏 Right-Hand Bat (RHB)
+                          <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} />Right-Hand Bat (RHB)
                         </button>
                         <button
                           type="button"
                           className={`fast-pill-btn ${formData.batting_hand === 'left' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, batting_hand: 'left' })}
                         >
-                          🏏 Left-Hand Bat (LHB)
+                          <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} />Left-Hand Bat (LHB)
                         </button>
                       </div>
                     </div>
@@ -552,7 +568,7 @@ const PlayerRegistration: React.FC = () => {
                           checked={formData.is_wicketkeeper}
                           onChange={handleInputChange}
                         />
-                        <span>🧤 Can also perform Wicketkeeping duties</span>
+                        <span><GloveIcon size={14} color="#10b981" style={{ marginRight: 4 }} /> Can also perform Wicketkeeping duties</span>
                       </label>
                     </div>
                   </div>
@@ -561,7 +577,7 @@ const PlayerRegistration: React.FC = () => {
                 {/* 2. BOWLER SPECS */}
                 {formData.role === 'bowler' && (
                   <div className="role-specific-inputs">
-                    <div className="spec-heading">🎯 Bowler Profile</div>
+                    <div className="spec-heading"><TargetIcon size={18} color="#f59e0b" style={{ marginRight: 6 }} />Bowler Profile</div>
 
                     <div style={{ marginBottom: '14px' }}>
                       <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Bowling Category:</label>
@@ -571,14 +587,14 @@ const PlayerRegistration: React.FC = () => {
                           className={`fast-pill-btn ${formData.bowling_category === 'pace' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, bowling_category: 'pace', bowling_type: 'fast-medium' })}
                         >
-                          🚀 Fast / Pace Bowling
+                          <RocketIcon size={14} color="#f59e0b" style={{ marginRight: 6 }} />Fast / Pace Bowling
                         </button>
                         <button
                           type="button"
                           className={`fast-pill-btn ${formData.bowling_category === 'spin' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, bowling_category: 'spin', bowling_type: 'off-spin' })}
                         >
-                          🌀 Spin Bowling
+                          <SpinIcon size={14} color="#38bdf8" style={{ marginRight: 6 }} />Spin Bowling
                         </button>
                       </div>
                     </div>
@@ -669,7 +685,7 @@ const PlayerRegistration: React.FC = () => {
                 {/* 3. ALL-ROUNDER SPECS */}
                 {formData.role === 'all-rounder' && (
                   <div className="role-specific-inputs">
-                    <div className="spec-heading">⚡ All-Rounder Profile</div>
+                    <div className="spec-heading"><LightningIcon size={18} color="#a855f7" style={{ marginRight: 6 }} />All-Rounder Profile</div>
 
                     <div style={{ marginBottom: '14px' }}>
                       <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Primary Dominance:</label>
@@ -679,14 +695,14 @@ const PlayerRegistration: React.FC = () => {
                           className={`fast-pill-btn ${formData.allrounder_type === 'batting-allrounder' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, allrounder_type: 'batting-allrounder' })}
                         >
-                          🏏 Batting All-Rounder (Batsman who bowls)
+                          <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} />Batting All-Rounder (Batsman who bowls)
                         </button>
                         <button
                           type="button"
                           className={`fast-pill-btn ${formData.allrounder_type === 'bowling-allrounder' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, allrounder_type: 'bowling-allrounder' })}
                         >
-                          🎯 Bowling All-Rounder (Bowler who bats)
+                          <TargetIcon size={14} color="#f59e0b" style={{ marginRight: 6 }} />Bowling All-Rounder (Bowler who bats)
                         </button>
                       </div>
                     </div>
@@ -755,7 +771,7 @@ const PlayerRegistration: React.FC = () => {
                 {/* 4. WICKETKEEPER SPECS */}
                 {formData.role === 'wicketkeeper' && (
                   <div className="role-specific-inputs">
-                    <div className="spec-heading">🧤 Wicketkeeper Profile</div>
+                    <div className="spec-heading"><GloveIcon size={18} color="#10b981" style={{ marginRight: 6 }} />Wicketkeeper Profile</div>
 
                     <div style={{ marginBottom: '14px' }}>
                       <label style={{ fontSize: '13px', color: '#cbd5e1' }}>Batting Hand:</label>
@@ -765,14 +781,14 @@ const PlayerRegistration: React.FC = () => {
                           className={`fast-pill-btn ${formData.batting_hand === 'right' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, batting_hand: 'right' })}
                         >
-                          🏏 Right-Hand Bat (RHB)
+                          <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} />Right-Hand Bat (RHB)
                         </button>
                         <button
                           type="button"
                           className={`fast-pill-btn ${formData.batting_hand === 'left' ? 'active' : ''}`}
                           onClick={() => setFormData({ ...formData, batting_hand: 'left' })}
                         >
-                          🏏 Left-Hand Bat (LHB)
+                          <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} />Left-Hand Bat (LHB)
                         </button>
                       </div>
                     </div>
@@ -854,7 +870,17 @@ const PlayerRegistration: React.FC = () => {
               className="btn-submit-reg"
               disabled={!leagueInfo || isSubmitting}
             >
-              {isSubmitting ? '⚡ Registering Player...' : '⚡ Submit Registration Instantly'}
+              {isSubmitting ? (
+                <>
+                  <LightningIcon size={16} color="#000" style={{ marginRight: 6 }} />
+                  Registering Player...
+                </>
+              ) : (
+                <>
+                  <LightningIcon size={16} color="#000" style={{ marginRight: 6 }} />
+                  Submit Registration Instantly
+                </>
+              )}
             </button>
           </form>
         )}

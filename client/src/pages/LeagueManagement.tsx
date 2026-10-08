@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { League, Team, Player } from '../types';
+import { 
+  TrophyIcon, 
+  ClipboardIcon, 
+  PlusIcon, 
+  CricketIcon, 
+  CrossIcon, 
+  CheckIcon, 
+  SpinIcon, 
+  SettingsIcon, 
+  UsersIcon, 
+  GavelIcon, 
+  BarChartIcon 
+} from '../components/Icons';
 import './LeagueManagement.css';
 
 const LeagueManagement: React.FC = () => {
@@ -152,7 +165,7 @@ const LeagueManagement: React.FC = () => {
         setCurrentLeague(createdLeague);
         setActiveLeagueId(createdLeague.id);
         setStatusMessage({
-          text: `🎉 League "${createdLeague.name}" registered! Unique Player Key: ${createdLeague.code} | Captain Key: ${createdLeague.captain_auction_key}`,
+          text: `League "${createdLeague.name}" registered! Unique Player Key: ${createdLeague.code} | Captain Key: ${createdLeague.captain_auction_key}`,
           type: 'success'
         });
         setNewLeague({
@@ -199,7 +212,7 @@ const LeagueManagement: React.FC = () => {
         const addedName = newTeamName.trim();
         setNewTeamName('');
         await loadLeagueDetails(currentLeague.id);
-        setStatusMessage({ text: `✅ Team "${addedName}" registered successfully!`, type: 'success' });
+        setStatusMessage({ text: `Team "${addedName}" registered successfully!`, type: 'success' });
       } else {
         setStatusMessage({ text: data.error || data.message || 'Failed to add team', type: 'error' });
       }
@@ -308,14 +321,14 @@ const LeagueManagement: React.FC = () => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedKey(label);
-    setStatusMessage({ text: `✓ ${label} copied to clipboard!`, type: 'success' });
+    setStatusMessage({ text: `${label} copied to clipboard!`, type: 'success' });
     setTimeout(() => setCopiedKey(null), 2500);
   };
 
   return (
     <div className="league-mgmt-container">
       <div className="league-mgmt-header">
-        <h1>🏆 Cricket League Administration Hub</h1>
+        <h1><TrophyIcon size={24} color="#facc15" style={{ marginRight: 8 }} /> Cricket League Administration Hub</h1>
         <p>Create and manage independent cricket leagues, team rosters, auction deadlines, and captain keys.</p>
 
         <div className="mgmt-tabs">
@@ -323,13 +336,13 @@ const LeagueManagement: React.FC = () => {
             className={`tab-btn ${activeTab === 'manage' ? 'active' : ''}`}
             onClick={() => setActiveTab('manage')}
           >
-            📋 Manage Active League
+            <ClipboardIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Manage Active League
           </button>
           <button
             className={`tab-btn ${activeTab === 'create' ? 'active' : ''}`}
             onClick={() => setActiveTab('create')}
           >
-            ➕ Register New Cricket League
+            <PlusIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Register New Cricket League
           </button>
         </div>
       </div>
@@ -342,7 +355,7 @@ const LeagueManagement: React.FC = () => {
 
       {activeTab === 'create' ? (
         <div className="create-league-card">
-          <h2>🏏 Register New Cricket League</h2>
+          <h2><CricketIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} /> Register New Cricket League</h2>
           <p className="subtext">
             Each league gets a Unique League ID for player registrations and a Unique Captain Key for auction bidding.
           </p>
@@ -500,7 +513,7 @@ const LeagueManagement: React.FC = () => {
                         }}
                         title="Remove team"
                       >
-                        ✕
+                        <CrossIcon size={14} color="#ef4444" />
                       </button>
                     )}
                   </div>
@@ -509,7 +522,7 @@ const LeagueManagement: React.FC = () => {
             </div>
 
             <button type="submit" className="btn-create-submit" disabled={loading}>
-              {loading ? '⏳ Registering League & Generating Keys...' : 'Register League & Generate Unique Keys'}
+              {loading ? 'Registering League & Generating Keys...' : 'Register League & Generate Unique Keys'}
             </button>
           </form>
         </div>
@@ -542,7 +555,11 @@ const LeagueManagement: React.FC = () => {
                     className="btn-copy"
                     onClick={() => copyToClipboard(currentLeague.code, 'League Player Key')}
                   >
-                    {copiedKey === 'League Player Key' ? '✅ Copied!' : '📋 Copy Player Key'}
+                    {copiedKey === 'League Player Key' ? (
+                      <><CheckIcon size={14} color="#10b981" style={{ marginRight: 4 }} /> Copied!</>
+                    ) : (
+                      <><ClipboardIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Copy Player Key</>
+                    )}
                   </button>
                 </div>
 
@@ -555,10 +572,14 @@ const LeagueManagement: React.FC = () => {
                       className="btn-copy"
                       onClick={() => copyToClipboard(currentLeague.captain_auction_key || '', 'Captain Auction Key')}
                     >
-                      {copiedKey === 'Captain Auction Key' ? '✅ Copied!' : '📋 Copy Captain Key'}
+                      {copiedKey === 'Captain Auction Key' ? (
+                        <><CheckIcon size={14} color="#10b981" style={{ marginRight: 4 }} /> Copied!</>
+                      ) : (
+                        <><ClipboardIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Copy Captain Key</>
+                      )}
                     </button>
                     <button className="btn-regen" onClick={handleRegenerateCaptainKey}>
-                      🔄 Regenerate Key
+                      <SpinIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Regenerate Key
                     </button>
                   </div>
                 </div>
@@ -566,13 +587,13 @@ const LeagueManagement: React.FC = () => {
 
               {/* Tournament Rules, Price Pool & Schedule Settings */}
               <div className="admin-panel-card">
-                <h3>⚙️ Tournament Rules, Price Pool & Schedule</h3>
+                <h3><SettingsIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Tournament Rules, Price Pool & Schedule</h3>
                 <div className="schedule-controls-grid">
                   <div className="control-item">
                     <label>Player Registration Status:</label>
                     <div className="status-toggle-row">
                       <span className={`status-pill ${currentLeague.registration_status}`}>
-                        {currentLeague.registration_status === 'open' ? '🟢 Registration OPEN' : '🔴 Registration CLOSED'}
+                        {currentLeague.registration_status === 'open' ? 'Registration OPEN' : 'Registration CLOSED'}
                       </span>
                       <button className="btn-toggle" onClick={handleToggleRegistration}>
                         {currentLeague.registration_status === 'open' ? 'Close Registrations' : 'Open Registrations'}
@@ -635,7 +656,7 @@ const LeagueManagement: React.FC = () => {
               <div className="admin-panel-card">
                 <div className="panel-header-row">
                   <div>
-                    <h3>🏏 Team Configuration ({teams.length} / {currentLeague.number_of_teams} Teams)</h3>
+                    <h3><CricketIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Team Configuration ({teams.length} / {currentLeague.number_of_teams} Teams)</h3>
                     <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
                       Default Team Purse: <strong style={{ color: '#00f0ff' }}>₹{currentLeague.default_team_purse || 100} Cr</strong> | Squad Limit: <strong style={{ color: '#00f0ff' }}>{currentLeague.max_players_per_team || 15} Players</strong>
                     </p>
@@ -696,7 +717,7 @@ const LeagueManagement: React.FC = () => {
 
               {/* Registered Players List */}
               <div className="admin-panel-card">
-                <h3>👥 Registered Players ({players.length} Total)</h3>
+                <h3><UsersIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Registered Players ({players.length} Total)</h3>
                 <div className="teams-table-container">
                   <table className="mgmt-table">
                     <thead>
@@ -715,7 +736,7 @@ const LeagueManagement: React.FC = () => {
                         const styleInfo = [
                           p.batting_hand ? `${p.batting_hand === 'left' ? 'LHB' : 'RHB'} (${p.batting_position || 'Middle Order'})` : null,
                           p.bowling_arm || p.bowling_type ? `${p.bowling_arm === 'left' ? 'Left' : 'Right'}-Arm ${p.bowling_category || ''} (${p.bowling_type || ''})` : null,
-                          p.is_wicketkeeper ? '🧤 WK' : null,
+                          p.is_wicketkeeper ? 'WK (Keeper)' : null,
                           p.allrounder_type ? (p.allrounder_type === 'batting-allrounder' ? 'Batting AR' : 'Bowling AR') : null
                         ].filter(Boolean).join(' • ');
 
@@ -748,13 +769,13 @@ const LeagueManagement: React.FC = () => {
                   className="btn-nav-primary"
                   onClick={() => navigate(`/auction?league=${currentLeague.id}`)}
                 >
-                  🎯 Launch Live Auction Arena
+                  <GavelIcon size={16} color="#000" style={{ marginRight: 6 }} /> Launch Live Auction Arena
                 </button>
                 <button
                   className="btn-nav-secondary"
                   onClick={() => navigate(`/live-matches?league=${currentLeague.id}`)}
                 >
-                  📊 Live Match Center & Scoring Console
+                  <BarChartIcon size={16} color="#00f0ff" style={{ marginRight: 6 }} /> Live Match Center & Scoring Console
                 </button>
               </div>
             </div>
@@ -767,7 +788,7 @@ const LeagueManagement: React.FC = () => {
                 style={{ width: 'auto', padding: '14px 32px', display: 'inline-block' }}
                 onClick={() => setActiveTab('create')}
               >
-                ➕ Register New Cricket League Now
+                <PlusIcon size={16} color="#000" style={{ marginRight: 6 }} /> Register New Cricket League Now
               </button>
             </div>
           )}

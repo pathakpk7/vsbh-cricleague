@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { League, Team } from '../types';
+import { ShieldIcon, CrownIcon, CricketIcon, AlertTriangleIcon, EyeIcon } from '../components/Icons';
 import './Login.css';
 
 const Login: React.FC = () => {
@@ -144,25 +145,25 @@ const Login: React.FC = () => {
             className={`role-tab ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={() => { setActiveTab('admin'); setErrorMessage(null); }}
           >
-            🛡️ League Admin
+            <ShieldIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> League Admin
           </button>
           <button
             className={`role-tab ${activeTab === 'captain' ? 'active' : ''}`}
             onClick={() => { setActiveTab('captain'); setErrorMessage(null); }}
           >
-            👑 Captain Auction
+            <CrownIcon size={14} color="#facc15" style={{ marginRight: 6 }} /> Captain Auction
           </button>
           <button
             className={`role-tab ${activeTab === 'player' ? 'active' : ''}`}
             onClick={() => { setActiveTab('player'); setErrorMessage(null); }}
           >
-            🏏 Player
+            <CricketIcon size={14} color="#10b981" style={{ marginRight: 6 }} /> Player
           </button>
         </div>
 
         {errorMessage && (
           <div className="login-error-badge">
-            ⚠️ {errorMessage}
+            <AlertTriangleIcon size={14} color="#ef4444" style={{ marginRight: 6 }} /> {errorMessage}
           </div>
         )}
 
@@ -296,7 +297,7 @@ const Login: React.FC = () => {
             className="btn-spectator-guest"
             onClick={() => navigate('/auction')}
           >
-            👀 Continue as Spectator (No Login Required)
+            <EyeIcon size={16} color="#00f0ff" style={{ marginRight: 6 }} /> Continue as Spectator (No Login Required)
           </button>
         </div>
       </div>

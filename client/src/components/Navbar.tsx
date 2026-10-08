@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ShieldIcon, CrownIcon, CricketIcon, KeyIcon } from './Icons';
 import PitchBidLogo from './PitchBidLogo';
 import './Navbar.css';
 
@@ -128,9 +129,9 @@ const Navbar: React.FC = () => {
                 <div className="user-details-mini">
                   <span className="user-name-label">{user.name}</span>
                   <span className={`user-role-chip role-${user.role}`}>
-                    {user.role === 'admin' ? '🛡️ LEAGUE ADMIN' : 
-                     user.role === 'captain' ? `👑 CAPTAIN` : 
-                     user.role === 'player' ? '🏏 SQUAD PLAYER' : 'SPECTATOR'}
+                    {user.role === 'admin' ? <><ShieldIcon size={12} color="#00f0ff" style={{ marginRight: 4 }} /> LEAGUE ADMIN</> : 
+                     user.role === 'captain' ? <><CrownIcon size={12} color="#facc15" style={{ marginRight: 4 }} /> CAPTAIN</> : 
+                     user.role === 'player' ? <><CricketIcon size={12} color="#10b981" style={{ marginRight: 4 }} /> SQUAD PLAYER</> : 'SPECTATOR'}
                   </span>
                 </div>
               </div>
@@ -143,7 +144,7 @@ const Navbar: React.FC = () => {
               className="soc-btn-signin" 
               onClick={() => navigate('/login')}
             >
-              <span className="signin-icon">🔑</span>
+              <span className="signin-icon"><KeyIcon size={14} color="#00f0ff" /></span>
               <span>Sign In</span>
             </button>
           )}

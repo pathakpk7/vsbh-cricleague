@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LightningIcon, TargetIcon, GloveIcon, CrownIcon, CricketIcon, TrophyIcon } from '../Icons';
 import './BroadcastTicker.css';
 
 interface BroadcastTickerProps {
@@ -26,12 +27,12 @@ const BroadcastTicker: React.FC<BroadcastTickerProps> = ({ customMessage }) => {
   }, []);
 
   const tickerItems = [
-    '⚡ VSBH COMMAND HUB ONLINE',
-    '🎯 MULTI-TENANT AUCTIONS: CONCURRENT BIDDING ENABLED',
-    '🧤 NEW: GRANULAR PLAYING PROFILES (BATTER / BOWLER / ALL-ROUNDER SPECS)',
-    '👑 CAPTAIN AUCTION KEYS: SECURE BIDDING ROOMS RESTRICTED BY LEAGUE',
-    '🏏 MATCH CENTER: LIVE BALL-BY-BALL DOCUMENTATION EDITABLE BY LEAGUE ADMIN',
-    customMessage || '🏆 REGISTRATION OPEN: JOIN YOUR COLLEGE TOURNAMENT TODAY'
+    { icon: <LightningIcon size={13} color="#00f0ff" />, text: 'VSBH COMMAND HUB ONLINE' },
+    { icon: <TargetIcon size={13} color="#00f0ff" />, text: 'MULTI-TENANT AUCTIONS: CONCURRENT BIDDING ENABLED' },
+    { icon: <GloveIcon size={13} color="#00f0ff" />, text: 'NEW: GRANULAR PLAYING PROFILES (BATTER / BOWLER / ALL-ROUNDER SPECS)' },
+    { icon: <CrownIcon size={13} color="#facc15" />, text: 'CAPTAIN AUCTION KEYS: SECURE BIDDING ROOMS RESTRICTED BY LEAGUE' },
+    { icon: <CricketIcon size={13} color="#10b981" />, text: 'MATCH CENTER: LIVE BALL-BY-BALL DOCUMENTATION EDITABLE BY LEAGUE ADMIN' },
+    { icon: <TrophyIcon size={13} color="#facc15" />, text: customMessage || 'REGISTRATION OPEN: JOIN YOUR COLLEGE TOURNAMENT TODAY' }
   ];
 
   return (
@@ -45,9 +46,10 @@ const BroadcastTicker: React.FC<BroadcastTickerProps> = ({ customMessage }) => {
         <div className="ticker-track">
           {/* Duplicate to create infinite seamless loop */}
           {[...tickerItems, ...tickerItems].map((item, index) => (
-            <span key={index} className="ticker-item">
+            <span key={index} className="ticker-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               <span className="ticker-bullet">◆</span>
-              {item}
+              {item.icon}
+              <span>{item.text}</span>
             </span>
           ))}
         </div>

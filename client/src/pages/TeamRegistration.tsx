@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import TeamCreation from '../components/TeamCreation';
+import { TrophyIcon, CheckIcon, GavelIcon, CrossIcon, ClipboardIcon, CricketIcon, PlusIcon, KeyIcon } from '../components/Icons';
 import './TeamRegistration.css';
 
 const TeamRegistration: React.FC = () => {
@@ -36,13 +37,13 @@ const TeamRegistration: React.FC = () => {
       <div className="team-registration">
         <div className="team-dashboard">
           <div className="dashboard-header">
-            <h1>🏆 Team Dashboard</h1>
+            <h1><TrophyIcon size={24} color="#facc15" style={{ marginRight: 8 }} /> Team Dashboard</h1>
             <p>Manage your team for the auction</p>
           </div>
           
           <div className="team-status-card">
             <div className="status-header">
-              <h2>✅ Team Registered</h2>
+              <h2><CheckIcon size={20} color="#10b981" style={{ marginRight: 8 }} /> Team Registered</h2>
               <p>Your team is ready for the auction</p>
             </div>
             
@@ -72,19 +73,19 @@ const TeamRegistration: React.FC = () => {
                 className="auction-btn"
                 onClick={() => window.location.href = '/auction'}
               >
-                🎯 Go to Auction
+                <GavelIcon size={16} color="#000" style={{ marginRight: 6 }} /> Go to Auction
               </button>
               
               <button 
                 className="logout-btn"
                 onClick={handleLogout}
               >
-                🚪 Logout / Create New Team
+                <CrossIcon size={16} color="#ef4444" style={{ marginRight: 6 }} /> Logout / Create New Team
               </button>
             </div>
             
             <div className="instructions">
-              <h3>📋 Next Steps:</h3>
+              <h3><ClipboardIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Next Steps:</h3>
               <ul>
                 <li>Save your captain code securely</li>
                 <li>Use your captain code to place bids during auction</li>
@@ -101,7 +102,7 @@ const TeamRegistration: React.FC = () => {
   return (
     <div className="team-registration">
       <div className="registration-header">
-        <h1>🏏 Cricket Auction Registration</h1>
+        <h1><CricketIcon size={24} color="#00f0ff" style={{ marginRight: 8 }} /> Cricket Auction Registration</h1>
         <p>Create your team to participate in the player auction</p>
       </div>
       
@@ -110,13 +111,13 @@ const TeamRegistration: React.FC = () => {
           className={`toggle-btn ${currentView === 'creation' ? 'active' : ''}`}
           onClick={() => setCurrentView('creation')}
         >
-          🆕 Create Team
+          <PlusIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Create Team
         </button>
         <button 
           className={`toggle-btn ${currentView === 'login' ? 'active' : ''}`}
           onClick={() => setCurrentView('login')}
         >
-          🔐 Login with Captain Code
+          <KeyIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Login with Captain Code
         </button>
       </div>
 
@@ -183,7 +184,7 @@ const CaptainLogin: React.FC<CaptainLoginProps> = ({ onTeamCreated }) => {
   return (
     <div className="captain-login">
       <div className="login-card">
-        <h2>🔐 Captain Login</h2>
+        <h2><KeyIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} /> Captain Login</h2>
         <p>Enter your captain code to access your team</p>
         
         <form onSubmit={handleSubmit} className="login-form">

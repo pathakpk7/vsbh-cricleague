@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { League, Player, Team } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { BarChartIcon, GavelIcon, CricketIcon, TrophyIcon, StarIcon } from '../components/Icons';
 import './Stats.css';
 
 const Stats: React.FC = () => {
@@ -100,7 +101,7 @@ const Stats: React.FC = () => {
       {/* 1. Header & Controls */}
       <div className="soc-stats-top-bar">
         <div className="stats-headline-group">
-          <h2>📈 Tournament Analytics & Scout Radar</h2>
+          <h2><BarChartIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} /> Tournament Analytics & Scout Radar</h2>
           <p className="stats-subtitle">
             Performance metrics, tactical role distributions, and squad valuation telemetry
           </p>
@@ -124,7 +125,7 @@ const Stats: React.FC = () => {
             </div>
           )}
           <Link to="/auction" className="soc-btn-create-league">
-            🎯 Auction Arena
+            <GavelIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Auction Arena
           </Link>
         </div>
       </div>
@@ -138,7 +139,7 @@ const Stats: React.FC = () => {
       ) : totalPlayers === 0 && totalTeams === 0 ? (
         /* 3. Empty State */
         <div className="soc-empty-state-card">
-          <div className="soc-empty-radar-icon">📈</div>
+          <div className="soc-empty-radar-icon"><BarChartIcon size={48} color="#64748b" /></div>
           <h3>NO ANALYTICS TELEMETRY AVAILABLE</h3>
           <p>
             {leagues.length === 0 
@@ -148,10 +149,10 @@ const Stats: React.FC = () => {
           </p>
           <div className="empty-state-actions">
             <Link to="/register-player" className="soc-btn-create-league">
-              🏏 Register New Player
+              <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Register New Player
             </Link>
             <Link to="/league-admin" className="soc-btn-primary-sm">
-              ⚡ League Admin
+              <TrophyIcon size={14} color="#facc15" style={{ marginRight: 6 }} /> League Admin
             </Link>
           </div>
         </div>
@@ -197,7 +198,7 @@ const Stats: React.FC = () => {
             {/* Tactical Specialization Breakdown */}
             <div className="soc-stats-section-card">
               <div className="section-header-strip">
-                <h3 className="section-title">🏏 Tactical Role Distribution</h3>
+                <h3 className="section-title"><CricketIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Tactical Role Distribution</h3>
                 <span className="squad-count-chip">{totalPlayers} Candidates</span>
               </div>
 
@@ -247,7 +248,7 @@ const Stats: React.FC = () => {
             {/* Top Valuation / Scouting Leaderboard */}
             <div className="soc-stats-section-card">
               <div className="section-header-strip">
-                <h3 className="section-title">💎 Top Valuation Player Leaderboard</h3>
+                <h3 className="section-title"><StarIcon size={18} color="#facc15" style={{ marginRight: 6 }} /> Top Valuation Player Leaderboard</h3>
                 <small className="squads-subtitle">Highest Price / Acquired</small>
               </div>
 

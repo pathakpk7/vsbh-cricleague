@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { socket } from '../config/socket';
 import { useAuth } from '../contexts/AuthContext';
 import { Match, League } from '../types';
+import { ActivityIcon, LocationPinIcon, ClipboardIcon, ShieldIcon, LightningIcon, CricketIcon, CheckIcon } from '../components/Icons';
 import './LiveMatchCenter.css';
 
 const LiveMatchCenter: React.FC = () => {
@@ -213,12 +214,12 @@ const LiveMatchCenter: React.FC = () => {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setAdminStatus('✅ Play documentation updated live!');
+        setAdminStatus('Play documentation updated live!');
         setSelectedMatch(data.data);
         setTimeout(() => setAdminStatus(null), 3000);
       }
     } catch (e) {
-      setAdminStatus('❌ Failed to save documentation');
+      setAdminStatus('Failed to save documentation');
     }
   };
 
@@ -274,7 +275,7 @@ const LiveMatchCenter: React.FC = () => {
       {/* Header & League Selector */}
       <div className="match-center-header">
         <div className="header-titles">
-          <span className="live-pill">🔴 LIVE MATCH CENTER</span>
+          <span className="live-pill"><ActivityIcon size={12} color="#ef4444" style={{ marginRight: 4 }} /> LIVE MATCH CENTER</span>
           <h1>Cricket Match Play & Live Scoring Space</h1>
           <p>Real-time scores, ball-by-ball updates, and match play documentation edited by league admins.</p>
         </div>
@@ -304,7 +305,7 @@ const LiveMatchCenter: React.FC = () => {
               onClick={() => handleSelectMatch(m)}
             >
               <div className="ribbon-status">
-                {m.status === 'live' ? '🔴 LIVE' : m.status === 'finished' ? 'FINAL' : 'UPCOMING'}
+                {m.status === 'live' ? <><ActivityIcon size={10} color="#ef4444" style={{ marginRight: 3 }} /> LIVE</> : m.status === 'finished' ? 'FINAL' : 'UPCOMING'}
               </div>
               <div className="ribbon-teams">
                 <span>{m.team1_name || 'Team 1'}</span> vs <span>{m.team2_name || 'Team 2'}</span>
@@ -364,7 +365,7 @@ const LiveMatchCenter: React.FC = () => {
             {/* Main Score Hero Card */}
             <div className="score-hero-card">
               <div className="score-hero-header">
-                <span className="venue-tag">📍 {selectedMatch.venue || 'Campus Main Ground'}</span>
+                <span className="venue-tag"><LocationPinIcon size={13} color="#00f0ff" style={{ marginRight: 4 }} /> {selectedMatch.venue || 'Campus Main Ground'}</span>
                 <span className={`match-state-badge ${selectedMatch.status}`}>
                   {selectedMatch.status.toUpperCase()}
                 </span>
@@ -423,7 +424,7 @@ const LiveMatchCenter: React.FC = () => {
             {/* DEDICATED LIVE PLAY DOCUMENTATION SPACE */}
             <div className="play-documentation-card">
               <div className="doc-card-header">
-                <div className="doc-icon">📝</div>
+                <div className="doc-icon"><ClipboardIcon size={20} color="#00f0ff" /></div>
                 <div>
                   <h3>Live Match Play Documentation</h3>
                   <p>Documented in real-time by the League Admin as the match unfolds.</p>
@@ -445,7 +446,7 @@ const LiveMatchCenter: React.FC = () => {
 
             {/* Ball-by-ball Commentary Feed */}
             <div className="commentary-card">
-              <h3>🎙️ Ball-by-Ball Live Commentary</h3>
+              <h3><ActivityIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Ball-by-Ball Live Commentary</h3>
               <div className="commentary-feed">
                 {selectedMatch.commentary && selectedMatch.commentary.length > 0 ? (
                   selectedMatch.commentary.map((c) => (
@@ -471,7 +472,7 @@ const LiveMatchCenter: React.FC = () => {
             <div className="admin-console-column">
               <div className="admin-console-card">
                 <div className="admin-console-header">
-                  <span className="shield-icon">🛡️</span>
+                  <span className="shield-icon"><ShieldIcon size={20} color="#00f0ff" /></span>
                   <h3>League Admin Live Console</h3>
                   <p>Edit scores & document live play in real-time</p>
                 </div>
@@ -482,20 +483,20 @@ const LiveMatchCenter: React.FC = () => {
 
                 {/* Quick Score Buttons */}
                 <div className="admin-section-box">
-                  <label className="section-title">⚡ Quick Score Increment</label>
+                  <label className="section-title"><LightningIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Quick Score Increment</label>
                   <div className="quick-buttons-grid">
                     <button className="btn-score-dot" onClick={() => handleScoreAddRuns(0)}>Dot (0)</button>
                     <button className="btn-score-run" onClick={() => handleScoreAddRuns(1)}>+1 Run</button>
                     <button className="btn-score-run" onClick={() => handleScoreAddRuns(2)}>+2 Runs</button>
                     <button className="btn-score-four" onClick={() => handleScoreAddRuns(4)}>+4 FOUR</button>
                     <button className="btn-score-six" onClick={() => handleScoreAddRuns(6)}>+6 SIX</button>
-                    <button className="btn-score-wicket" onClick={() => handleScoreAddRuns(0, true)}>⚡ WICKET</button>
+                    <button className="btn-score-wicket" onClick={() => handleScoreAddRuns(0, true)}><LightningIcon size={12} color="#fff" style={{ marginRight: 4 }} /> WICKET</button>
                   </div>
                 </div>
 
                 {/* Batting & Bowling Form */}
                 <div className="admin-section-box">
-                  <label className="section-title">🏏 Current Batter & Bowler</label>
+                  <label className="section-title"><CricketIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Current Batter & Bowler</label>
                   <div className="input-group">
                     <label>Striker Name & Score</label>
                     <input
@@ -524,7 +525,7 @@ const LiveMatchCenter: React.FC = () => {
 
                 {/* Live Play Documentation Edit Box */}
                 <div className="admin-section-box">
-                  <label className="section-title">📝 Edit Live Play Documentation</label>
+                  <label className="section-title"><ClipboardIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Edit Live Play Documentation</label>
                   <p className="field-hint">
                     Document live game analysis, pitch behavior, strategy, and turning points. This updates live for all spectators!
                   </p>
@@ -538,13 +539,13 @@ const LiveMatchCenter: React.FC = () => {
                     className="btn-admin-primary"
                     onClick={handleSaveDocumentation}
                   >
-                    💾 Save & Broadcast Play Notes
+                    <CheckIcon size={14} color="#000" style={{ marginRight: 6 }} /> Save & Broadcast Play Notes
                   </button>
                 </div>
 
                 {/* Live Commentary Entry */}
                 <div className="admin-section-box">
-                  <label className="section-title">🎙️ Add Live Commentary Line</label>
+                  <label className="section-title"><ActivityIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Add Live Commentary Line</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="text"

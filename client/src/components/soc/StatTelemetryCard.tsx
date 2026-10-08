@@ -2,7 +2,7 @@ import React from 'react';
 import './StatTelemetryCard.css';
 
 interface StatTelemetryCardProps {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   value: string | number;
   subValue?: string;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Team, League } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { ShieldIcon, CrownIcon, LightningIcon, CricketIcon } from '../components/Icons';
 import './Teams.css';
 
 const Teams: React.FC = () => {
@@ -84,7 +85,7 @@ const Teams: React.FC = () => {
       {/* 1. Header Bar with League Selection */}
       <div className="soc-squads-top-bar">
         <div className="squads-headline-group">
-          <h2>🛡️ Squad Command Deck</h2>
+          <h2><ShieldIcon size={22} color="#00f0ff" style={{ marginRight: 8 }} /> Squad Command Deck</h2>
           <p className="squads-subtitle">
             Tactical squad compositions, purse balances, and verified player rosters
           </p>
@@ -136,7 +137,7 @@ const Teams: React.FC = () => {
       {/* 3. Empty State if No Squads Exist */}
       {teams.length === 0 ? (
         <div className="soc-empty-state-card">
-          <div className="soc-empty-radar-icon">🛡️</div>
+          <div className="soc-empty-radar-icon"><ShieldIcon size={48} color="#64748b" /></div>
           <h3>NO ACTIVE SQUADS FOUND</h3>
           <p>
             {leagues.length === 0 
@@ -146,10 +147,10 @@ const Teams: React.FC = () => {
           </p>
           <div className="empty-state-actions">
             <Link to="/league-admin" className="soc-btn-create-league">
-              ⚡ Open League Operations
+              <LightningIcon size={14} color="#00f0ff" style={{ marginRight: 6 }} /> Open League Operations
             </Link>
             <Link to="/register-player" className="soc-btn-primary-sm">
-              🏏 Player Registration
+              <CricketIcon size={14} color="#10b981" style={{ marginRight: 6 }} /> Player Registration
             </Link>
           </div>
         </div>
@@ -174,7 +175,7 @@ const Teams: React.FC = () => {
                     <div>
                       <h3 className="team-name-title">{team.name}</h3>
                       <div className="team-captain-pill">
-                        <span className="captain-icon">👑</span>
+                        <span className="captain-icon"><CrownIcon size={12} color="#facc15" /></span>
                         <span>Captain: {team.captain_name || 'Unassigned'}</span>
                       </div>
                     </div>

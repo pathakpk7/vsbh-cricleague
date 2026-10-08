@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { League, Player } from '../types';
 import LiveOperationsBanner from '../components/soc/LiveOperationsBanner';
 import StatTelemetryCard from '../components/soc/StatTelemetryCard';
+import { CricketIcon, ShieldIcon, TrophyIcon, ActivityIcon, GavelIcon, TargetIcon, GloveIcon, LightningIcon } from '../components/Icons';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -96,7 +97,7 @@ const Dashboard: React.FC = () => {
       {/* 2. Real-Time Telemetry HUD Grid */}
       <div className="soc-telemetry-grid">
         <StatTelemetryCard 
-          icon="🏏"
+          icon={<CricketIcon size={24} color="#00f0ff" />}
           title="Auction Pool Velocity"
           value={stats.totalPlayers}
           subValue={`${stats.availablePlayers} Available • ${stats.soldPlayers} Signed`}
@@ -107,7 +108,7 @@ const Dashboard: React.FC = () => {
         />
 
         <StatTelemetryCard 
-          icon="🛡️"
+          icon={<ShieldIcon size={24} color="#10b981" />}
           title="Franchise Squads"
           value={stats.totalTeams}
           subValue={`Multi-tenant franchise squads across leagues`}
@@ -118,7 +119,7 @@ const Dashboard: React.FC = () => {
         />
 
         <StatTelemetryCard 
-          icon="⚡"
+          icon={<TrophyIcon size={24} color="#facc15" />}
           title="Active Tournament Hubs"
           value={leagues.length}
           subValue={`Isolated rooms with Captain Key security`}
@@ -129,7 +130,7 @@ const Dashboard: React.FC = () => {
         />
 
         <StatTelemetryCard 
-          icon="🔴"
+          icon={<ActivityIcon size={24} color="#ef4444" />}
           title="Match Operations"
           value={stats.totalMatches}
           subValue={`${stats.liveMatchesCount} In-play • Ball-by-ball play doc`}
@@ -147,7 +148,7 @@ const Dashboard: React.FC = () => {
           <div className="soc-card-wrapper">
             <div className="soc-card-header">
               <div className="header-title-group">
-                <span className="header-glyph">🏆</span>
+                <span className="header-glyph"><TrophyIcon size={20} color="#facc15" /></span>
                 <div>
                   <h3>Cricket Tournaments & Leagues</h3>
                   <small>Independent concurrent leagues with unique player codes</small>
@@ -185,10 +186,10 @@ const Dashboard: React.FC = () => {
 
                   <div className="unit-actions-row">
                     <Link to={`/register-player?league=${league.code}`} className="soc-unit-action-btn reg-btn">
-                      🏏 Register Player
+                      <CricketIcon size={14} color="#00f0ff" style={{ marginRight: 4 }} /> Register Player
                     </Link>
                     <Link to={`/auction?league=${league.id}`} className="soc-unit-action-btn auction-btn">
-                      🎯 Arena Entry
+                      <GavelIcon size={14} color="#facc15" style={{ marginRight: 4 }} /> Arena Entry
                     </Link>
                   </div>
                 </div>
@@ -202,7 +203,7 @@ const Dashboard: React.FC = () => {
           <div className="soc-card-wrapper">
             <div className="soc-card-header">
               <div className="header-title-group">
-                <span className="header-glyph">📡</span>
+                <span className="header-glyph"><ActivityIcon size={20} color="#00f0ff" /></span>
                 <div>
                   <h3>Player Scouting Radar</h3>
                   <small>Recent registrations with playing styles</small>
@@ -218,9 +219,9 @@ const Dashboard: React.FC = () => {
                 recentPlayers.map(player => (
                   <div key={player.id} className="soc-scouting-player-item">
                     <div className="player-avatar-badge">
-                      {player.role === 'batter' ? '🏏' : 
-                       player.role === 'bowler' ? '🎯' : 
-                       player.role === 'wicketkeeper' ? '🧤' : '⚡'}
+                      {player.role === 'batter' ? <CricketIcon size={16} color="#00f0ff" /> : 
+                       player.role === 'bowler' ? <TargetIcon size={16} color="#f59e0b" /> : 
+                       player.role === 'wicketkeeper' ? <GloveIcon size={16} color="#10b981" /> : <LightningIcon size={16} color="#a855f7" />}
                     </div>
 
                     <div className="player-info-meta">
@@ -245,7 +246,7 @@ const Dashboard: React.FC = () => {
 
                       {player.special_skills && (
                         <div className="player-skills-snippet">
-                          ⚡ {player.special_skills}
+                          <LightningIcon size={12} color="#facc15" style={{ marginRight: 4 }} /> {player.special_skills}
                         </div>
                       )}
                     </div>
@@ -269,13 +270,13 @@ const Dashboard: React.FC = () => {
       {/* 4. Operations Command Grid */}
       <div className="soc-quick-operations-panel">
         <div className="panel-header">
-          <h3>⚡ Quick Operations Matrix</h3>
+          <h3><LightningIcon size={18} color="#00f0ff" style={{ marginRight: 6 }} /> Quick Operations Matrix</h3>
           <span>One-click access to all tournament command centers</span>
         </div>
 
         <div className="operations-matrix-grid">
           <Link to="/auction" className="matrix-tile">
-            <span className="tile-icon">🎯</span>
+            <span className="tile-icon"><GavelIcon size={24} color="#00f0ff" /></span>
             <div className="tile-text">
               <strong>Live Auction Arena</strong>
               <p>Captain Bidding Mode with unique key, real-time timer countdown, and squad rosters</p>
@@ -283,7 +284,7 @@ const Dashboard: React.FC = () => {
           </Link>
 
           <Link to="/live-matches" className="matrix-tile">
-            <span className="tile-icon">🔴</span>
+            <span className="tile-icon"><ActivityIcon size={24} color="#ef4444" /></span>
             <div className="tile-text">
               <strong>Match Center & Scoring</strong>
               <p>Ball-by-ball commentary, runs tracker, and live play documentation</p>
@@ -291,7 +292,7 @@ const Dashboard: React.FC = () => {
           </Link>
 
           <Link to="/register-player" className="matrix-tile">
-            <span className="tile-icon">🏏</span>
+            <span className="tile-icon"><CricketIcon size={24} color="#10b981" /></span>
             <div className="tile-text">
               <strong>Direct Player Registration</strong>
               <p>In-website registration with Batting, Bowling, and All-Rounder specifications</p>
@@ -299,7 +300,7 @@ const Dashboard: React.FC = () => {
           </Link>
 
           <Link to="/league-admin" className="matrix-tile">
-            <span className="tile-icon">🏆</span>
+            <span className="tile-icon"><TrophyIcon size={24} color="#facc15" /></span>
             <div className="tile-text">
               <strong>League Administration Hub</strong>
               <p>Configure number of teams, set registration deadlines, and reveal Captain Auction Keys</p>

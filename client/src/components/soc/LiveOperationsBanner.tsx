@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GavelIcon, ActivityIcon, CricketIcon, TrophyIcon } from '../Icons';
 import './LiveOperationsBanner.css';
 
 interface LiveOperationsBannerProps {
@@ -56,10 +57,10 @@ const LiveOperationsBanner: React.FC<LiveOperationsBannerProps> = ({
             onClick={() => navigate('/auction')}
           >
             <div className="btn-glow-layer"></div>
-            <span className="btn-icon">🎯</span>
+            <span className="btn-icon"><GavelIcon size={24} color="#00f0ff" /></span>
             <div className="btn-text-block">
               <span className="btn-label">Live Auction Arena</span>
-              <small>{isAuctionActive ? '🔴 Bidding in progress' : 'Captains & Spectators'}</small>
+              <small>{isAuctionActive ? 'Bidding in progress' : 'Captains & Spectators'}</small>
             </div>
           </button>
 
@@ -68,7 +69,7 @@ const LiveOperationsBanner: React.FC<LiveOperationsBannerProps> = ({
             onClick={() => navigate('/live-matches')}
           >
             <div className="btn-glow-layer"></div>
-            <span className="btn-icon">🔴</span>
+            <span className="btn-icon"><ActivityIcon size={24} color="#ef4444" /></span>
             <div className="btn-text-block">
               <span className="btn-label">Match Center</span>
               <small>{totalLiveMatches > 0 ? `${totalLiveMatches} Active Match` : 'Ball-by-ball Scoring'}</small>
@@ -80,7 +81,7 @@ const LiveOperationsBanner: React.FC<LiveOperationsBannerProps> = ({
             onClick={() => navigate('/register-player')}
           >
             <div className="btn-glow-layer"></div>
-            <span className="btn-icon">🏏</span>
+            <span className="btn-icon"><CricketIcon size={24} color="#10b981" /></span>
             <div className="btn-text-block">
               <span className="btn-label">Register Player</span>
               <small>Choose Playing Styles</small>
@@ -92,7 +93,7 @@ const LiveOperationsBanner: React.FC<LiveOperationsBannerProps> = ({
             onClick={() => navigate('/league-admin')}
           >
             <div className="btn-glow-layer"></div>
-            <span className="btn-icon">🏆</span>
+            <span className="btn-icon"><TrophyIcon size={24} color="#facc15" /></span>
             <div className="btn-text-block">
               <span className="btn-label">League Hub</span>
               <small>{totalLeaguesCount} Leagues Managed</small>
