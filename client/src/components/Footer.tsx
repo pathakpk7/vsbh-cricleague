@@ -7,25 +7,17 @@ const Footer: React.FC = () => {
   const location = useLocation();
   const isAuctionPage = location.pathname === '/auction';
 
-  // Live Auction Arena uses an ultra-slim, dedicated broadcast telemetry strip
+  // Live Auction Arena uses an ultra-slim, streamlined status strip
   if (isAuctionPage) {
     return (
       <footer className="soc-auction-footer">
         <div className="soc-auction-footer-inner">
-          <div className="auction-footer-status">
+          <div className="auction-footer-left">
             <span className="live-dot-pulse"></span>
-            <span className="auction-status-tag">PITCHBID PRO LIVE</span>
-            <span className="soc-footer-sep">•</span>
-            <span className="auction-telemetry-text">REAL-TIME BIDDING TELEMETRY ACTIVE</span>
+            <span className="auction-status-tag">PITCHBID PRO LIVE AUCTION</span>
           </div>
 
-          <div className="auction-footer-center">
-            <span>PITCHBID PRO OPERATIONS CENTER</span>
-            <span className="soc-footer-sep">•</span>
-            <span className="auction-center-hint">OFFICIAL DRAFT & AUCTION ARENA</span>
-          </div>
-
-          <div className="auction-footer-actions">
+          <div className="auction-footer-right">
             <Link to="/" className="auction-footer-exit-link">
               ← Return to Deck
             </Link>

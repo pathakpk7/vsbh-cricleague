@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { socket } from '../config/socket';
 import { useAuth } from '../contexts/AuthContext';
 import { Player, Team, League } from '../types';
@@ -15,6 +15,7 @@ interface DisclosedPools {
 }
 
 const Auction: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, activeLeagueId, setActiveLeagueId, loginCaptain } = useAuth();
 
@@ -331,11 +332,33 @@ const Auction: React.FC = () => {
 
   const getTeamById = (teamId: string) => teams.find(t => t.id === teamId);
 
-  if (isLoading && !currentLeague) {
+  if (isLoading && leagues.length === 0) {
     return (
       <div className="auction-container">
         <div style={{ textAlign: 'center', padding: '60px', color: '#94a3b8' }}>
           Loading live cricket auction arena...
+        </div>
+      </div>
+    );
+  }
+
+  if (leagues.length === 0) {
+    return (
+      <div className="auction-container">
+        <div className="auction-empty-state-card">
+          <div className="empty-state-icon">🏏</div>
+          <h2>No Active Tournaments or Leagues Found</h2>
+          <p>
+            The auction floor starts completely fresh with zero mock data. Create a tournament league from the League Management desk to initialize team purses, squads, and bidding pools.
+          </p>
+          <div className="empty-state-actions">
+            <button onClick={() => navigate('/league-admin')} className="btn-primary-action">
+              + Create Tournament League
+            </button>
+            <button onClick={() => navigate('/register-player')} className="btn-secondary-action">
+              Register New Player
+            </button>
+          </div>
         </div>
       </div>
     );
