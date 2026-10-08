@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { League, Team } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { BarChartIcon, CricketIcon, LightningIcon, ShieldIcon } from '../components/Icons';
+import { supabase } from '../config/supabase';
 import './PointsTable.css';
 
 interface TeamStanding {
@@ -35,13 +36,28 @@ const PointsTable: React.FC = () => {
 
   const fetchLeagues = async () => {
     try {
-      const res = await fetch('/api/leagues');
-      const data = await res.json();
-      if (res.ok && data.success && data.data.length > 0) {
-        setLeagues(data.data);
-        if (!selectedLeagueId) {
-          setSelectedLeagueId(data.data[0].id);
+      let list: League[] = [];
+      try {
+        const res = await fetch('/api/leagues');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) list = data.data;
         }
+      } catch (e) {}
+
+      if (list.length === 0 && supabase) {
+        try {
+          const { data: sbL } = await supabase.from('leagues').select('*').order('created_at', { ascending: false });
+          if (sbL && sbL.length > 0) list = sbL;
+        } catch (e) {}
+      }
+
+      if (list.length > 0) {
+        setLeagues(list);
+        const savedId = selectedLeagueId || localStorage.getItem('vsbh_active_league');
+        const chosen = (savedId ? list.find((l: League) => l.id === savedId) : null) || list[0];
+        setSelectedLeagueId(chosen.id);
+        localStorage.setItem('vsbh_active_league', chosen.id);
       }
     } catch (e) {
       console.error('Failed to load leagues in PointsTable:', e);
@@ -54,14 +70,33 @@ const PointsTable: React.FC = () => {
       const teamsUrl = leagueId ? `/api/teams?leagueId=${leagueId}` : '/api/teams';
       const matchesUrl = leagueId ? `/api/matches?leagueId=${leagueId}` : '/api/matches';
 
-      const [teamsRes, matchesRes] = await Promise.all([
-        fetch(teamsUrl),
-        fetch(matchesUrl)
-      ]);
+      let teamsData: Team[] = [];
+      let matchesData: any[] = [];
 
-      const teamsData: Team[] = await teamsRes.json();
-      const matchesJson = await matchesRes.json();
-      const matchesData: any[] = matchesJson.data || [];
+      try {
+        const [teamsRes, matchesRes] = await Promise.all([
+          fetch(teamsUrl),
+          fetch(matchesUrl)
+        ]);
+        const tJson = await teamsRes.json();
+        if (Array.isArray(tJson)) teamsData = tJson;
+        const mJson = await matchesRes.json();
+        if (mJson.data && Array.isArray(mJson.data)) matchesData = mJson.data;
+      } catch (e) {}
+
+      if (teamsData.length === 0 && supabase) {
+        try {
+          let qT = supabase.from('teams').select('*');
+          if (leagueId) qT = qT.eq('league_id', leagueId);
+          const { data: sbT } = await qT;
+          if (sbT) teamsData = sbT;
+
+          let qM = supabase.from('matches').select('*');
+          if (leagueId) qM = qM.eq('league_id', leagueId);
+          const { data: sbM } = await qM;
+          if (sbM) matchesData = sbM;
+        } catch (e) {}
+      }
 
       if (!Array.isArray(teamsData) || teamsData.length === 0) {
         setStandings([]);

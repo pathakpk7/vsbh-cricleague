@@ -3,8 +3,11 @@ const router = express.Router();
 const db = require('../services/db');
 
 // Get all players (optionally by leagueId and filters)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
+    if (!db.data.players || db.data.players.length === 0) {
+      await db.syncFromSupabase();
+    }
     const { leagueId, status, role } = req.query;
     const players = db.getPlayers(leagueId, { status, role });
     res.json(players);
@@ -14,8 +17,11 @@ router.get('/', (req, res) => {
 });
 
 // Get available players for auction (optionally by leagueId)
-router.get('/available', (req, res) => {
+router.get('/available', async (req, res) => {
   try {
+    if (!db.data.players || db.data.players.length === 0) {
+      await db.syncFromSupabase();
+    }
     const { leagueId } = req.query;
     const players = db.getPlayers(leagueId, { status: 'available' });
     res.json(players);

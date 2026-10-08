@@ -25,6 +25,7 @@ import {
   StarIcon,
   PlayIcon
 } from '../components/Icons';
+import { supabase } from '../config/supabase';
 import './Auction.css';
 
 interface DisclosedPools {
@@ -185,15 +186,31 @@ const Auction: React.FC = () => {
 
   const fetchLeagues = async () => {
     try {
-      const res = await fetch('/api/leagues');
-      const data = await res.json();
-      if (res.ok && data.success && data.data.length > 0) {
-        setLeagues(data.data);
-        if (!currentLeagueId) {
-          const defaultId = data.data[0].id;
-          setCurrentLeagueId(defaultId);
-          setActiveLeagueId(defaultId);
+      let list: League[] = [];
+      try {
+        const res = await fetch('/api/leagues');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+            list = data.data;
+          }
         }
+      } catch (e) {}
+
+      if (list.length === 0 && supabase) {
+        try {
+          const { data: sbLeagues } = await supabase.from('leagues').select('*').order('created_at', { ascending: false });
+          if (sbLeagues && sbLeagues.length > 0) list = sbLeagues;
+        } catch (e) {}
+      }
+
+      if (list.length > 0) {
+        setLeagues(list);
+        const savedId = currentLeagueId || localStorage.getItem('vsbh_active_league');
+        const selected = (savedId ? list.find((l: League) => l.id === savedId) : null) || list[0];
+        setCurrentLeagueId(selected.id);
+        setActiveLeagueId(selected.id);
+        localStorage.setItem('vsbh_active_league', selected.id);
       }
     } catch (e) {
       console.error('Error fetching leagues:', e);
@@ -204,39 +221,82 @@ const Auction: React.FC = () => {
     try {
       setIsLoading(true);
       // Fetch league info
-      const lRes = await fetch(`/api/leagues/${leagueId}`);
-      const lData = await lRes.json();
-      if (lRes.ok && lData.success) {
-        setCurrentLeague(lData.data);
+      let leagueInfo: any = null;
+      try {
+        const lRes = await fetch(`/api/leagues/${leagueId}`);
+        if (lRes.ok) {
+          const lData = await lRes.json();
+          if (lData.success) leagueInfo = lData.data;
+        }
+      } catch (e) {}
+      if (!leagueInfo && supabase) {
+        try {
+          const { data: sbL } = await supabase.from('leagues').select('*').eq('id', leagueId).single();
+          if (sbL) leagueInfo = sbL;
+        } catch (e) {}
       }
+      if (leagueInfo) setCurrentLeague(leagueInfo);
 
       // Fetch auction state
-      const stateRes = await fetch(`/api/auction/state?leagueId=${leagueId}`);
-      const stateData = await stateRes.json();
-      if (stateRes.ok && stateData.success && stateData.data) {
-        const auction = stateData.data;
-        setCurrentBid(auction.current_bid || 10);
-        setTimer(auction.timer_seconds !== undefined ? auction.timer_seconds : 30);
-        setIsAuctionActive(!!auction.is_active);
-        setLeadingTeamId(auction.current_team_id || null);
-        setCurrentPlayer(auction.currentPlayer || null);
-        if (auction.currentPlayer) {
-          setActivePoolTab(getPlayerCategory(auction.currentPlayer));
+      try {
+        const stateRes = await fetch(`/api/auction/state?leagueId=${leagueId}`);
+        const stateData = await stateRes.json();
+        if (stateRes.ok && stateData.success && stateData.data) {
+          const auction = stateData.data;
+          setCurrentBid(auction.current_bid || 10);
+          setTimer(auction.timer_seconds !== undefined ? auction.timer_seconds : 30);
+          setIsAuctionActive(!!auction.is_active);
+          setLeadingTeamId(auction.current_team_id || null);
+          setCurrentPlayer(auction.currentPlayer || null);
+          if (auction.currentPlayer) {
+            setActivePoolTab(getPlayerCategory(auction.currentPlayer));
+          }
         }
-      }
+      } catch (e) {}
 
       // Fetch teams with their bought players
-      const teamsRes = await fetch(`/api/teams?leagueId=${leagueId}`);
-      const teamsData = await teamsRes.json();
-      if (teamsRes.ok) {
-        setTeams(teamsData);
+      let teamsList: any[] = [];
+      try {
+        const teamsRes = await fetch(`/api/teams?leagueId=${leagueId}`);
+        if (teamsRes.ok) {
+          const teamsData = await teamsRes.json();
+          if (Array.isArray(teamsData) && teamsData.length > 0) teamsList = teamsData;
+        }
+      } catch (e) {}
+      if (teamsList.length === 0 && supabase) {
+        try {
+          const { data: sbTeams } = await supabase.from('teams').select('*').eq('league_id', leagueId);
+          if (sbTeams) teamsList = sbTeams;
+        } catch (e) {}
       }
+      setTeams(teamsList);
 
-      // Fetch disclosed category pools
-      const poolsRes = await fetch(`/api/auction/pools?leagueId=${leagueId}`);
-      const poolsData = await poolsRes.json();
-      if (poolsRes.ok && poolsData.success && poolsData.data?.pools) {
-        setPools(poolsData.data.pools);
+      // Fetch disclosed category pools or players from Supabase
+      let poolsLoaded = false;
+      try {
+        const poolsRes = await fetch(`/api/auction/pools?leagueId=${leagueId}`);
+        const poolsData = await poolsRes.json();
+        if (poolsRes.ok && poolsData.success && poolsData.data?.pools) {
+          setPools(poolsData.data.pools);
+          poolsLoaded = true;
+        }
+      } catch (e) {}
+
+      if (!poolsLoaded && supabase) {
+        try {
+          const { data: sbPlayers } = await supabase.from('players').select('*').eq('league_id', leagueId);
+          if (sbPlayers && sbPlayers.length > 0) {
+            const categorized: DisclosedPools = {
+              batters: sbPlayers.filter(p => p.role === 'batter'),
+              wicketkeepers: sbPlayers.filter(p => p.role === 'wicketkeeper' || p.is_wicketkeeper),
+              allrounders: sbPlayers.filter(p => p.role === 'all-rounder'),
+              pacers: sbPlayers.filter(p => p.role === 'bowler' && p.bowling_category === 'pace'),
+              spinners: sbPlayers.filter(p => p.role === 'bowler' && p.bowling_category === 'spin'),
+              other: []
+            };
+            setPools(categorized);
+          }
+        } catch (e) {}
       }
     } catch (e) {
       console.error('Error loading auction data:', e);

@@ -4,6 +4,7 @@ import { socket } from '../config/socket';
 import { useAuth } from '../contexts/AuthContext';
 import { Match, League } from '../types';
 import { ActivityIcon, LocationPinIcon, ClipboardIcon, ShieldIcon, LightningIcon, CricketIcon, CheckIcon } from '../components/Icons';
+import { supabase } from '../config/supabase';
 import './LiveMatchCenter.css';
 
 const LiveMatchCenter: React.FC = () => {
@@ -21,6 +22,8 @@ const LiveMatchCenter: React.FC = () => {
   const [commentaryText, setCommentaryText] = useState('');
   const [documentationNotes, setDocumentationNotes] = useState('');
   const [adminStatus, setAdminStatus] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(false);
 
   // New match form state
   const [showCreateMatch, setShowCreateMatch] = useState(false);
@@ -88,13 +91,28 @@ const LiveMatchCenter: React.FC = () => {
 
   const fetchLeagues = async () => {
     try {
-      const res = await fetch('/api/leagues');
-      const data = await res.json();
-      if (res.ok && data.success && data.data.length > 0) {
-        setLeagues(data.data);
-        if (!selectedLeagueId) {
-          setSelectedLeagueId(data.data[0].id);
+      let list: League[] = [];
+      try {
+        const res = await fetch('/api/leagues');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) list = data.data;
         }
+      } catch (e) {}
+
+      if (list.length === 0 && supabase) {
+        try {
+          const { data: sbL } = await supabase.from('leagues').select('*').order('created_at', { ascending: false });
+          if (sbL && sbL.length > 0) list = sbL;
+        } catch (e) {}
+      }
+
+      if (list.length > 0) {
+        setLeagues(list);
+        const savedId = selectedLeagueId || localStorage.getItem('vsbh_active_league');
+        const chosen = (savedId ? list.find((l: League) => l.id === savedId) : null) || list[0];
+        setSelectedLeagueId(chosen.id);
+        localStorage.setItem('vsbh_active_league', chosen.id);
       }
     } catch (e) {
       console.error('Error fetching leagues:', e);
@@ -104,20 +122,32 @@ const LiveMatchCenter: React.FC = () => {
   const fetchMatches = async (leagueId: string) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/matches?leagueId=${leagueId}`);
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setMatches(data.data);
-        if (data.data.length > 0) {
-          const liveMatch = data.data.find((m: Match) => m.status === 'live');
-          const chosen = liveMatch || data.data[0];
-          setSelectedMatch(chosen);
-          setDocumentationNotes(chosen.play_documentation || '');
-          setCustomStriker(chosen.current_striker || '');
-          setCustomBowler(chosen.current_bowler || '');
-        } else {
-          setSelectedMatch(null);
+      let list: Match[] = [];
+      try {
+        const res = await fetch(`/api/matches?leagueId=${leagueId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data)) list = data.data;
         }
+      } catch (e) {}
+
+      if (list.length === 0 && supabase) {
+        try {
+          const { data: sbM } = await supabase.from('matches').select('*').eq('league_id', leagueId).order('created_at', { ascending: true });
+          if (sbM && sbM.length > 0) list = sbM;
+        } catch (e) {}
+      }
+
+      setMatches(list);
+      if (list.length > 0) {
+        const liveMatch = list.find((m: Match) => m.status === 'live');
+        const chosen = liveMatch || list[0];
+        setSelectedMatch(chosen);
+        setDocumentationNotes(chosen.play_documentation || '');
+        setCustomStriker(chosen.current_striker || '');
+        setCustomBowler(chosen.current_bowler || '');
+      } else {
+        setSelectedMatch(null);
       }
     } catch (e) {
       console.error('Error fetching matches:', e);

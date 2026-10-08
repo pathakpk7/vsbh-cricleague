@@ -4,6 +4,7 @@ import { League, Player } from '../types';
 import LiveOperationsBanner from '../components/soc/LiveOperationsBanner';
 import StatTelemetryCard from '../components/soc/StatTelemetryCard';
 import { CricketIcon, ShieldIcon, TrophyIcon, ActivityIcon, GavelIcon, TargetIcon, GloveIcon, LightningIcon } from '../components/Icons';
+import { supabase } from '../config/supabase';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -28,42 +29,85 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
 
-      // Fetch leagues
-      const lRes = await fetch('/api/leagues');
-      const lData = await lRes.json();
-      if (lRes.ok && lData.success) {
-        setLeagues(lData.data);
+      // Fetch leagues (API with Supabase fallback)
+      let leagueList: League[] = [];
+      try {
+        const lRes = await fetch('/api/leagues');
+        if (lRes.ok) {
+          const lData = await lRes.json();
+          if (lData.success && Array.isArray(lData.data)) leagueList = lData.data;
+        }
+      } catch (e) {}
+      if (leagueList.length === 0 && supabase) {
+        try {
+          const { data: sbL } = await supabase.from('leagues').select('*').order('created_at', { ascending: false });
+          if (sbL && sbL.length > 0) leagueList = sbL;
+        } catch (e) {}
+      }
+      setLeagues(leagueList);
+
+      // Fetch players (API with Supabase fallback)
+      let playerList: Player[] = [];
+      try {
+        const pRes = await fetch('/api/players');
+        if (pRes.ok) {
+          const players = await pRes.json();
+          if (Array.isArray(players)) playerList = players;
+        }
+      } catch (e) {}
+      if (playerList.length === 0 && supabase) {
+        try {
+          const { data: sbP } = await supabase.from('players').select('*').order('created_at', { ascending: false });
+          if (sbP && sbP.length > 0) playerList = sbP;
+        } catch (e) {}
       }
 
-      // Fetch players
-      const pRes = await fetch('/api/players');
-      const players = await pRes.json();
-
-      // Fetch teams
-      const tRes = await fetch('/api/teams');
-      const teams = await tRes.json();
-
-      // Fetch matches
-      const mRes = await fetch('/api/matches');
-      const mData = await mRes.json();
-      const matches = mData.data || [];
-
-      if (Array.isArray(players)) {
-        const sold = players.filter((p: any) => p.status === 'sold').length;
-        const available = players.filter((p: any) => p.status === 'available').length;
-        
-        setStats({
-          totalPlayers: players.length,
-          totalTeams: Array.isArray(teams) ? teams.length : 0,
-          totalMatches: Array.isArray(matches) ? matches.length : 0,
-          soldPlayers: sold,
-          availablePlayers: available,
-          liveMatchesCount: Array.isArray(matches) ? matches.filter((m: any) => m.status === 'live').length : 0
-        });
-
-        // Take last 4 players
-        setRecentPlayers(players.slice(-4).reverse());
+      // Fetch teams (API with Supabase fallback)
+      let teamList: any[] = [];
+      try {
+        const tRes = await fetch('/api/teams');
+        if (tRes.ok) {
+          const teams = await tRes.json();
+          if (Array.isArray(teams)) teamList = teams;
+        }
+      } catch (e) {}
+      if (teamList.length === 0 && supabase) {
+        try {
+          const { data: sbT } = await supabase.from('teams').select('*');
+          if (sbT && sbT.length > 0) teamList = sbT;
+        } catch (e) {}
       }
+
+      // Fetch matches (API with Supabase fallback)
+      let matchList: any[] = [];
+      try {
+        const mRes = await fetch('/api/matches');
+        if (mRes.ok) {
+          const mData = await mRes.json();
+          if (mData.success && Array.isArray(mData.data)) matchList = mData.data;
+        }
+      } catch (e) {}
+      if (matchList.length === 0 && supabase) {
+        try {
+          const { data: sbM } = await supabase.from('matches').select('*');
+          if (sbM && sbM.length > 0) matchList = sbM;
+        } catch (e) {}
+      }
+
+      const sold = playerList.filter((p: any) => p.status === 'sold').length;
+      const available = playerList.filter((p: any) => p.status === 'available').length;
+      
+      setStats({
+        totalPlayers: playerList.length,
+        totalTeams: teamList.length,
+        totalMatches: matchList.length,
+        soldPlayers: sold,
+        availablePlayers: available,
+        liveMatchesCount: matchList.filter((m: any) => m.status === 'live').length
+      });
+
+      // Take last 4 players
+      setRecentPlayers(playerList.slice(-4).reverse());
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {

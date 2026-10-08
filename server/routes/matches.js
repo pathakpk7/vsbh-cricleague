@@ -3,8 +3,11 @@ const router = express.Router();
 const db = require('../services/db');
 
 // Get all matches (optionally filtered by leagueId)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
+    if (!db.data.matches || db.data.matches.length === 0) {
+      await db.syncFromSupabase();
+    }
     const { leagueId } = req.query;
     const matches = db.getMatches(leagueId);
     res.json({ success: true, data: matches });

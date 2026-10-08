@@ -3,8 +3,11 @@ const router = express.Router();
 const db = require('../services/db');
 
 // Get all leagues (public)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
+    if (!db.data.leagues || db.data.leagues.length === 0) {
+      await db.syncFromSupabase();
+    }
     const leagues = db.getLeagues();
     res.json({ success: true, data: leagues });
   } catch (error) {
@@ -13,12 +16,13 @@ router.get('/', (req, res) => {
 });
 
 // Get league by ID or Code
-router.get('/:idOrCode', (req, res) => {
+router.get('/:idOrCode', async (req, res) => {
   try {
     const { idOrCode } = req.params;
-    let league = db.getLeagueById(idOrCode);
+    let league = db.getLeagueById(idOrCode) || db.getLeagueByCode(idOrCode);
     if (!league) {
-      league = db.getLeagueByCode(idOrCode);
+      await db.syncFromSupabase();
+      league = db.getLeagueById(idOrCode) || db.getLeagueByCode(idOrCode);
     }
     if (!league) {
       return res.status(404).json({ success: false, message: 'League not found' });

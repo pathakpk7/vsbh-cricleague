@@ -18,6 +18,7 @@ import {
   PlusIcon, 
   AlertTriangleIcon 
 } from '../components/Icons';
+import { supabase } from '../config/supabase';
 import './PlayerRegistration.css';
 
 const PlayerRegistration: React.FC = () => {
@@ -68,13 +69,31 @@ const PlayerRegistration: React.FC = () => {
 
   const fetchOpenLeagues = async () => {
     try {
-      const res = await fetch('/api/leagues');
-      const data = await res.json();
-      if (res.ok && data.success && Array.isArray(data.data)) {
-        setAllLeagues(data.data);
-        const queryLeague = searchParams.get('league');
+      let leaguesList: League[] = [];
+      try {
+        const res = await fetch('/api/leagues');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+            leaguesList = data.data;
+          }
+        }
+      } catch (e) {}
+
+      if (leaguesList.length === 0 && supabase) {
+        try {
+          const { data: sbLeagues } = await supabase.from('leagues').select('*').order('created_at', { ascending: false });
+          if (sbLeagues && sbLeagues.length > 0) {
+            leaguesList = sbLeagues;
+          }
+        } catch (e) {}
+      }
+
+      if (leaguesList.length > 0) {
+        setAllLeagues(leaguesList);
+        const queryLeague = searchParams.get('league') || localStorage.getItem('vsbh_active_league');
         if (queryLeague) {
-          const match = data.data.find(
+          const match = leaguesList.find(
             (l: League) => l.code?.toUpperCase() === queryLeague.toUpperCase() || l.id === queryLeague
           );
           if (match) {
@@ -83,7 +102,7 @@ const PlayerRegistration: React.FC = () => {
           }
         }
         // Auto-select open league or first available league
-        const defaultOpen = data.data.find((l: League) => l.registration_status === 'open') || data.data[0];
+        const defaultOpen = leaguesList.find((l: League) => l.registration_status === 'open') || leaguesList[0];
         if (defaultOpen) {
           selectLeague(defaultOpen);
         }
@@ -97,6 +116,7 @@ const PlayerRegistration: React.FC = () => {
     setLeagueInfo(league);
     setLeagueCode(league.code);
     setActiveLeagueId(league.id);
+    localStorage.setItem('vsbh_active_league', league.id);
     setLeagueError(null);
   };
 
@@ -105,14 +125,32 @@ const PlayerRegistration: React.FC = () => {
     setIsVerifyingLeague(true);
     setLeagueError(null);
     try {
-      const res = await fetch(`/api/leagues/${codeToVerify.trim()}`);
-      const data = await res.json();
-      if (res.ok && data.success) {
-        selectLeague(data.data);
+      let foundLeague: League | null = null;
+      try {
+        const res = await fetch(`/api/leagues/${codeToVerify.trim()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data) foundLeague = data.data;
+        }
+      } catch (e) {}
+
+      if (!foundLeague && supabase) {
+        try {
+          const { data: sbL } = await supabase
+            .from('leagues')
+            .select('*')
+            .or(`code.eq.${codeToVerify.trim().toUpperCase()},id.eq.${codeToVerify.trim()}`)
+            .single();
+          if (sbL) foundLeague = sbL;
+        } catch (e) {}
+      }
+
+      if (foundLeague) {
+        selectLeague(foundLeague);
         setShowCustomCode(false);
       } else {
         setLeagueInfo(null);
-        setLeagueError(data.message || 'Invalid League Key. Please verify with tournament organizer.');
+        setLeagueError('Invalid League Key. Please verify with tournament organizer.');
       }
     } catch (err: any) {
       setLeagueError('Could not verify league key. Please check connection.');
@@ -173,21 +211,77 @@ const PlayerRegistration: React.FC = () => {
     setErrorMessage(null);
 
     try {
-      const res = await fetch('/api/auth/player-register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leagueCode: leagueInfo.code,
-          ...formData
-        })
-      });
+      let registeredPlayer: any = null;
 
-      const data = await res.json();
+      try {
+        const res = await fetch('/api/auth/player-register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            leagueCode: leagueInfo.code,
+            ...formData
+          })
+        });
 
-      if (res.ok && data.success) {
-        setSubmitSuccess(data.data);
-      } else {
-        setErrorMessage(data.message || 'Player registration failed');
+        const data = await res.json();
+        if (res.ok && data.success) {
+          registeredPlayer = data.data;
+        } else if (data.message) {
+          setErrorMessage(data.message);
+          setIsSubmitting(false);
+          return;
+        }
+      } catch (apiErr) {
+        console.warn('API error during player registration, proceeding with direct Supabase:', apiErr);
+      }
+
+      // If API failed or to ensure guaranteed persistence, write directly to Supabase
+      if (!registeredPlayer && supabase) {
+        try {
+          const playerPayload = {
+            league_id: leagueInfo.id,
+            name: formData.name.trim(),
+            email: formData.email.trim().toLowerCase(),
+            phone: formData.phone.trim(),
+            role: formData.role,
+            department: formData.department.trim(),
+            college_id: formData.college_id.trim(),
+            year: formData.year.trim(),
+            base_price: Number(formData.base_price) || 10,
+            password: formData.password || 'player123',
+            is_available: formData.is_available,
+            batting_hand: formData.batting_hand,
+            batting_position: formData.batting_position,
+            bowling_arm: formData.bowling_arm,
+            bowling_category: formData.bowling_category,
+            bowling_type: formData.bowling_type,
+            allrounder_type: formData.allrounder_type,
+            is_wicketkeeper: formData.is_wicketkeeper,
+            experience_level: formData.experience_level,
+            jersey_number: formData.jersey_number ? Number(formData.jersey_number) : null,
+            special_skills: formData.special_skills.trim(),
+            status: 'available',
+            registered_at: new Date().toISOString()
+          };
+
+          const { data: insData, error: insErr } = await supabase.from('players').insert([playerPayload]).select();
+          if (!insErr && insData && insData.length > 0) {
+            registeredPlayer = {
+              player: insData[0],
+              league: leagueInfo
+            };
+          } else if (insErr) {
+            console.error('Direct Supabase player insert error:', insErr);
+          }
+        } catch (sbErr) {
+          console.error('Direct Supabase insert exception:', sbErr);
+        }
+      }
+
+      if (registeredPlayer) {
+        setSubmitSuccess(registeredPlayer);
+      } else if (!errorMessage) {
+        setErrorMessage('Player registration failed. Please verify database connection.');
       }
     } catch (err: any) {
       setErrorMessage('Network error during registration');

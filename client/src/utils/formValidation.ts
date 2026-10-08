@@ -4,7 +4,7 @@
  */
 
 // Validation regex patterns
-export const validationPatterns = {
+export const validationPatterns: Record<string, RegExp> = {
   // Name validation: letters, spaces, hyphens, apostrophes, periods
   name: /^[a-zA-Z\s\-',.]{2,50}$/,
   
@@ -37,7 +37,7 @@ export const validationPatterns = {
 };
 
 // Validation error messages
-export const validationMessages = {
+export const validationMessages: Record<string, any> = {
   name: {
     required: 'Name is required',
     invalid: 'Name can only contain letters, spaces, hyphens, apostrophes, and periods',

@@ -55,23 +55,44 @@ class DatabaseService {
   async syncFromSupabase() {
     if (!supabase || typeof supabase.from !== 'function') return;
     try {
-      if (this.data.players.length === 0) {
-        const { data: dbPlayers } = await supabase.from('players').select('*');
-        if (dbPlayers && dbPlayers.length > 0) {
-          this.data.players = dbPlayers;
-          console.log(`[Supabase] Loaded ${dbPlayers.length} players from Supabase`);
-        }
+      // 1. Sync leagues
+      const { data: dbLeagues, error: lErr } = await supabase.from('leagues').select('*').order('created_at', { ascending: false });
+      if (!lErr && Array.isArray(dbLeagues) && dbLeagues.length > 0) {
+        this.data.leagues = dbLeagues;
+        console.log(`[Supabase] Loaded ${dbLeagues.length} leagues`);
       }
-      if (this.data.teams.length === 0) {
-        const { data: dbTeams } = await supabase.from('teams').select('*');
-        if (dbTeams && dbTeams.length > 0) {
-          this.data.teams = dbTeams;
-          console.log(`[Supabase] Loaded ${dbTeams.length} teams from Supabase`);
-        }
+
+      // 2. Sync teams
+      const { data: dbTeams, error: tErr } = await supabase.from('teams').select('*');
+      if (!tErr && Array.isArray(dbTeams) && dbTeams.length > 0) {
+        this.data.teams = dbTeams;
+        console.log(`[Supabase] Loaded ${dbTeams.length} teams`);
       }
+
+      // 3. Sync players
+      const { data: dbPlayers, error: pErr } = await supabase.from('players').select('*');
+      if (!pErr && Array.isArray(dbPlayers) && dbPlayers.length > 0) {
+        this.data.players = dbPlayers;
+        console.log(`[Supabase] Loaded ${dbPlayers.length} players`);
+      }
+
+      // 4. Sync team players
+      const { data: dbTeamPlayers, error: tpErr } = await supabase.from('team_players').select('*');
+      if (!tpErr && Array.isArray(dbTeamPlayers) && dbTeamPlayers.length > 0) {
+        this.data.team_players = dbTeamPlayers;
+        console.log(`[Supabase] Loaded ${dbTeamPlayers.length} team_players`);
+      }
+
+      // 5. Sync matches
+      const { data: dbMatches, error: mErr } = await supabase.from('matches').select('*');
+      if (!mErr && Array.isArray(dbMatches) && dbMatches.length > 0) {
+        this.data.matches = dbMatches;
+        console.log(`[Supabase] Loaded ${dbMatches.length} matches`);
+      }
+
       this.save();
     } catch (e) {
-      // Graceful fallback
+      console.warn('[Supabase Sync] Warning during sync:', e.message);
     }
   }
 
@@ -79,12 +100,35 @@ class DatabaseService {
     if (!supabase || typeof supabase.from !== 'function' || !record) return;
     try {
       const payload = { ...record };
-      if (table === 'teams' && !payload.captain_code) {
-        payload.captain_code = 'CAP-' + (crypto.randomBytes ? crypto.randomBytes(3).toString('hex').toUpperCase() : '001');
+
+      // Table-specific sanitization to prevent PostgREST column mismatches
+      if (table === 'teams') {
+        delete payload.team_players;
+        delete payload.players_count;
+        if (!payload.captain_code) {
+          payload.captain_code = 'CAP-' + (crypto.randomBytes ? crypto.randomBytes(3).toString('hex').toUpperCase() : '001');
+        }
+      } else if (table === 'players') {
+        delete payload.team;
+        delete payload.teamName;
+        // Ensure numeric fields
+        if (payload.base_price !== undefined) payload.base_price = Number(payload.base_price) || 10;
+        if (payload.sold_price !== undefined && payload.sold_price !== null) payload.sold_price = Number(payload.sold_price);
+      } else if (table === 'team_players') {
+        delete payload.player;
+        delete payload.players;
+        delete payload.college_id;
+        delete payload.picked_by;
+      } else if (table === 'matches') {
+        delete payload.team1;
+        delete payload.team2;
       }
+
       const { error } = await supabase.from(table).upsert(payload, { onConflict: 'id' });
       if (error) {
-        console.warn(`[Supabase Sync] ${table} upsert notice:`, error.message);
+        console.warn(`[Supabase Sync] ${table} upsert warning:`, error.message, error.details || '');
+      } else {
+        console.log(`[Supabase Sync] ${table} synced successfully:`, payload.id || payload.name || '');
       }
     } catch (err) {
       console.warn(`[Supabase Sync] Failed to sync ${table}:`, err.message);

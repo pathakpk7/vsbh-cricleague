@@ -15,6 +15,7 @@ import {
   GavelIcon, 
   BarChartIcon 
 } from '../components/Icons';
+import { supabase } from '../config/supabase';
 import './LeagueManagement.css';
 
 const LeagueManagement: React.FC = () => {
@@ -72,19 +73,45 @@ const LeagueManagement: React.FC = () => {
   const fetchLeagues = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/leagues');
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setLeagues(data.data);
-        if (data.data.length === 0) {
-          setActiveTab('create');
-        } else if (!currentLeague) {
-          const selected = activeLeagueId 
-            ? data.data.find((l: League) => l.id === activeLeagueId) || data.data[0]
-            : data.data[0];
-          setCurrentLeague(selected);
-          setActiveLeagueId(selected.id);
+      let list: League[] = [];
+
+      try {
+        const res = await fetch('/api/leagues');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+            list = data.data;
+          }
         }
+      } catch (e) {
+        console.warn('API leagues fetch error:', e);
+      }
+
+      // If API returned empty (e.g. Render spinning up), fetch directly from Supabase!
+      if (list.length === 0 && supabase) {
+        try {
+          const { data: sbLeagues, error: sbErr } = await supabase
+            .from('leagues')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!sbErr && sbLeagues && sbLeagues.length > 0) {
+            list = sbLeagues;
+            console.log('Loaded leagues directly from Supabase:', list.length);
+          }
+        } catch (sbErr) {
+          console.warn('Direct Supabase fetch error:', sbErr);
+        }
+      }
+
+      setLeagues(list);
+
+      if (list.length === 0) {
+        setActiveTab('create');
+      } else {
+        const savedId = activeLeagueId || localStorage.getItem('vsbh_active_league');
+        const selected = (savedId ? list.find((l: League) => l.id === savedId) : null) || list[0];
+        setCurrentLeague(selected);
+        setActiveLeagueId(selected.id);
       }
     } catch (e) {
       console.error('Error fetching leagues:', e);
@@ -97,39 +124,77 @@ const LeagueManagement: React.FC = () => {
     if (!leagueId) return;
     try {
       setLoading(true);
-      const leagueRes = await fetch(`/api/leagues/${leagueId}`);
-      const leagueData = await leagueRes.json();
-      if (leagueRes.ok && leagueData.success) {
-        setCurrentLeague(leagueData.data);
-        setActiveLeagueId(leagueData.data.id);
-        if (leagueData.data.default_team_purse !== undefined) {
-          setEditDefaultPurse(leagueData.data.default_team_purse);
-          setNewTeamBudget(leagueData.data.default_team_purse);
+      let leagueDetail: any = null;
+
+      try {
+        const leagueRes = await fetch(`/api/leagues/${leagueId}`);
+        if (leagueRes.ok) {
+          const leagueData = await leagueRes.json();
+          if (leagueData.success && leagueData.data) {
+            leagueDetail = leagueData.data;
+          }
         }
-        if (leagueData.data.max_players_per_team !== undefined) {
-          setEditMaxPlayers(leagueData.data.max_players_per_team);
+      } catch (e) {}
+
+      // Fallback to Supabase if API is slow/offline
+      if (!leagueDetail && supabase) {
+        try {
+          const { data: sbLeague } = await supabase.from('leagues').select('*').eq('id', leagueId).single();
+          if (sbLeague) leagueDetail = sbLeague;
+        } catch (e) {}
+      }
+
+      if (leagueDetail) {
+        setCurrentLeague(leagueDetail);
+        setActiveLeagueId(leagueDetail.id);
+        if (leagueDetail.default_team_purse !== undefined) {
+          setEditDefaultPurse(leagueDetail.default_team_purse);
+          setNewTeamBudget(leagueDetail.default_team_purse);
         }
-        if (leagueData.data.auction_date_time) {
-          setAuctionDateTime(leagueData.data.auction_date_time.slice(0, 16));
+        if (leagueDetail.max_players_per_team !== undefined) {
+          setEditMaxPlayers(leagueDetail.max_players_per_team);
         }
-        if (leagueData.data.registration_deadline) {
-          setRegDeadline(leagueData.data.registration_deadline.slice(0, 16));
+        if (leagueDetail.auction_date_time) {
+          setAuctionDateTime(leagueDetail.auction_date_time.slice(0, 16));
+        }
+        if (leagueDetail.registration_deadline) {
+          setRegDeadline(leagueDetail.registration_deadline.slice(0, 16));
         }
       }
 
-      // Fetch teams
-      const teamsRes = await fetch(`/api/teams?leagueId=${leagueId}`);
-      if (teamsRes.ok) {
-        const teamsData = await teamsRes.json();
-        setTeams(Array.isArray(teamsData) ? teamsData : []);
+      // Fetch teams (API with Supabase fallback)
+      let teamsList: Team[] = [];
+      try {
+        const teamsRes = await fetch(`/api/teams?leagueId=${leagueId}`);
+        if (teamsRes.ok) {
+          const teamsData = await teamsRes.json();
+          if (Array.isArray(teamsData) && teamsData.length > 0) teamsList = teamsData;
+        }
+      } catch (e) {}
+      if (teamsList.length === 0 && supabase) {
+        try {
+          const { data: sbTeams } = await supabase.from('teams').select('*').eq('league_id', leagueId);
+          if (sbTeams && sbTeams.length > 0) teamsList = sbTeams;
+        } catch (e) {}
       }
+      setTeams(teamsList);
 
-      // Fetch players
-      const playersRes = await fetch(`/api/players?leagueId=${leagueId}`);
-      if (playersRes.ok) {
-        const playersData = await playersRes.json();
-        setPlayers(Array.isArray(playersData) ? playersData : []);
+      // Fetch players (API with Supabase fallback)
+      let playersList: Player[] = [];
+      try {
+        const playersRes = await fetch(`/api/players?leagueId=${leagueId}`);
+        if (playersRes.ok) {
+          const playersData = await playersRes.json();
+          if (Array.isArray(playersData) && playersData.length > 0) playersList = playersData;
+        }
+      } catch (e) {}
+      if (playersList.length === 0 && supabase) {
+        try {
+          const { data: sbPlayers } = await supabase.from('players').select('*').eq('league_id', leagueId);
+          if (sbPlayers && sbPlayers.length > 0) playersList = sbPlayers;
+        } catch (e) {}
       }
+      setPlayers(playersList);
     } catch (e) {
       console.error('Error loading league details:', e);
     } finally {
@@ -145,23 +210,72 @@ const LeagueManagement: React.FC = () => {
     const validTeams = initialTeamNames.map(t => t.trim()).filter(t => t.length > 0);
 
     try {
-      const res = await fetch('/api/leagues', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...newLeague,
-          default_team_purse: Number(newLeague.default_team_purse) || 100,
-          max_players_per_team: Number(newLeague.max_players_per_team) || 15,
-          auction_date_time: newLeague.auction_date_time ? new Date(newLeague.auction_date_time).toISOString() : undefined,
-          registration_deadline: newLeague.registration_deadline ? new Date(newLeague.registration_deadline).toISOString() : undefined,
-          number_of_teams: newLeague.number_of_teams ? Number(newLeague.number_of_teams) : (validTeams.length || undefined),
-          team_names: validTeams
-        })
-      });
-      const data = await res.json();
+      const payload = {
+        ...newLeague,
+        default_team_purse: Number(newLeague.default_team_purse) || 100,
+        max_players_per_team: Number(newLeague.max_players_per_team) || 15,
+        auction_date_time: newLeague.auction_date_time ? new Date(newLeague.auction_date_time).toISOString() : undefined,
+        registration_deadline: newLeague.registration_deadline ? new Date(newLeague.registration_deadline).toISOString() : undefined,
+        number_of_teams: newLeague.number_of_teams ? Number(newLeague.number_of_teams) : (validTeams.length || undefined),
+        team_names: validTeams
+      };
 
-      if (res.ok && data.success) {
-        const createdLeague = data.data;
+      let createdLeague: League | null = null;
+
+      try {
+        const res = await fetch('/api/leagues', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          createdLeague = data.data;
+        }
+      } catch (apiErr) {
+        console.warn('API error during league create, trying direct Supabase:', apiErr);
+      }
+
+      // If backend failed or was unreachable, write directly to Supabase
+      if (!createdLeague && supabase) {
+        try {
+          const code = `LEAGUE-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+          const capKey = `CAP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+          const sbPayload = {
+            name: newLeague.name.trim(),
+            code,
+            admin_name: newLeague.admin_name.trim(),
+            admin_email: newLeague.admin_email.trim().toLowerCase(),
+            admin_password: newLeague.admin_password,
+            number_of_teams: payload.number_of_teams || 6,
+            default_team_purse: payload.default_team_purse,
+            max_players_per_team: payload.max_players_per_team,
+            registration_deadline: payload.registration_deadline,
+            auction_date_time: payload.auction_date_time,
+            captain_auction_key: capKey,
+            registration_status: 'open',
+            auction_status: 'draft'
+          };
+          const { data: insData, error: insErr } = await supabase.from('leagues').insert([sbPayload]).select();
+          if (!insErr && insData && insData.length > 0) {
+            createdLeague = insData[0];
+            // Insert teams if any
+            if (validTeams.length > 0) {
+              const teamPayloads = validTeams.map(tn => ({
+                league_id: createdLeague!.id,
+                name: tn,
+                budget: payload.default_team_purse,
+                captain_code: `CAP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+              }));
+              await supabase.from('teams').insert(teamPayloads);
+            }
+          }
+        } catch (sbErr) {
+          console.error('Direct Supabase insert error:', sbErr);
+        }
+      }
+
+      if (createdLeague) {
         setCurrentLeague(createdLeague);
         setActiveLeagueId(createdLeague.id);
         setStatusMessage({
@@ -184,7 +298,7 @@ const LeagueManagement: React.FC = () => {
         await loadLeagueDetails(createdLeague.id);
         setActiveTab('manage');
       } else {
-        setStatusMessage({ text: data.message || 'Failed to create league', type: 'error' });
+        setStatusMessage({ text: 'Failed to create league. Please verify database connection.', type: 'error' });
       }
     } catch (e) {
       console.error('Error creating league:', e);
