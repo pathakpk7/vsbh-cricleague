@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import PitchBidLogo from './PitchBidLogo';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
@@ -32,11 +33,11 @@ const Navbar: React.FC = () => {
           
           <div className="soc-nav-brand" onClick={() => navigate('/')}>
             <div className="brand-logo-frame">
-              <img src="/logo_vsbh.png" alt="VSBH" className="soc-brand-logo" />
+              <PitchBidLogo size={36} className="soc-brand-logo" />
             </div>
             <div className="brand-text-block">
-              <span className="soc-brand-title">VSBH<span className="brand-accent">_CL</span></span>
-              <span className="soc-edition-tag">SPORTS OPS CENTER</span>
+              <span className="soc-brand-title">PitchBid<span className="brand-accent">_Pro</span></span>
+              <span className="soc-edition-tag">CRICKET OPS & AUCTION DECK</span>
             </div>
           </div>
         </div>

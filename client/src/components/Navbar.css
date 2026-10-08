@@ -82,8 +82,9 @@
 
 .soc-brand-logo {
   height: 28px;
-  width: auto;
+  width: 28px;
   object-fit: contain;
+  display: block;
 }
 
 .brand-text-block {

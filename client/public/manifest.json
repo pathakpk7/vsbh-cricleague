@@ -1,7 +1,13 @@
 {
-  "short_name": "CricBid Play",
-  "name": "CricBid Play - Live Cricket Auction & League Arena",
+  "short_name": "PitchBid Pro",
+  "name": "PitchBid Pro - Live Cricket Auction & League Arena",
   "icons": [
+    {
+      "src": "logo_pitchbid.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
@@ -20,6 +26,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#080b11",
+  "background_color": "#020408"
 }

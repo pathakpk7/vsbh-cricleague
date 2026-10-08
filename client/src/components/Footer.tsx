@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import PitchBidLogo from './PitchBidLogo';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -13,15 +14,15 @@ const Footer: React.FC = () => {
         <div className="soc-auction-footer-inner">
           <div className="auction-footer-status">
             <span className="live-dot-pulse"></span>
-            <span className="auction-status-tag">LIVE AUCTION ROOM</span>
+            <span className="auction-status-tag">PITCHBID PRO LIVE</span>
             <span className="soc-footer-sep">•</span>
-            <span className="auction-telemetry-text">REAL-TIME SOCKET FEED ACTIVE</span>
+            <span className="auction-telemetry-text">REAL-TIME BIDDING TELEMETRY ACTIVE</span>
           </div>
 
           <div className="auction-footer-center">
-            <span>VSBH SPORTS OPERATIONS CENTER</span>
+            <span>PITCHBID PRO OPERATIONS CENTER</span>
             <span className="soc-footer-sep">•</span>
-            <span className="auction-center-hint">OFFICIAL BIDDING ARENA</span>
+            <span className="auction-center-hint">OFFICIAL DRAFT & AUCTION ARENA</span>
           </div>
 
           <div className="auction-footer-actions">
@@ -29,7 +30,7 @@ const Footer: React.FC = () => {
               ← Return to Deck
             </Link>
             <span className="soc-footer-sep">•</span>
-            <span className="auction-footer-copy">&copy; {new Date().getFullYear()} VSBH-CL</span>
+            <span className="auction-footer-copy">&copy; {new Date().getFullYear()} PitchBid Pro</span>
           </div>
         </div>
       </footer>
@@ -43,13 +44,13 @@ const Footer: React.FC = () => {
         {/* Left: Brand & Tag */}
         <div className="soc-footer-brand">
           <div className="soc-footer-logo-frame">
-            <img src="/logo_vsbh.png" alt="VSBH" className="soc-footer-logo" />
+            <PitchBidLogo size={32} className="soc-footer-logo" />
           </div>
           <div className="soc-footer-text">
             <span className="soc-footer-title">
-              VSBH<span className="soc-footer-accent">_CL</span>
+              PitchBid<span className="soc-footer-accent">_Pro</span>
             </span>
-            <span className="soc-footer-sub">SPORTS OPERATIONS CENTER</span>
+            <span className="soc-footer-sub">CRICKET AUCTION & LEAGUE OPS</span>
           </div>
         </div>
 

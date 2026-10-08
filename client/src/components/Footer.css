@@ -45,8 +45,9 @@
 
 .soc-footer-logo {
   width: 20px;
-  height: auto;
+  height: 20px;
   object-fit: contain;
+  display: block;
 }
 
 .soc-footer-text {

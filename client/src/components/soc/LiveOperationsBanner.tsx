@@ -42,10 +42,10 @@ const LiveOperationsBanner: React.FC<LiveOperationsBannerProps> = ({
 
         <div className="hero-main-headline">
           <h1 className="hero-title">
-            College Cricket League <span className="headline-gradient">Broadcast & Auction Deck</span>
+            PitchBid Pro <span className="headline-gradient">Live Auction & League Arena</span>
           </h1>
           <p className="hero-subtitle">
-            Next-gen multi-tenant tournament platform. Concurrent real-time auctions, captain-secured bidding rooms, and dedicated ball-by-ball match play documentation.
+            Next-gen cricket operations center. High-speed real-time auctions, captain-secured bidding rooms, dynamic roster telemetry, and ball-by-ball match play.
           </p>
         </div>
 
