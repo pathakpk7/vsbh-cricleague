@@ -78,7 +78,11 @@ class DatabaseService {
   async syncToSupabase(table, record) {
     if (!supabase || typeof supabase.from !== 'function' || !record) return;
     try {
-      const { error } = await supabase.from(table).upsert(record, { onConflict: 'id' });
+      const payload = { ...record };
+      if (table === 'teams' && !payload.captain_code) {
+        payload.captain_code = 'CAP-' + (crypto.randomBytes ? crypto.randomBytes(3).toString('hex').toUpperCase() : '001');
+      }
+      const { error } = await supabase.from(table).upsert(payload, { onConflict: 'id' });
       if (error) {
         console.warn(`[Supabase Sync] ${table} upsert notice:`, error.message);
       }
