@@ -1,14 +1,17 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'placeholder_key';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://qriibawpjsbazglbwohn.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY && !process.env.SUPABASE_SERVICE_KEY.includes('placeholder')
+  ? process.env.SUPABASE_SERVICE_KEY
+  : (process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_EIgjeOEIBpz97t6RnJ2J9g_Ni3XF39l');
 
 // Only create client if valid credentials are provided
 let supabase = null;
 
-if (supabaseUrl && supabaseUrl !== 'https://placeholder.supabase.co') {
+if (supabaseUrl && supabaseKey) {
   try {
-    supabase = createClient(supabaseUrl, supabaseServiceKey);
+    supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase client initialized for URL:', supabaseUrl);
   } catch (error) {
     console.warn('Failed to initialize Supabase:', error.message);
   }

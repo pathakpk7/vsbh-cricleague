@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const supabase = require('../config/supabase');
 
 const DB_FILE = path.join(__dirname, '..', 'data', 'store.json');
 
@@ -24,6 +25,7 @@ class DatabaseService {
   constructor() {
     this.data = null;
     this.init();
+    this.syncFromSupabase();
   }
 
   init() {
@@ -47,6 +49,50 @@ class DatabaseService {
       console.error('Error loading db file, reinitializing default:', e);
       this.data = getInitialState();
       this.save();
+    }
+  }
+
+  async syncFromSupabase() {
+    if (!supabase || typeof supabase.from !== 'function') return;
+    try {
+      if (this.data.players.length === 0) {
+        const { data: dbPlayers } = await supabase.from('players').select('*');
+        if (dbPlayers && dbPlayers.length > 0) {
+          this.data.players = dbPlayers;
+          console.log(`[Supabase] Loaded ${dbPlayers.length} players from Supabase`);
+        }
+      }
+      if (this.data.teams.length === 0) {
+        const { data: dbTeams } = await supabase.from('teams').select('*');
+        if (dbTeams && dbTeams.length > 0) {
+          this.data.teams = dbTeams;
+          console.log(`[Supabase] Loaded ${dbTeams.length} teams from Supabase`);
+        }
+      }
+      this.save();
+    } catch (e) {
+      // Graceful fallback
+    }
+  }
+
+  async syncToSupabase(table, record) {
+    if (!supabase || typeof supabase.from !== 'function' || !record) return;
+    try {
+      const { error } = await supabase.from(table).upsert(record, { onConflict: 'id' });
+      if (error) {
+        console.warn(`[Supabase Sync] ${table} upsert notice:`, error.message);
+      }
+    } catch (err) {
+      console.warn(`[Supabase Sync] Failed to sync ${table}:`, err.message);
+    }
+  }
+
+  async syncDeleteToSupabase(table, id) {
+    if (!supabase || typeof supabase.from !== 'function' || !id) return;
+    try {
+      await supabase.from(table).delete().eq('id', id);
+    } catch (err) {
+      console.warn(`[Supabase Sync] Failed to delete ${table} ${id}:`, err.message);
     }
   }
 
@@ -158,6 +204,11 @@ class DatabaseService {
     });
 
     this.save();
+    this.syncToSupabase('leagues', newLeague);
+    validTeamNames.forEach((_, idx) => {
+      const createdT = this.data.teams[this.data.teams.length - validTeamNames.length + idx];
+      if (createdT) this.syncToSupabase('teams', createdT);
+    });
     return newLeague;
   }
 
@@ -233,6 +284,7 @@ class DatabaseService {
     };
     this.data.teams.push(newTeam);
     this.save();
+    this.syncToSupabase('teams', newTeam);
     return newTeam;
   }
 
@@ -241,6 +293,7 @@ class DatabaseService {
     if (idx === -1) return null;
     this.data.teams[idx] = { ...this.data.teams[idx], ...updates };
     this.save();
+    this.syncToSupabase('teams', this.data.teams[idx]);
     return this.data.teams[idx];
   }
 
@@ -251,6 +304,7 @@ class DatabaseService {
     // Remove relations
     this.data.team_players = this.data.team_players.filter(tp => tp.team_id !== id);
     this.save();
+    this.syncDeleteToSupabase('teams', id);
     return true;
   }
 
@@ -329,6 +383,7 @@ class DatabaseService {
     };
     this.data.players.push(newPlayer);
     this.save();
+    this.syncToSupabase('players', newPlayer);
     return newPlayer;
   }
 
@@ -337,6 +392,7 @@ class DatabaseService {
     if (idx === -1) return null;
     this.data.players[idx] = { ...this.data.players[idx], ...updates };
     this.save();
+    this.syncToSupabase('players', this.data.players[idx]);
     return this.data.players[idx];
   }
 
@@ -411,14 +467,15 @@ class DatabaseService {
     }
 
     // 3. Add to team_players
-    this.data.team_players.push({
+    const teamPlayerRecord = {
       id: generateId(),
       league_id: leagueId,
       team_id: teamId,
       player_id: playerId,
       sold_price: finalBid,
       picked_at: new Date().toISOString()
-    });
+    };
+    this.data.team_players.push(teamPlayerRecord);
 
     // 4. Log winning bid
     this.addAuctionLog({
@@ -430,6 +487,9 @@ class DatabaseService {
     });
 
     this.save();
+    if (player) this.syncToSupabase('players', player);
+    if (team) this.syncToSupabase('teams', team);
+    this.syncToSupabase('team_players', teamPlayerRecord);
     return { player, team };
   }
 
@@ -438,6 +498,7 @@ class DatabaseService {
     if (player) {
       player.status = 'unsold';
       player.sold_at = new Date().toISOString();
+      this.syncToSupabase('players', player);
     }
     this.save();
     return player;
@@ -551,6 +612,7 @@ class DatabaseService {
 
     this.data.matches.push(newMatch);
     this.save();
+    this.syncToSupabase('matches', newMatch);
     return newMatch;
   }
 
@@ -567,6 +629,7 @@ class DatabaseService {
 
     this.data.matches[idx] = updated;
     this.save();
+    this.syncToSupabase('matches', updated);
     return updated;
   }
 
@@ -594,6 +657,7 @@ class DatabaseService {
 
     match.updated_at = new Date().toISOString();
     this.save();
+    this.syncToSupabase('matches', match);
     return match;
   }
 
@@ -602,6 +666,7 @@ class DatabaseService {
     if (idx === -1) return false;
     this.data.matches.splice(idx, 1);
     this.save();
+    this.syncDeleteToSupabase('matches', id);
     return true;
   }
 
