@@ -70,7 +70,11 @@
     }
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": "20.x",
     "npm": ">=8.0.0"
+  },
+  "allowScripts": {
+    "core-js": true,
+    "core-js-pure": true
   }
 }

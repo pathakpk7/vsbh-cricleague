@@ -47,5 +47,13 @@
   },
   "devDependencies": {
     "jest-environment-jsdom": "^30.3.0"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": ">=8.0.0"
+  },
+  "allowScripts": {
+    "core-js": true,
+    "core-js-pure": true
   }
 }
